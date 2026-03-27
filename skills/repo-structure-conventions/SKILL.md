@@ -59,6 +59,23 @@ Ensure every managed repository has a consistent, navigable, industry-standard f
 
 ## A) Universal file layout
 
+### Root minimalism principle
+
+A file belongs at the repository root **only** if at least one of these conditions is true:
+
+| Condition | Examples |
+|---|---|
+| **Tool enforcement** — a tool will not find the file elsewhere | `package.json`, `Cargo.toml`, `go.mod`, `.gitignore` |
+| **Platform convention** — GitHub/GitLab renders or processes it from root | `README.md`, `LICENSE`, `CHANGELOG.md`, `CODEOWNERS` |
+| **Ecosystem standard name** — the ecosystem's toolchain expects it at root | `tsconfig.json`, `pyproject.toml`, `.editorconfig`, `Makefile` |
+| **Primary entry point** — the project has ≤ 3 source files and no `src/` dir | `mem-watchdog.sh`, `install.sh`, `main.py` |
+
+All other files belong in a purpose-named directory (`docs/`, `scripts/`, `test/`, `src/`, `.github/`).
+
+**Audit behavior**: Root files failing this test are flagged at `low` severity (informational). The finding recommends which directory the file should move to, but does not block merges.
+
+**Cross-ecosystem consensus**: Rust (`src/`, `tests/`), Go (`cmd/`, `internal/`, `test/`), Python (`src/<pkg>/`, `tests/`), JS/TS (`src/`, `test/`), .NET (`src/`, `test/`), and the kriasoft Folder-Structure-Conventions standard (2k★, 5.8k forks) all converge on this layout: source and tests in subdirectories, root contains only files that must be there.
+
 Every repository must have this root-level structure (files may be absent if N/A):
 
 ```
