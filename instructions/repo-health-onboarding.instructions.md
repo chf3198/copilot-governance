@@ -50,6 +50,22 @@ Run `repo-profile-governance` skill when:
 - Before any public release.
 - When community health gaps are suspected.
 
+## Repository structure conventions
+
+- On new repos or restructuring, invoke `repo-structure-conventions` skill.
+- Every repo follows a universal root layout: README, LICENSE, CHANGELOG, .gitignore, .github/, docs/, scripts/, test/.
+- CHANGELOG.md follows [Keep a Changelog](https://keepachangelog.com/) format: Added, Changed, Deprecated, Removed, Fixed, Security.
+- Build artifacts are isolated via .gitignore (and .vscodeignore / .npmignore where applicable).
+- No build outputs (dist/, node_modules/, resources/, *.vsix, __pycache__/) in git history.
+
+## OpenSSF security alignment
+
+- Enable Dependabot alerts, secret scanning, and push protection on every public repo.
+- Add `ossf/scorecard-action` to CI for public repos to track security posture.
+- Pin third-party Actions to full commit SHA, not tags.
+- Workflow `permissions` block defaults to `read-all`; grant write only per-job.
+- Private vulnerability reporting enabled via GitHub settings.
+
 ## Consistency across repos
 
 - Critical standards are consistent across all managed repositories.
