@@ -342,7 +342,44 @@ echo "  Settings Sync syncs the location REFERENCES (settings.json)."
 echo "  This repo syncs the CONTENT (instructions, skills, agents, hooks)."
 echo "  Together they provide complete cross-machine governance."
 
-# ─── Done ───────────────────────────────────────────────────────────────
+# ─── Step 8: gh CLI check ───────────────────────────────────────────────────
+info "Step 8: Checking gh CLI (needed for self-annealing PRs)"
+
+if command -v gh &>/dev/null; then
+    log "gh CLI found: $(gh --version | head -1)"
+    if gh auth status &>/dev/null 2>&1; then
+        log "gh CLI already authenticated"
+    else
+        warn "gh CLI not yet authenticated — run: gh auth login"
+    fi
+else
+    warn "gh CLI not installed — self-annealing PRs will not work until it is"
+    echo ""
+    echo "  Install gh CLI for your OS:"
+    echo ""
+    # Detect OS and print the right install command
+    if [[ -f /etc/debian_version ]] || grep -qi 'debian\|ubuntu' /etc/os-release 2>/dev/null; then
+        echo "  Debian / Ubuntu / Crostini:"
+        echo "    sudo apt update && sudo apt install -y gh"
+        echo ""
+        echo "  If 'gh' is not in apt, add the GitHub repo first:"
+        echo "    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \\"
+        echo "      | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg"
+        echo "    echo \"deb [arch=\$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" \\"
+        echo "      | sudo tee /etc/apt/sources.list.d/github-cli.list"
+        echo "    sudo apt update && sudo apt install -y gh"
+    elif [[ "$(uname)" == "Darwin" ]]; then
+        echo "  macOS:"
+        echo "    brew install gh"
+    else
+        echo "  See https://cli.github.com for your OS"
+    fi
+    echo ""
+    echo "  After installing: gh auth login"
+    echo ""
+fi
+
+# ─── Done ─────────────────────────────────────────────────────────
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"

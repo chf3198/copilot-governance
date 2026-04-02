@@ -42,8 +42,7 @@ One repo. One `git pull`. All platforms live.
 
 ## 🚀 Quick Install
 
-**Prerequisites (all platforms):** `git`, `bash`, `python3`
-**For self-annealing PRs (one-time per machine):** [`gh` CLI](https://cli.github.com) installed and authenticated
+**Prerequisites (all platforms):** `git`, `bash`, `python3` — present by default on Linux, macOS, and Crostini.
 
 **One command installs governance for every platform present on the machine:**
 
@@ -53,8 +52,35 @@ curl -fsSL https://raw.githubusercontent.com/chf3198/copilot-governance/main/ins
 
 The installer is fully idempotent — safe to re-run at any time. The pull timer installs itself and syncs from `main` every 15 minutes in the background.
 
-After install, authenticate the GitHub CLI once so the AI can propose self-annealing PRs:
+**After install — install and authenticate the GitHub CLI (once per machine).**
+This enables the AI to propose self-annealing PRs. The installer will tell you if it's missing.
 
+<details>
+<summary>Install gh CLI</summary>
+
+**Debian / Ubuntu / Crostini (ChromeOS Linux):**
+```bash
+sudo apt update && sudo apt install -y gh
+```
+If `gh` is not in your apt sources yet:
+```bash
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+  | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+  | sudo tee /etc/apt/sources.list.d/github-cli.list
+sudo apt update && sudo apt install -y gh
+```
+
+**macOS:**
+```bash
+brew install gh
+```
+
+**Other:** see [cli.github.com](https://cli.github.com)
+
+</details>
+
+Once installed:
 ```bash
 gh auth login
 ```
