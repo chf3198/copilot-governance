@@ -2,21 +2,26 @@
 
 ## Purpose and Core Problem
 
-This repo solves **cross-platform, cross-machine AI governance**: ensuring that VS Code Copilot, Claude Code, and Google Antigravity on any laptop (currently Chromebook/Crostini as primary) all receive the same global instructions, skills, agents, and lifecycle hooks — without duplication or manual per-machine setup.
+This repo solves **cross-platform, cross-machine AI governance**: ensuring that any AI coding platform on any machine receives the same global instructions, skills, agents, and lifecycle hooks — without duplication or manual per-machine setup.
 
-**The strategic challenge:** Three different IDE platforms each have different global-config formats and install paths. This repo must package global-items so they are **easily installed once and auto-updating** on every new machine.
+**The strategic challenge:** Different AI IDE platforms have different global-config formats and install paths. This repo packages global-items so they are **easily installed once and auto-updating** on every new machine, for any number of platforms and users.
+
+Currently wired: VS Code Copilot, Claude Code, and Google Antigravity. The architecture accommodates any additional platform that supports file-based rules and a skills directory — adding one means writing a template rules file and one `install.sh` stanza. No skill files change.
 
 ---
 
 ## Platform Landscape (April 2026)
+
+The following platforms are currently wired. This list is **not exhaustive** — any platform that reads a markdown rules file and loads skills from a directory can be added.
 
 | Platform | Global Config Root | Skills Path | Rules/Instructions | Hooks |
 |---|---|---|---|---|
 | **VS Code Copilot** | `~/.copilot/` (via settings) | `~/.copilot/skills/` | `~/.copilot/instructions/` | `~/.copilot/hooks/global-standards.json` |
 | **Claude Code** | `~/.claude/` | `~/.claude/skills/` (also reads `.agents/skills/`) | `~/.claude/CLAUDE.md`, `~/.claude/rules/` | `~/.claude/settings.json` → `hooks` key |
 | **Google Antigravity** | `~/.gemini/` | `~/.gemini/antigravity/skills/` | `~/.gemini/GEMINI.md`, `.agents/rules/` | Not yet documented |
+| **Any platform** | `~/.yourplatform/` | symlink → `skills/` | template rules file via `envsubst` | platform-specific |
 
-**Key insight:** All three platforms consume the same `SKILL.md` format from the [agentskills.io open standard](https://agentskills.io/). Skills in `skills/*/SKILL.md` already work in VS Code Copilot, Claude Code, and Antigravity without modification.
+**Key insight:** Any platform that implements the [agentskills.io open standard](https://agentskills.io/) consumes the same `SKILL.md` format. Skills in `skills/*/SKILL.md` require zero per-platform variants — the install path is the only variable.
 
 **Google Antigravity** (`antigravity.google`) is Google's local, agent-first IDE — the successor to Firebase Studio (sunset March 2027). It runs locally on Linux/macOS/Windows, supports Claude/Gemini/GPT models, and uses `~/.gemini/GEMINI.md` for global rules and `~/.gemini/antigravity/skills/` for global skills. Available for Linux (glibc ≥ 2.28), meaning it runs in Crostini on Chromebook.
 
@@ -40,17 +45,20 @@ VS Code loads via settings: `chat.instructionsFilesLocations`, `chat.agentSkills
 
 ## Unified Architecture (Cross-Platform, Conflict-Free)
 
-**No extension system. No marketplace. One architecture for all platforms.**
+**No extension system. No marketplace. One architecture for any number of platforms.**
 
-Both VS Code and Antigravity use identical install mechanics: a git clone at `~/copilot-governance/` with symlinks pointing each IDE into it. The repo IS the config source — no copying, no translation layer. Claude Code works the same way.
+Every platform uses identical install mechanics: a git clone at `~/copilot-governance/` with symlinks pointing each platform into it. The repo IS the config source — no copying, no translation layer. Adding a new platform means adding one `install.sh` stanza, one template rules file, and one skills symlink.
 
 ### Platform Config Wiring
+
+Any platform that supports (a) a markdown rules/instructions file and (b) a skills directory can be wired in using the same pattern as the three below.
 
 | Platform | Wired By | What Points Into the Repo |
 |---|---|---|
 | **VS Code Copilot** | `~/.copilot/ → ~/copilot-governance/` symlink + `settings.json` keys | `skills/`, `instructions/`, `agents/`, `hooks/` |
 | **Google Antigravity** | `~/.gemini/GEMINI.md` `@`-imports + `~/.gemini/antigravity/skills/ → ~/copilot-governance/skills/` symlink | All instructions via `GEMINI.md`; skills via symlink |
 | **Claude Code** | `~/.claude/CLAUDE.md` `@`-imports + `~/.claude/skills/ → ~/copilot-governance/skills/` symlink | All instructions via `CLAUDE.md`; skills via symlink |
+| **Any new platform** | `NEWPLATFORM.md` template + `envsubst` in `install.sh` + skills symlink | Instructions via platform rules file; skills via symlink |
 
 **Antigravity `@`-import syntax** (rules natively support absolute-path imports):
 ```markdown
@@ -73,10 +81,13 @@ GitHub (main — protected, merges require PR + approval)
      ↑ self-annealing: AI creates PR → user approves → merges to main
      ↓ pull timer (every 15 min, silent, all machines)
 
-Machine A (VS Code)     Machine B (VS Code)     Machine C (Antigravity)
-  pulls ← main            pulls ← main            pulls ← main
-  creates PRs ↑           creates PRs ↑           creates PRs ↑
+Machine A           Machine B           Machine C  ...  Machine N
+(any platform)      (any platform)      (any platform)  (any platform)
+  pulls ← main        pulls ← main        pulls ← main    pulls ← main
+  creates PRs ↑       creates PRs ↑       creates PRs ↑   creates PRs ↑
 ```
+
+No limit on machines or platforms. Each machine clones the repo once; `install.sh` wires whichever platforms are installed on that machine.
 
 **Self-annealing flow — when a machine improves a global-item:**
 1. AI identifies an efficiency gain in a skill or instruction

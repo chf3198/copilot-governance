@@ -2,7 +2,7 @@
 
 # 🧠 copilot-governance
 
-**Cross-platform, cross-machine AI governance for VS Code Copilot, Claude Code, and Google Antigravity**
+**Platform-agnostic AI governance — any AI coding platform, any machine, any number of users**
 
 [![CI](https://github.com/chf3198/copilot-governance/actions/workflows/validate-pr.yml/badge.svg)](https://github.com/chf3198/copilot-governance/actions/workflows/validate-pr.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -20,20 +20,20 @@
 
 Every AI coding session on every machine should follow the same high-quality protocols — the same engineering standards, the same GitHub workflow, the same security guards. This repo is that shared governance layer.
 
-It works on three IDE platforms without modification, installs in one command, self-updates every 15 minutes, and lets any machine's AI propose an improvement that — after your review — propagates everywhere.
+It installs in one command, self-updates every 15 minutes, and lets any machine's AI propose an improvement that — after your review — propagates everywhere. The architecture places **no limit on platforms, machines, or users**: any AI platform that reads a rules file and loads skills from a directory can be wired in with one `install.sh` stanza and a template file.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                     ~/copilot-governance  (this repo)                    │
 │                                                                          │
 │  instructions/   skills/   agents/   hooks/   sync/                     │
-└───────┬──────────────┬──────────────┬───────────────────────────────────┘
-        │              │              │
-        ▼              ▼              ▼
-  ~/.copilot/    ~/.gemini/      ~/.claude/
-  (VS Code)   (Antigravity)   (Claude Code)
-  symlink       symlink +       symlink +
-                @-imports       @-imports
+└───────┬──────────────┬──────────────┬────────────────┬───────────────────┘
+        │              │              │                │
+        ▼              ▼              ▼                ▼
+  ~/.copilot/    ~/.gemini/      ~/.claude/       ~/.yourplatform/
+  (VS Code)   (Antigravity)   (Claude Code)     (any future platform)
+  symlink       symlink +       symlink +         one stanza in
+                @-imports       @-imports         install.sh
 ```
 
 One repo. One `git pull`. All platforms live.
@@ -78,13 +78,18 @@ All steps are idempotent — safe to re-run any time.
 
 ### Platform Support
 
+The architecture is **platform-agnostic**. Any AI coding platform that supports file-based config can be wired in by adding one stanza to `install.sh`, a `${REPO_DIR}` template rules file, and a skills directory symlink. No skill files change — the [agentskills.io](https://agentskills.io) `SKILL.md` format is an open standard any platform can implement.
+
+**Currently wired platforms:**
+
 | Platform | Config Root | Skills | Rules / Instructions | Hooks |
 |---|---|---|---|---|
 | **VS Code Copilot** | `~/.copilot/` → repo symlink | `~/.copilot/skills/` | `~/.copilot/instructions/*.instructions.md` | `hooks/global-standards.json` |
 | **Google Antigravity** | `~/.gemini/` | `~/.gemini/antigravity/skills/` → symlink | `~/.gemini/GEMINI.md` with `@`-imports | *(not yet documented)* |
 | **Claude Code** | `~/.claude/` | `~/.claude/skills/` → symlink | `~/.claude/CLAUDE.md` with `@`-imports | `~/.claude/settings.json` hooks |
+| **Any platform** | `~/.yourplatform/` | symlink → `skills/` | template rules file via `envsubst` | platform-specific |
 
-All three platforms consume the same [`SKILL.md` format](https://agentskills.io) — no per-platform skill variants.
+**Adding a new platform:** create `YOURPLATFORM.md` template, add an `install.sh` stanza that runs `envsubst` and creates the skills symlink, open a PR. Skill files require zero changes.
 
 ### Repository Layout
 
@@ -170,22 +175,26 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant M1 as Machine A (VS Code)
-    participant M2 as Machine B (Antigravity)
+    participant M1 as Machine A (any platform)
+    participant M2 as Machine B (any platform)
+    participant MN as Machine N (any platform)
     participant GH as GitHub main
 
-    Note over M1,GH: Automatic pull cycle every 15 min
+    Note over M1,GH: Automatic pull cycle every 15 min — all machines
     M1->>GH: git fetch + merge --ff-only origin/main
     M2->>GH: git fetch + merge --ff-only origin/main
+    MN->>GH: git fetch + merge --ff-only origin/main
 
     Note over M1,GH: AI on Machine A self-anneals a skill
     M1->>GH: create-pr.sh → feat/anneal-X branch + draft PR
     Note over GH: User reviews and approves PR
     GH->>GH: Merge feat/anneal-X → main
 
-    Note over M2,GH: Machine B receives it on next pull cycle
+    Note over M2,GH: All other machines receive it on next pull cycle
     M2->>GH: git fetch + merge --ff-only origin/main
     GH-->>M2: Updated skill delivered via symlink instantly
+    MN->>GH: git fetch + merge --ff-only origin/main
+    GH-->>MN: Updated skill delivered via symlink instantly
 ```
 
 ### Why Conflicts Cannot Occur
@@ -234,7 +243,7 @@ Evidence: 3 recent merges passed without CHANGELOG entries."
 
 ## 📚 Skills Library
 
-Skills are on-demand expert procedures. All 25 follow the [agentskills.io](https://agentskills.io) open standard and work across all three platforms without modification.
+Skills are on-demand expert procedures. All 25 follow the [agentskills.io](https://agentskills.io) open standard — the same `SKILL.md` file works on every supported platform without modification. Adding a platform does not require changing any skill.
 
 **Invoke any skill by name:**
 ```
