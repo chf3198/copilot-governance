@@ -1,0 +1,92 @@
+name: validate-pr
+
+# Validates incoming PRs against main — the quality gate that enforces
+# that self-annealed improvements are well-formed before the user approves.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-skills:
+    name: Validate SKILL.md files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check SKILL.md frontmatter
+        run: |
+          ERRORS=0
+          while IFS= read -r -d '' skill; do
+            # Each SKILL.md must open with a YAML frontmatter block.
+            if ! head -1 "$skill" | grep -q '^---'; then
+              echo "FAIL: missing YAML frontmatter in $skill"
+              ERRORS=$((ERRORS+1))
+            fi
+            # Must contain a 'name:' key.
+            if ! grep -q '^name:' "$skill"; then
+              echo "FAIL: missing 'name:' key in $skill"
+              ERRORS=$((ERRORS+1))
+            fi
+            # Must contain a 'description:' key.
+            if ! grep -q '^description:' "$skill"; then
+              echo "FAIL: missing 'description:' key in $skill"
+              ERRORS=$((ERRORS+1))
+            fi
+          done < <(find skills -name 'SKILL.md' -print0)
+          if [[ "$ERRORS" -gt 0 ]]; then
+            echo "::error::$ERRORS SKILL.md validation error(s). See above."
+            exit 1
+          fi
+          echo "All SKILL.md files valid."
+
+  validate-instructions:
+    name: Validate instruction files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check .instructions.md files are non-empty
+        run: |
+          ERRORS=0
+          while IFS= read -r -d '' f; do
+            if [[ ! -s "$f" ]]; then
+              echo "FAIL: empty instruction file: $f"
+              ERRORS=$((ERRORS+1))
+            fi
+          done < <(find instructions -name '*.instructions.md' -print0)
+          if [[ "$ERRORS" -gt 0 ]]; then
+            echo "::error::$ERRORS empty instruction file(s). See above."
+            exit 1
+          fi
+          echo "All instruction files non-empty."
+
+  validate-no-secrets:
+    name: Check for accidental secret patterns
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for secret patterns
+        run: |
+          # Fail if any tracked file contains a pattern that looks like a secret.
+          # Extend this list as needed.
+          PATTERNS=(
+            'AKIA[0-9A-Z]{16}'          # AWS access key
+            'sk-[a-zA-Z0-9]{40,}'       # OpenAI API key
+            'ghp_[a-zA-Z0-9]{36}'       # GitHub PAT (classic)
+            'github_pat_[a-zA-Z0-9_]+'  # GitHub PAT (fine-grained)
+            'xox[baprs]-[0-9a-zA-Z]+'   # Slack token
+          )
+          FOUND=0
+          for pat in "${PATTERNS[@]}"; do
+            if git grep -P "$pat" -- ':!.github/workflows/validate-pr.yml' >/dev/null 2>&1; then
+              echo "::error::Possible secret pattern found matching: $pat"
+              FOUND=$((FOUND+1))
+            fi
+          done
+          if [[ "$FOUND" -gt 0 ]]; then exit 1; fi
+          echo "No secret patterns detected."

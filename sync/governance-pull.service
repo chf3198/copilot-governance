@@ -1,0 +1,12 @@
+[Unit]
+Description=Governance Pull — fetch canonical governance from origin/main
+Documentation=https://github.com/chf3198/copilot-governance
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/copilot-governance/sync/pull.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=governance-pull

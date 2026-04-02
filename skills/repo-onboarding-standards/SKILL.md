@@ -17,7 +17,12 @@ description: Onboard any repository into a standardized Copilot + CI governance 
 3. Add targeted `.github/instructions/*.instructions.md` files for stack-specific rules.
 4. Verify CI has minimum baseline: lint/test, dependency/security review, artifact/release checks.
 5. Add or update release policy controls (version integrity, docs sync, packaging audit).
-6. Produce an onboarding report with required vs optional controls and evidence.
+6. For platforms that support exact-version install/pin, require version-selectability controls:
+	- immutable artifact retention,
+	- exact-version install smoke checks,
+	- canonical version index/source alignment for update prompts,
+	- documented rollback and version-yank policy.
+7. Produce an onboarding report with required vs optional controls and evidence.
 
 ## Required handoffs
 
@@ -39,3 +44,4 @@ description: Onboard any repository into a standardized Copilot + CI governance 
 - Prefer smallest correct baseline over over-engineered policy stacks.
 - Require objective verification gates for each recommended control.
 - Do not claim onboarding complete without evidence for every required control.
+- Do not mark release governance complete when an app type can support exact-version installability but lacks enforceable controls for it.

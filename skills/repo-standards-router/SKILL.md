@@ -28,6 +28,7 @@ If the request includes GitHub workflow governance controls, hand off to `github
 3. Must return explicit verification gates.
 4. If repository type is unclear, return `NO_CHANGE` + missing evidence.
 5. Prefer existing classes + overlays over creating a new branch.
+6. For app-types with first-class versioned distribution channels, include a `version-selectability` control in release recommendations.
 
 ## Decision flow
 
@@ -105,6 +106,19 @@ evolution_todos:
 - `collaboration`: contributor-facing hygiene (`LICENSE`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `SECURITY`, templates, CI).
 - `release`: SemVer/release checklist, changelog quality, rollback notes.
 - `observability` (optional): telemetry, SLO/error budget, alert ownership.
+
+## Version-selectability capability rule (required)
+
+When `overlays` includes `release`, evaluate whether the repository's distribution channel supports exact version installation or pinning (for example package registries, extension marketplaces, container tags/digests, action tags).
+
+If supported, add a required release control that enforces all of the following:
+
+1. Immutable per-version artifacts (no overwrite of released versions).
+2. Exact-version install path remains available for supported historical versions.
+3. Release pipeline verifies exact-version installability before marking a version active/announced.
+4. Update prompts use the same canonical version source used for installation.
+
+If not supported by platform constraints, record an explicit exception and the nearest deterministic fallback.
 
 ## Future branch promotion rule
 

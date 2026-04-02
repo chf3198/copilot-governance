@@ -1,0 +1,14 @@
+[Unit]
+Description=Governance Pull Timer — sync from origin/main every 15 minutes
+Documentation=https://github.com/chf3198/copilot-governance
+
+[Timer]
+# Run 2 minutes after boot, then every 15 minutes.
+OnBootSec=2min
+OnUnitActiveSec=15min
+# Spread start time by up to 60 seconds to avoid thundering-herd on GitHub.
+RandomizedDelaySec=60
+Unit=governance-pull.service
+
+[Install]
+WantedBy=timers.target

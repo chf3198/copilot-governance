@@ -21,5 +21,6 @@ After every PR merge or deployment that changes user-facing behavior, run these 
 3. **Profile governance**: Run the `repo-profile-governance` skill to audit community health files (SUPPORT.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md), metadata (description, topics, homepage), and contribution surfaces (templates, CODEOWNERS).
 4. **Docs drift**: Run the `docs-drift-maintenance` skill to detect stale documentation that contradicts the new behavior.
 5. **Learnings**: If the change revealed a significant discovery, add an entry to `docs/workflow/learnings.md`.
+6. **Release integrity**: If the merge changes extension or package behavior, run `release-version-integrity` to validate tag/manifest/changelog alignment, then publish the new version.
 
-Do not consider a PR merge or deployment task complete until steps 1-5 are explicitly addressed (either completed or confirmed not applicable).
+Do not consider a PR merge or deployment task complete until steps 1-6 are explicitly addressed (either completed or confirmed not applicable).

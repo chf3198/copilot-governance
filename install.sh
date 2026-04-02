@@ -1,21 +1,42 @@
 #!/usr/bin/env bash
-# install.sh — Bootstrap copilot-governance on a new machine
+# install.sh — Bootstrap copilot-governance on a new machine (all platforms)
 #
-# Usage: git clone git@github.com:chf3198/copilot-governance.git ~/copilot-governance
-#        cd ~/copilot-governance && bash install.sh
+# Usage (one-liner):
+#   curl -fsSL https://raw.githubusercontent.com/chf3198/copilot-governance/main/install.sh | bash
 #
-# What it does:
-#   1. Symlinks ~/.copilot/ → this repo directory
-#   2. Merges required VS Code settings into settings.json
-#   3. Optionally configures BYOK API keys via VS Code
+# Or manual:
+#   git clone https://github.com/chf3198/copilot-governance.git ~/copilot-governance
+#   cd ~/copilot-governance && bash install.sh
 #
-# Safe to re-run — idempotent checks on every step.
+# What it does (idempotent — safe to re-run):
+#   1. Clone repo to ~/copilot-governance if not already present
+#   2. VS Code Copilot: symlink ~/.copilot/ → repo; merge settings.json
+#   3. Google Antigravity: envsubst GEMINI.md → ~/.gemini/GEMINI.md; symlink skills/
+#   4. Claude Code: envsubst CLAUDE.md → ~/.claude/CLAUDE.md; symlink skills/
+#   5. Sync: install systemd user timer (pull every 15 min); enable linger
+#
+# After install, authenticate gh CLI once per machine:
+#   gh auth login
 
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
+# ─── Resolve repo dir (works whether run via curl | bash or directly) ──
+if [[ "${BASH_SOURCE[0]}" == "" ]]; then
+    # Piped from curl — clone first, then re-exec from the clone
+    REPO_DIR="$HOME/copilot-governance"
+    if [[ ! -d "$REPO_DIR/.git" ]]; then
+        echo "[i] Cloning copilot-governance to $REPO_DIR ..."
+        git clone https://github.com/chf3198/copilot-governance.git "$REPO_DIR"
+    fi
+    exec bash "$REPO_DIR/install.sh"
+fi
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export REPO_DIR  # needed by envsubst
+
 COPILOT_LINK="$HOME/.copilot"
 VSCODE_SETTINGS="$HOME/.config/Code/User/settings.json"
+SYSTEMD_USER_DIR="$HOME/.config/systemd/user"
 
 # Colors
 RED='\033[0;31m'
@@ -31,7 +52,8 @@ info() { printf "${BLUE}[i]${NC} %s\n" "$1"; }
 
 echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║          Copilot Governance System — Installer              ║"
+echo "║         Copilot Governance System — Installer v2           ║"
+echo "║         VS Code · Google Antigravity · Claude Code         ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
 
@@ -179,9 +201,119 @@ PYEOF
     log "Settings check complete"
 fi
 
-# ─── Step 3: BYOK reminder ─────────────────────────────────────────────
+# ─── Step 3: Google Antigravity ────────────────────────────────────────
 
-info "Step 3: Multi-model API keys"
+info "Step 3: Configuring Google Antigravity"
+
+GEMINI_DIR="$HOME/.gemini"
+GEMINI_SKILLS_DIR="$GEMINI_DIR/antigravity/skills"
+GEMINI_RULES="$GEMINI_DIR/GEMINI.md"
+
+mkdir -p "$GEMINI_DIR/antigravity"
+
+# Symlink skills into Antigravity
+if [[ -L "$GEMINI_SKILLS_DIR" ]]; then
+    log "~/.gemini/antigravity/skills/ already symlinked"
+elif [[ -d "$GEMINI_SKILLS_DIR" ]]; then
+    BACKUP="$GEMINI_SKILLS_DIR.backup.$(date +%Y%m%d-%H%M%S)"
+    warn "~/.gemini/antigravity/skills/ is a real directory — backing up to $BACKUP"
+    mv "$GEMINI_SKILLS_DIR" "$BACKUP"
+    ln -sfn "$REPO_DIR/skills" "$GEMINI_SKILLS_DIR"
+    log "Skills symlinked for Antigravity"
+else
+    ln -sfn "$REPO_DIR/skills" "$GEMINI_SKILLS_DIR"
+    log "Created ~/.gemini/antigravity/skills/ → $REPO_DIR/skills"
+fi
+
+# Generate ~/.gemini/GEMINI.md from template (envsubst replaces ${REPO_DIR})
+if [[ -f "$REPO_DIR/GEMINI.md" ]]; then
+    if command -v envsubst &>/dev/null; then
+        envsubst < "$REPO_DIR/GEMINI.md" > "$GEMINI_RULES"
+        log "Generated ~/.gemini/GEMINI.md (${REPO_DIR} resolved)"
+    else
+        warn "envsubst not found — copying GEMINI.md template as-is (paths may need manual fix)"
+        cp "$REPO_DIR/GEMINI.md" "$GEMINI_RULES"
+        sed -i "s|\${REPO_DIR}|$REPO_DIR|g" "$GEMINI_RULES"
+        log "Generated ~/.gemini/GEMINI.md (sed fallback)"
+    fi
+else
+    warn "GEMINI.md template not found in repo — skipping Antigravity rules"
+fi
+
+# ─── Step 4: Claude Code ───────────────────────────────────────────────
+
+info "Step 4: Configuring Claude Code"
+
+CLAUDE_DIR="$HOME/.claude"
+CLAUDE_SKILLS_DIR="$CLAUDE_DIR/skills"
+CLAUDE_RULES="$CLAUDE_DIR/CLAUDE.md"
+
+mkdir -p "$CLAUDE_DIR"
+
+# Symlink skills into Claude Code
+if [[ -L "$CLAUDE_SKILLS_DIR" ]]; then
+    log "~/.claude/skills/ already symlinked"
+elif [[ -d "$CLAUDE_SKILLS_DIR" ]]; then
+    BACKUP="$CLAUDE_SKILLS_DIR.backup.$(date +%Y%m%d-%H%M%S)"
+    warn "~/.claude/skills/ is a real directory — backing up to $BACKUP"
+    mv "$CLAUDE_SKILLS_DIR" "$BACKUP"
+    ln -sfn "$REPO_DIR/skills" "$CLAUDE_SKILLS_DIR"
+    log "Skills symlinked for Claude Code"
+else
+    ln -sfn "$REPO_DIR/skills" "$CLAUDE_SKILLS_DIR"
+    log "Created ~/.claude/skills/ → $REPO_DIR/skills"
+fi
+
+# Generate ~/.claude/CLAUDE.md from template
+if [[ -f "$REPO_DIR/CLAUDE.md" ]]; then
+    if command -v envsubst &>/dev/null; then
+        envsubst < "$REPO_DIR/CLAUDE.md" > "$CLAUDE_RULES"
+        log "Generated ~/.claude/CLAUDE.md (${REPO_DIR} resolved)"
+    else
+        warn "envsubst not found — sed fallback"
+        cp "$REPO_DIR/CLAUDE.md" "$CLAUDE_RULES"
+        sed -i "s|\${REPO_DIR}|$REPO_DIR|g" "$CLAUDE_RULES"
+        log "Generated ~/.claude/CLAUDE.md (sed fallback)"
+    fi
+else
+    warn "CLAUDE.md template not found in repo — skipping Claude Code rules"
+fi
+
+# ─── Step 5: Systemd pull timer (auto-sync every 15 min) ───────────────
+
+info "Step 5: Installing sync pull timer"
+
+if command -v systemctl &>/dev/null && systemctl --user status &>/dev/null 2>&1; then
+    mkdir -p "$SYSTEMD_USER_DIR"
+
+    cp "$REPO_DIR/sync/governance-pull.service" "$SYSTEMD_USER_DIR/governance-pull.service"
+    cp "$REPO_DIR/sync/governance-pull.timer"   "$SYSTEMD_USER_DIR/governance-pull.timer"
+
+    # Patch the service to use the real repo path on this machine
+    sed -i "s|%h/copilot-governance|$REPO_DIR|g" \
+        "$SYSTEMD_USER_DIR/governance-pull.service"
+
+    systemctl --user daemon-reload
+    systemctl --user enable --now governance-pull.timer 2>/dev/null || \
+        systemctl --user enable governance-pull.timer 2>/dev/null || \
+        warn "Could not enable governance-pull.timer — run: systemctl --user enable --now governance-pull.timer"
+
+    log "Governance pull timer enabled (every 15 min)"
+
+    # Enable linger so timer persists after logout (important on Crostini)
+    if command -v loginctl &>/dev/null; then
+        loginctl enable-linger "$(whoami)" 2>/dev/null || \
+            warn "loginctl enable-linger failed — timer may not persist after logout"
+        log "Linger enabled (timer survives logout)"
+    fi
+else
+    warn "systemd user session not available — skipping timer install"
+    warn "Run 'bash $REPO_DIR/sync/pull.sh' manually to sync from main"
+fi
+
+# ─── Step 6: BYOK reminder ─────────────────────────────────────────────
+
+info "Step 6: Multi-model API keys"
 echo ""
 echo "  To add Anthropic, OpenRouter, or other model providers:"
 echo "  1. Open VS Code"
@@ -191,9 +323,9 @@ echo "  4. Keys are stored in VS Code's secure credential storage (not in files)
 echo ""
 warn "NEVER store API keys in this repo, .env files, or settings.json"
 
-# ─── Step 4: Settings Sync reminder ────────────────────────────────────
+# ─── Step 7: Settings Sync reminder ────────────────────────────────────
 
-info "Step 4: Settings Sync"
+info "Step 7: Settings Sync"
 echo ""
 echo "  To sync VS Code settings across machines:"
 echo "  1. Open VS Code → gear icon → 'Turn on Settings Sync...'"
@@ -210,10 +342,12 @@ echo ""
 echo "╔══════════════════════════════════════════════════════════════╗"
 echo "║                    Installation Complete                    ║"
 echo "╠══════════════════════════════════════════════════════════════╣"
-echo "║  ~/.copilot/ → $REPO_DIR"
-echo "║  7 instructions │ 18 skills │ 4 agents │ 4 hooks          ║"
-echo "║                                                            ║"
-echo "║  To update: cd ~/copilot-governance && git pull            ║"
-echo "║  Agents: select from agents dropdown in Chat view          ║"
+echo "║  VS Code  : ~/.copilot/ → $REPO_DIR"
+echo "║  Antigravity: ~/.gemini/GEMINI.md + skills/ symlink         ║"
+echo "║  Claude Code: ~/.claude/CLAUDE.md + skills/ symlink         ║"
+echo "║  Sync timer : every 15 min (governance-pull.timer)          ║"
+echo "║                                                             ║"
+echo "║  Next: gh auth login  (once per machine, for PRs)           ║"
+echo "║  Pull now: bash $REPO_DIR/sync/pull.sh"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo ""
