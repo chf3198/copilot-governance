@@ -21,7 +21,9 @@
 set -euo pipefail
 
 # ─── Resolve repo dir (works whether run via curl | bash or directly) ──
-if [[ "${BASH_SOURCE[0]}" == "" ]]; then
+# ${BASH_SOURCE[0]:-} avoids unbound variable error under set -u when
+# the script is piped (curl | bash), where BASH_SOURCE is not set.
+if [[ "${BASH_SOURCE[0]:-}" == "" ]]; then
     # Piped from curl — clone first, then re-exec from the clone
     REPO_DIR="$HOME/copilot-governance"
     if [[ ! -d "$REPO_DIR/.git" ]]; then
