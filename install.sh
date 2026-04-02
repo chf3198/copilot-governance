@@ -18,12 +18,13 @@
 # After install, authenticate gh CLI once per machine:
 #   gh auth login
 
-set -euo pipefail
-
-# ─── Resolve repo dir (works whether run via curl | bash or directly) ──
-# ${BASH_SOURCE[0]:-} avoids unbound variable error under set -u when
-# the script is piped (curl | bash), where BASH_SOURCE is not set.
-if [[ "${BASH_SOURCE[0]:-}" == "" ]]; then
+# ─── Resolve repo dir BEFORE enabling strict mode ──────────────────────
+# set -euo pipefail is deferred until AFTER this block on purpose.
+# When piped via curl | bash, bash reads from stdin and BASH_SOURCE is
+# either entirely unset or empty. Referencing it under set -u aborts
+# immediately. Check it first without strict mode, then enable once we
+# are guaranteed to be running from a real on-disk file path.
+if [[ -z "${BASH_SOURCE[0]+x}" ]] || [[ -z "${BASH_SOURCE[0]}" ]]; then
     # Piped from curl — clone first, then re-exec from the clone
     REPO_DIR="$HOME/copilot-governance"
     if [[ ! -d "$REPO_DIR/.git" ]]; then
@@ -32,6 +33,9 @@ if [[ "${BASH_SOURCE[0]:-}" == "" ]]; then
     fi
     exec bash "$REPO_DIR/install.sh"
 fi
+
+# Running from a real file from here onward — safe to enable strict mode.
+set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export REPO_DIR  # needed by envsubst
