@@ -42,33 +42,112 @@ One repo. One `git pull`. All platforms live.
 
 ## 🚀 Quick Install
 
-**Any platform — one command:**
+**Prerequisites (all platforms):** `git`, `bash`, `python3`
+**For self-annealing PRs (one-time per machine):** [`gh` CLI](https://cli.github.com) installed and authenticated
+
+**One command installs governance for every platform present on the machine:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/chf3198/copilot-governance/main/install.sh | bash
 ```
 
-**One-time per machine — authenticate the GitHub CLI so the AI can propose PRs:**
+The installer is fully idempotent — safe to re-run at any time. The pull timer installs itself and syncs from `main` every 15 minutes in the background.
+
+After install, authenticate the GitHub CLI once so the AI can propose self-annealing PRs:
 
 ```bash
 gh auth login
 ```
 
-That's it. The pull timer installs itself and runs every 15 minutes in the background.
+---
+
+### Platform-Specific Setup & Verification
 
 <details>
-<summary>What the installer does (click to expand)</summary>
+<summary>🖥️ VS Code Copilot</summary>
 
-1. Clones the repo to `~/copilot-governance` (skips if already present)
-2. Symlinks `~/.copilot/ → ~/copilot-governance/` and merges VS Code `settings.json`
-3. Generates `~/.gemini/GEMINI.md` (Antigravity rules) from the template with your actual path
-4. Symlinks `~/.gemini/antigravity/skills/ → ~/copilot-governance/skills/`
-5. Generates `~/.claude/CLAUDE.md` (Claude Code instructions) from the template
-6. Symlinks `~/.claude/skills/ → ~/copilot-governance/skills/`
-7. Installs and enables the systemd user pull timer (`governance-pull.timer`)
-8. Runs `loginctl enable-linger` so the timer survives logout
+**Additional prerequisites:** [VS Code](https://code.visualstudio.com) with the GitHub Copilot extension installed.
 
-All steps are idempotent — safe to re-run any time.
+**What the installer does:**
+- Symlinks `~/.copilot/ → ~/copilot-governance/`
+- Merges required keys into `~/.config/Code/User/settings.json`
+
+**Verify it worked:**
+```bash
+# Confirm symlink
+ls -la ~/.copilot   # should point to ~/copilot-governance
+
+# Confirm settings keys were added
+grep -c "chat.instructionsFilesLocations" ~/.config/Code/User/settings.json
+# should print 1
+```
+
+Then in VS Code, open a new Chat session and ask:
+> "What governance instructions are you operating under?"
+
+It should enumerate `global-standards`, `github-governance`, and the other instruction files.
+
+</details>
+
+<details>
+<summary>🌌 Google Antigravity</summary>
+
+**Additional prerequisites:** [Google Antigravity](https://antigravity.google) installed (Linux glibc ≥ 2.28, macOS, or Windows). Available in Crostini on Chromebook.
+
+**What the installer does:**
+- Generates `~/.gemini/GEMINI.md` from the repo template, resolving `${REPO_DIR}` to the actual clone path
+- Symlinks `~/.gemini/antigravity/skills/ → ~/copilot-governance/skills/`
+
+**Verify it worked:**
+```bash
+# Confirm GEMINI.md was generated with resolved paths (no literal ${REPO_DIR})
+grep "REPO_DIR" ~/.gemini/GEMINI.md && echo "ERROR: path not resolved" || echo "OK"
+
+# Confirm the first @-import line looks correct
+head -5 ~/.gemini/GEMINI.md
+
+# Confirm skills symlink
+ls -la ~/.gemini/antigravity/skills   # should point to ~/copilot-governance/skills
+```
+
+Then open an Antigravity session and ask:
+> "What governance instructions are you operating under?"
+
+It should enumerate the global-standards, github-governance, and other instruction files loaded via `~/.gemini/GEMINI.md`.
+
+**Note on `@`-imports:** Antigravity's `GEMINI.md` format supports `@/absolute/path/file.md` syntax for importing external instruction files. The generated `~/.gemini/GEMINI.md` uses this to pull all 8 instruction files from the repo without copying them.
+
+</details>
+
+<details>
+<summary>🤖 Claude Code</summary>
+
+**Additional prerequisites:** [Claude Code](https://claude.ai/code) installed.
+
+**What the installer does:**
+- Generates `~/.claude/CLAUDE.md` from the repo template, resolving `${REPO_DIR}` to the actual clone path
+- Symlinks `~/.claude/skills/ → ~/copilot-governance/skills/`
+
+**Verify it worked:**
+```bash
+# Confirm CLAUDE.md was generated with resolved paths
+grep "REPO_DIR" ~/.claude/CLAUDE.md && echo "ERROR: path not resolved" || echo "OK"
+
+# Confirm skills symlink
+ls -la ~/.claude/skills   # should point to ~/copilot-governance/skills
+```
+
+Then open a Claude Code session and ask:
+> "What governance instructions are you operating under?"
+
+</details>
+
+<details>
+<summary>➕ Adding a new platform</summary>
+
+1. Create `YOURPLATFORM.md` in the repo root using the `${REPO_DIR}` placeholder pattern (see `GEMINI.md` as a reference)
+2. Add a stanza to `install.sh` that runs `envsubst < YOURPLATFORM.md > ~/.yourplatform/rules.md` and symlinks `skills/`
+3. Open a PR — no skill files need to change
 
 </details>
 
