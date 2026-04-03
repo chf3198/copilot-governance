@@ -39,32 +39,25 @@ Files live in repo root or `.github/`. Missing items are prioritized:
 - Classify repository by primary app type (`website-static`, `web-app`, `library-sdk`, `infra-automation`) before applying standards.
 - Apply core-baseline controls, then primary-type controls, then relevant overlays (`security`, `collaboration`, `release`, `observability`).
 - Prefer the smallest correct standards stack over over-engineered policy.
-- For detailed routing, invoke `repo-standards-router` skill.
+- For detailed routing, if available, invoke `repo-standards-router` skill.
 - For new/uninitialized repos, invoke `repo-onboarding-standards` skill.
 
 ## Governance audit triggers
 
 Run `repo-profile-governance` skill when:
 - Starting a new session in any repository (quick health check).
-- After a PR merge or deployment that changes user-facing behavior.
 - Before any public release.
 - When community health gaps are suspected.
 
 ## Repository structure conventions
 
-- On new repos or restructuring, invoke `repo-structure-conventions` skill.
+- On new repos or restructuring, if available, invoke `repo-structure-conventions` skill.
 - Every repo follows a universal root layout: README, LICENSE, CHANGELOG, .gitignore, .github/, docs/, scripts/, test/.
 - CHANGELOG.md follows [Keep a Changelog](https://keepachangelog.com/) format: Added, Changed, Deprecated, Removed, Fixed, Security.
 - Build artifacts are isolated via .gitignore (and .vscodeignore / .npmignore where applicable).
 - No build outputs (dist/, node_modules/, resources/, *.vsix, __pycache__/) in git history.
 
-## OpenSSF security alignment
 
-- Enable Dependabot alerts, secret scanning, and push protection on every public repo.
-- Add `ossf/scorecard-action` to CI for public repos to track security posture.
-- Pin third-party Actions to full commit SHA, not tags.
-- Workflow `permissions` block defaults to `read-all`; grant write only per-job.
-- Private vulnerability reporting enabled via GitHub settings.
 
 ## Consistency across repos
 

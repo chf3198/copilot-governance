@@ -10,7 +10,6 @@ applyTo: "**"
 - Never claim build, test, release, or publish success without explicit evidence.
 - Keep changes minimal, localized, and reversible.
 - Preserve public APIs unless change scope explicitly requires API updates.
-- When behavior or interfaces change, update documentation in the same change.
 - Never expose secrets in repository files, packaged artifacts, logs, or generated examples.
 - Before packaging/publishing, verify exclude rules (`.vscodeignore`, `.npmignore`, artifact manifests) block secret-bearing files. Run manifest listing commands (`vsce ls`, `npm pack --dry-run`) as preflight.
 - Use placeholders in docs and examples — never live tokens, keys, or credentials.

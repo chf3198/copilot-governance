@@ -32,19 +32,3 @@ Run `workflow-self-anneal` skill when any of these conditions is true:
 4. Propose minimal docs/workflow delta that prevents recurrence.
 5. Define objective verification gate confirming the fix works.
 
-## Documentation drift detection
-
-Run `docs-drift-maintenance` skill after any change to:
-- Commands, CLI flags, or API behavior.
-- Configuration files, defaults, or environment variables.
-- Workflows, CI/CD pipelines, or automation scripts.
-- UX-visible behavior, user-facing features, or settings.
-
-## Documentation drift rules
-
-- Docs updates must ship with behavior/config/workflow changes — not as follow-up.
-- Map each changed surface to impacted docs (README, CHANGELOG, operational docs, runbooks).
-- Identify stale, missing, or contradictory statements.
-- Keep wording precise, testable, and user-actionable.
-- Avoid speculative claims unsupported by current implementation.
-- Verify that docs match actual behavior and invocation paths after updates.

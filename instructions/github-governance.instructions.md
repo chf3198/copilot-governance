@@ -25,7 +25,7 @@ applyTo: "**"
 - Issues must include: problem/objective, expected outcome, acceptance criteria.
 - Large work is decomposed with sub-issues and `blocked by` / `blocking` dependencies.
 - Templates required: at minimum bug, task, and epic forms. `blank_issues_enabled: false` in config.yml.
-- For detailed lifecycle execution, invoke `github-ticket-lifecycle-orchestrator` skill.
+- For detailed lifecycle execution, if available, invoke the `github-ticket-lifecycle-orchestrator` skill.
 
 ## Review and merge gates
 
@@ -34,15 +34,18 @@ applyTo: "**"
 - All review conversations resolved.
 - Rulesets/branch protection requirements satisfied.
 - Merge method follows repo policy.
-- For detailed review/merge administration, invoke `github-review-merge-admin` skill.
+- For detailed review/merge administration, if available, invoke the `github-review-merge-admin` skill.
 
-## Actions security baseline
+## Actions & OpenSSF security baseline
 
-- `GITHUB_TOKEN`: default to read permissions; elevate per-job only when required.
-- Third-party actions: pin to full commit SHA where policy requires.
+- `GITHUB_TOKEN`: default to read-all permissions; grant write only per-job when required.
+- Third-party actions: pin to full commit SHA, not tags.
 - Prefer OIDC over long-lived static cloud credentials.
 - CODEOWNERS coverage for `.github/workflows/`.
 - No auto-remediation that broadens permissions.
+- Enable Dependabot alerts, secret scanning, and push protection on every public repo.
+- Add `ossf/scorecard-action` to CI for public repos to track security posture.
+- Private vulnerability reporting enabled via GitHub settings.
 - For detailed Actions hardening, invoke `github-actions-security-hardening` skill.
 
 ## Release and incident flow
@@ -53,18 +56,18 @@ applyTo: "**"
 - Incident items include severity, impact, owner, and containment plan.
 - Hotfix branch/PR linked to incident issue with validation evidence.
 - Follow-up prevention tickets created before incident closure.
-- For detailed release/incident procedures, invoke `github-release-incident-flow` skill.
+- For detailed release/incident procedures, if available, invoke the `github-release-incident-flow` skill.
 
 ## Project linkage
 
 - Project items have status, priority, iteration, and owner fields populated.
 - Issue ↔ branch and issue ↔ PR linkage maintained in the Development panel.
 - Built-in workflows: auto-add, status sync, auto-archive configured where available.
-- For detailed Agile linkage setup, invoke `github-projects-agile-linkage` skill.
+- For detailed Agile linkage setup, if available, invoke the `github-projects-agile-linkage` skill.
 
 ## Capability-first routing
 
 - Before recommending rulesets, merge queue, or plan-sensitive features, run `github-capability-resolver` to verify availability by plan/visibility/owner type.
-- Route all GitHub workflow governance requests through `github-ops-tree-router` to the correct specialist skill.
+- If available, route GitHub workflow governance requests through `github-ops-tree-router`.
 - Use `github-ops-excellence` as the policy catalog overlay for calibrating strictness.
 - For ruleset design/migration, invoke `github-ruleset-architecture` skill.
