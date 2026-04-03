@@ -9,6 +9,8 @@ Commit and PR titles follow [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-04-03
+
 ### Refactored
 - `instructions/`: Consolidated `operator-identity-context` / `role-baton` duplication, centralized docs drift to `release-docs-hygiene`, shifted OpenSSF security rules to `github-governance`, fixed legacy `.copilot` paths, and softened dangling specialist skill references.
 
