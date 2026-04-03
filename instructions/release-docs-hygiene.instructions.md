@@ -8,7 +8,10 @@ applyTo: "**"
 - Before any release action, verify version consistency between tag, manifest, and changelog. Invoke `release-version-integrity` skill for systematic drift detection.
 - Audit packaged artifact file lists before publish when packaging tools support manifest listing.
 - Treat `.env`, key material, token files, and private config as non-distributable by default. Invoke `secret-exposure-prevention` skill when editing publish/package workflows.
-- If commands, configuration, workflows, or user-facing behavior change, update README/CHANGELOG and operation docs. Invoke `docs-drift-maintenance` skill to systematically detect stale documentation.
+- Run `docs-drift-maintenance` skill after any change to commands, CLI flags, configuration files, APIs, workflows, or user-facing behavior.
+- Docs updates must ship with changes — not as follow-up.
+- Map each changed surface to impacted docs (README, CHANGELOG, operational docs, runbooks).
+- Keep wording precise, testable, and user-actionable. Verify docs match actual behavior after updates.
 - Prefer automated versioning flows over manual multi-file version edits.
 - Keep release notes factual and traceable to merged changes.
 

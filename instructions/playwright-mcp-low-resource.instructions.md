@@ -8,7 +8,7 @@ When the task involves Playwright MCP, browser automation, visual QA, screenshot
 
 1. Apply the `playwright-vision-low-resource` skill first.
 2. Run preflight before browser actions:
-   - `~/.copilot/skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh`
+   - `~/.gemini/antigravity/skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh`
 3. Use bounded retries:
    - Maximum 2 retries for browser-context failures.
 4. Prefer local constrained profile by default:

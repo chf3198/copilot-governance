@@ -9,6 +9,9 @@ Commit and PR titles follow [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+### Refactored
+- `instructions/`: Consolidated `operator-identity-context` / `role-baton` duplication, centralized docs drift to `release-docs-hygiene`, shifted OpenSSF security rules to `github-governance`, fixed legacy `.copilot` paths, and softened dangling specialist skill references.
+
 ### Added
 - `sync/create-pr.sh` — AI-invocable script to propose a self-annealed improvement as a draft GitHub PR for user review before any change propagates to other machines
 - `sync/pull.sh` — `--ff-only` pull from `origin/main`, run by systemd user timer every 15 minutes
