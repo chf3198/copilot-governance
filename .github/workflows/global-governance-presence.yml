@@ -1,0 +1,19 @@
+name: global-governance-presence
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  presence-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify global governance files
+        run: bash .github/scripts/check-global-governance.sh
