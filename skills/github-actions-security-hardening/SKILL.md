@@ -60,3 +60,14 @@ missing_evidence:
 ## Invocation policy
 
 Run in pre-merge for workflow/security-sensitive changes and in periodic governance audits.
+
+## Repo workflow inventory
+
+| Workflow | Trigger | Permissions | Status |
+|---|---|---|---|
+| `.github/workflows/lint.yml` | PR/push to main | default read | ✅ active |
+| `.github/workflows/label-lint.yml` | issues events | `issues:write`, `contents:read` | ✅ active (ADR-010) |
+
+`label-lint.yml` enforces ADR-010 rules 1–4 on every issue event. Any violation
+posts an explanatory comment and fails the check. See
+`research/adr/010-ticket-status-role-model.md`.

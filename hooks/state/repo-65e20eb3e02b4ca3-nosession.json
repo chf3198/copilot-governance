@@ -1,0 +1,53 @@
+{
+  "cwd": "/home/curtisfranks/devenv-ops-3446",
+  "repo_type": "website-static",
+  "routing": {
+    "lane": "free",
+    "backend": "auto",
+    "recommended_model": "Auto",
+    "confidence": "medium",
+    "rationale": "default"
+  },
+  "current_phase": "admin",
+  "active_branch": "feat/3446-ship-gate-corpus",
+  "roles": {
+    "manager": false,
+    "collaborator": false,
+    "admin": true,
+    "consultant": false
+  },
+  "flags": {
+    "code_touched": false,
+    "docs_touched": false,
+    "extension_touched": false,
+    "ui_touched": false
+  },
+  "admin_ops": {
+    "version_check": false,
+    "commit": true,
+    "push": true,
+    "pr_create": true,
+    "ci_green": false,
+    "merge": false,
+    "publish": false,
+    "release_integrity": false,
+    "gh_release": false,
+    "issue_close": false,
+    "issue_linked": true,
+    "visual_qa": false
+  },
+  "blast_radius": {
+    "files_edited_count": 0,
+    "push_count": 0,
+    "provider_call_count": 0
+  },
+  "drift": {
+    "commits": 0,
+    "commits_with_ticket": 0,
+    "branches": 0,
+    "branches_compliant": 0,
+    "edits_gated": 0,
+    "edits_ungated": 0
+  },
+  "active_ticket": 3446
+}

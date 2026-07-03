@@ -1,0 +1,52 @@
+{
+  "active_branch": null,
+  "admin_ops": {
+    "ci_green": true,
+    "commit": true,
+    "gh_release": false,
+    "issue_close": false,
+    "issue_linked": false,
+    "merge": true,
+    "pr_create": true,
+    "publish": false,
+    "push": true,
+    "release_integrity": false,
+    "version_check": false,
+    "visual_qa": false
+  },
+  "blast_radius": {
+    "files_edited_count": 0,
+    "provider_call_count": 0,
+    "push_count": 1
+  },
+  "current_phase": "manager",
+  "cwd": "/tmp/stress-admin-emit-7MIpFc",
+  "drift": {
+    "branches": 0,
+    "branches_compliant": 0,
+    "commits": 0,
+    "commits_with_ticket": 0,
+    "edits_gated": 0,
+    "edits_ungated": 0
+  },
+  "flags": {
+    "code_touched": true,
+    "docs_touched": false,
+    "extension_touched": false,
+    "ui_touched": false
+  },
+  "repo_type": "generic",
+  "roles": {
+    "admin": true,
+    "collaborator": true,
+    "consultant": false,
+    "manager": false
+  },
+  "routing": {
+    "backend": "auto",
+    "confidence": "medium",
+    "lane": "free",
+    "rationale": "default",
+    "recommended_model": "Auto"
+  }
+}

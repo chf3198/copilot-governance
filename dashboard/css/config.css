@@ -1,0 +1,36 @@
+.config-grid {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.config-note {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.refresh-ctl {
+  display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 0.4rem;
+}
+
+.refresh-ctl input[type=range] {
+  width: 80px; accent-color: var(--blue); cursor: pointer;
+}
+
+.refresh-ctl span { font-size: 0.8rem; color: var(--blue); min-width: 2em; }
+
+/* Stress test parallel tickets */
+.stress-grid { display: flex; flex-direction: column; gap: 0.35rem; }
+.stress-header {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.82rem; margin-bottom: 0.15rem;
+}
+.stress-tickets { display: flex; flex-direction: column; gap: 0.2rem; }
+.stress-ticket {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.78rem;
+}
+.st-id { font-weight: 600; min-width: 60px; }
+.st-role { font-size: 0.68rem; }
+.st-agent { color: var(--text-muted); font-size: 0.72rem; margin-left: auto; }

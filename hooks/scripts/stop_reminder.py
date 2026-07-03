@@ -1,45 +1,29 @@
 #!/usr/bin/env python3
 """Stop hook: governance-aware session completion reminder.
 
-Detects whether the session involved code changes, merges, or deploys,
-and reminds the agent about specific post-merge governance skills.
+Delegates git state detection to git_checks and admin completion
+logic to stop_checks. Orchestrates blocking decisions and messages.
 """
 import json
 import os
-import subprocess
 import sys
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
-def detect_session_signals(cwd: str) -> list[str]:
-    """Detect what happened in this session by checking git state."""
-    signals = []
-    try:
-        # Check for recent commits (last 2 hours) that suggest a merge/deploy happened
-        result = subprocess.run(
-            ["git", "log", "--oneline", "--since=2 hours ago", "--no-walk", "HEAD"],
-            capture_output=True, text=True, cwd=cwd, timeout=5
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            signals.append("recent-commits")
-
-        # Check if any tracked files were modified in this session
-        result = subprocess.run(
-            ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
-            capture_output=True, text=True, cwd=cwd, timeout=5
-        )
-        if result.returncode == 0:
-            changed = result.stdout.strip().split("\n")
-            changed = [f for f in changed if f]
-            if any(f.endswith(".sh") or f.endswith(".js") or f.endswith(".py") for f in changed):
-                signals.append("code-changed")
-            if any("README" in f or "CHANGELOG" in f for f in changed):
-                signals.append("docs-updated")
-            if any(f.startswith("vscode-extension/") for f in changed):
-                signals.append("extension-changed")
-    except Exception:
-        pass
-    return signals
+from git_checks import detect_session_signals, detect_uncommitted_changes
+from governance_state import ensure_state, reset_on_branch_change, save_state
+from stop_checks import (
+    check_admin_ops, check_uncommitted, post_merge_messages, wiki_pending_message,
+)
+from client_arbitration_guard import (
+    classify_internal_conflict,
+    detect_client_arbitration,
+    emit_incident,
+    extract_assistant_text,
+)
 
 
 def main() -> int:
@@ -52,25 +36,91 @@ def main() -> int:
         return 0
 
     cwd = payload.get("cwd") or os.getcwd()
+    state = ensure_state(cwd)
+    import subprocess
+    try:
+        branch = subprocess.check_output(["git","rev-parse","--abbrev-ref","HEAD"],
+                                         cwd=cwd, text=True, stderr=subprocess.DEVNULL).strip()
+    except Exception:
+        branch = None
+    state = reset_on_branch_change(cwd, branch)
     signals = detect_session_signals(cwd)
+    uncommitted = detect_uncommitted_changes(cwd)
+    flags = state.get("flags", {})
+    ops = state.get("admin_ops", {})
+    roles = state.get("roles", {})
+    repo_type = state.get("repo_type", "generic")
 
-    if "code-changed" in signals or "extension-changed" in signals:
-        msg = (
-            "Post-merge governance checklist — verify before ending:\n"
-            "1. CHANGELOG updated for all shipped behavioral changes\n"
-            "2. README/docs reflect new behavior (kill hierarchy, commands, settings)\n"
-            "3. repo-profile-governance: community health files, metadata, templates\n"
-            "4. docs-drift-maintenance: no stale docs contradicting new behavior\n"
-            "5. Learnings entry if significant discovery was made\n"
-            "If these were already completed or are not applicable, proceed."
+    messages = []
+    block_reason = None
+
+    assistant_text = extract_assistant_text(payload)
+    violations = detect_client_arbitration(assistant_text)
+    if violations:
+        emit_incident("client-arbitration-output-leak", evidence=violations)
+        block_reason = "Stop blocked: client-arbitration leakage detected."
+        messages.append(
+            "CLIENT-ARBITRATION GUARDRAIL BLOCK — internal governance/worktree/team "
+            "conflicts must be resolved by the operator, not delegated to the client."
         )
+
+    if not block_reason:
+        block_reason, msg = check_uncommitted(uncommitted, roles)
     else:
-        msg = (
-            "Before ending: confirm claimed checks/releases are evidence-backed "
-            "and docs are synchronized where behavior/config changed."
+        msg = None
+    if msg:
+        messages.append(msg)
+
+    conflict = classify_internal_conflict(uncommitted)
+    if conflict.get("type") != "none":
+        emit_incident(
+            "internal-conflict-auto-resolution-required",
+            evidence=[conflict["type"], *conflict.get("files", [])[:5]],
+            severity="medium",
+        )
+        if not block_reason:
+            block_reason = "Stop blocked: unresolved internal conflict requires deterministic operator resolution."
+        policy = " | ".join(conflict.get("policy", []))
+        messages.append(
+            f"INTERNAL-CONFLICT POLICY ({conflict['type']}): {policy}"
         )
 
-    out = {"systemMessage": msg}
+    if not block_reason:
+        # #3266: a clean lane:research session is PR-less/merge-less by design — require ZERO
+        # Admin ops so a lingering code_touched flag cannot manufacture a phantom Admin nag.
+        # A dirty tree removes the exemption (nothing-to-merge is the whole justification).
+        research_clean_exempt = False
+        try:
+            from pretool_guard import active_ticket_is_research_lane
+            research_clean_exempt = (
+                bool(active_ticket_is_research_lane(state, cwd)) and not uncommitted)
+        except Exception:
+            research_clean_exempt = False  # fail-safe: fall back to the standard Admin-op gate
+        block_reason, msg = check_admin_ops(
+            flags, ops, roles, repo_type, uncommitted, research_clean_exempt)
+        if msg:
+            messages.append(msg)
+
+    messages.extend(post_merge_messages(signals, bool(messages), ops))
+    wiki_msg = wiki_pending_message(cwd, flags, ops)
+    if wiki_msg:
+        messages.append(wiki_msg)
+
+    drift = state.get("drift", {})
+    total_c = drift.get("commits", 0)
+    if total_c > 0:
+        rate = (total_c - drift.get("commits_with_ticket", 0)) / total_c * 100
+        messages.append(f"📊 Drift score: {rate:.0f}% ticketless ({total_c} commits this session).")
+
+    out = {"systemMessage": "\n\n".join(messages)}
+    if block_reason:
+        out["decision"] = "block"
+        out["reason"] = block_reason
+
+    if not block_reason:
+        roles["consultant"] = True
+        save_state(state)
+
     print(json.dumps(out))
     return 0
 

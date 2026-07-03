@@ -1,0 +1,50 @@
+{
+  "active_branch": "feat/3030-analyze-comments-parity",
+  "active_ticket": 3030,
+  "admin_ops": {
+    "ci_green": true,
+    "commit": true,
+    "gh_release": true,
+    "issue_close": true,
+    "issue_linked": true,
+    "merge": true,
+    "pr_create": true,
+    "publish": true,
+    "push": true,
+    "release_integrity": true,
+    "version_check": true,
+    "visual_qa": true
+  },
+  "current_phase": "admin",
+  "current_ticket": 3030,
+  "cwd": "/home/curtisfranks/devenv-ops-3029",
+  "drift": {
+    "branches": 0,
+    "branches_compliant": 0,
+    "commits": 0,
+    "commits_with_ticket": 0,
+    "edits_gated": 0,
+    "edits_ungated": 0
+  },
+  "flags": {
+    "code_touched": false,
+    "docs_touched": false,
+    "extension_touched": false,
+    "ui_touched": false
+  },
+  "repo_type": "website-static",
+  "roles": {
+    "admin": true,
+    "collaborator": false,
+    "consultant": false,
+    "manager": false
+  },
+  "routing": {
+    "backend": "auto",
+    "confidence": "medium",
+    "lane": "free",
+    "rationale": "default",
+    "recommended_model": "Auto"
+  },
+  "ticket": 3030
+}

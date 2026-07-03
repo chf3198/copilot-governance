@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Megingjord — Fleet Operations Center</title>
+    <link rel="stylesheet" href="css/app.css"><link rel="stylesheet" href="css/stats.css"><link rel="stylesheet" href="css/router.css"><link rel="stylesheet" href="css/config.css"><link rel="stylesheet" href="css/views.css"><link rel="stylesheet" href="css/topology.css"><link rel="stylesheet" href="css/anneal-queue.css"><link rel="stylesheet" href="css/goal-coverage.css"><link rel="stylesheet" href="css/hamr-panel.css"><link rel="stylesheet" href="css/merge-evidence.css"><link rel="stylesheet" href="css/context-flow-anim.css"><link rel="stylesheet" href="css/panel-anim.css">
+    <link rel="stylesheet" href="css/baton.css"><link rel="stylesheet" href="css/ticket-log.css"><link rel="stylesheet" href="css/activity.css"><link rel="stylesheet" href="css/wiki.css"><link rel="stylesheet" href="css/wiki-metrics.css"><link rel="stylesheet" href="css/fleet-health.css"><link rel="stylesheet" href="css/governance.css"><link rel="stylesheet" href="css/context.css"><link rel="stylesheet" href="css/github.css"><link rel="stylesheet" href="css/settings.css"><link rel="stylesheet" href="css/agents.css"><link rel="stylesheet" href="css/demo.css">
+    <script src="js/transport.js"></script><script src="js/vscode-transport.js"></script><script defer src="js/alpine.min.js"></script>
+    <script src="js/health-check.js"></script><script src="js/quota-tracker.js"></script>
+    <script src="js/device-monitor.js"></script><script src="js/router-tracker.js"></script>
+    <script src="js/live-stats.js"></script><script src="js/quota-live.js"></script>
+    <script src="js/fleet-topology.js"></script><script src="js/baton-flow.js"></script>
+    <script src="js/resource-monitor.js"></script><script src="js/activity-feed.js"></script>
+    <script src="js/event-bus.js"></script><script src="js/render-panels.js"></script>
+    <script src="js/config-panel.js"></script><script src="js/stress-test.js"></script>
+    <script src="js/help-content.js"></script><script src="js/help-user.js"></script><script src="js/help-dev.js"></script>
+    <script src="js/wiki-panel.js"></script><script src="js/wiki-reader.js"></script><script src="js/wiki-metrics.js"></script>
+    <script src="js/context-flow.js"></script><script src="js/llm-context.js"></script><script src="js/github-monitor.js"></script>
+    <script src="js/fleet-health-log.js"></script><script src="js/fleet-settings.js"></script><script src="js/fleet-setup-wizard.js"></script>
+    <script src="js/governance-panel.js"></script><script src="js/ticket-log.js"></script>
+    <script src="js/tooltips.js"></script><script src="js/app-actions.js"></script>
+    <script src="js/credential-store.js"></script><script src="js/provider-presets.js"></script><script src="js/fleet-probe.js"></script><script src="js/settings-panel.js"></script><script src="js/settings-form.js"></script><script src="js/settings-actions.js"></script>
+    <script src="js/event-source.js"></script><script src="js/context-flow-events.js"></script><script src="js/token-telemetry.js"></script><script src="js/quality-parity.js"></script><script src="js/goal-health.js"></script><script src="js/token-reconcile.js"></script><script src="js/cost-monitor.js"></script><script src="js/multi-agent-sessions.js"></script><script src="js/tier-c-banner.js"></script><script src="js/agent-inventory.js"></script><script src="js/anneal-queue-panel.js"></script><script src="js/goal-coverage-panel.js"></script><script src="js/hamr-panel.js"></script><script src="js/hamr-offload-panel.js"></script><script src="js/merge-evidence-panel.js"></script><script src="js/fleet-cost-panel.js"></script><script src="js/panel-anim.js"></script><script src="js/baton-flow-anim.js"></script><script src="js/app.js"></script><script src="js/transport-mocks.js"></script><script src="js/transport-mocks-extended.js"></script><script src="js/fixture-runner.js"></script><script src="js/demo-overlay.js"></script>
+</head>
+<body x-cloak x-data="dashboardApp()" x-init="init()">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <header class="header">
+        <div class="header-brand"><h1>🖥️ Megingjord</h1><span class="status-badge" :class="overallStatus"><span x-text="overallStatus"></span></span></div>
+        <nav class="header-nav" aria-label="Dashboard views">
+            <button @click="setView('live')" :class="{active:isView('live')}" data-tip="view-live" title="Live">🔴 Live</button>
+            <button @click="setView('logs')" :class="{active:isView('logs')}" data-tip="view-logs" title="Logs">📜 Logs</button>
+            <button @click="setView('ops')" :class="{active:isView('ops')}" data-tip="view-ops" title="Ops">📊 Ops</button>
+            <button @click="setView('fleet')" :class="{active:isView('fleet')}" data-tip="view-fleet" title="Fleet">🌐 Fleet</button>
+            <button @click="setView('wiki')" :class="{active:isView('wiki')}" data-tip="view-wiki" title="Wiki">📚 Wiki</button><button @click="setView('cost')" :class="{active:isView('cost')}" data-tip="view-cost" title="Cost">💰 Cost</button>
+            <button @click="setView('fleet')" data-tip="view-settings" title="Settings">⚙️ Settings</button>
+            <button @click="setView('agents')" :class="{active:isView('agents')}" data-tip="view-agents" title="Agents">🤖 Agents</button>
+            <button @click="setView('help')" :class="{active:isView('help')}" data-tip="view-help" title="Help">📘 Help</button>
+        </nav>
+        <div class="header-actions">
+            <button id="btn-refresh" aria-label="Refresh" @click="refreshAll()" :disabled="loading" data-tip="refresh" title="Refresh">↻<span class="btn-label">Refresh</span></button>
+            <button id="btn-auto" aria-label="Timer" @click="toggleAutoRefresh()" :aria-pressed="autoRefreshEnabled" data-tip="auto" :title="'Auto-refresh: '+config.refreshSec+'s'">⏱️<span class="btn-label">Timer</span></button>
+            <button id="btn-test" aria-label="Test" @click="runQuickTest()" :disabled="testRun.running" data-tip="test" title="Stress test">🧪<span class="btn-label">Test</span></button>
+            <button id="btn-tips" aria-label="Hint" @click="toggleTips()" :aria-pressed="tooltipsEnabled" data-tip="tips" title="Tooltips">💡<span class="btn-label">Hint</span></button>
+            <button id="btn-contrast" aria-label="Contrast" @click="setHighContrast(!config.highContrast)" :aria-pressed="config.highContrast" data-tip="contrast" title="Contrast">◐<span class="btn-label">Contrast</span></button>
+        </div>
+    </header>
+    <main id="main-content" class="dashboard-grid" :class="'view-'+currentView">
+        <!-- LIVE: 3 panels (animated-updates) -->
+        <template x-if="isView('live')"><section id="panel-baton" class="panel">
+            <h2>🔄 Agent Baton <button class="shb" data-tip="baton" aria-label="Help: Baton">?</button></h2><div x-html="renderBatonFlow(batonState)"></div></section></template>
+        <template x-if="isView('live')"><section id="panel-activity" class="panel">
+            <h2>📡 Live Activity <button class="shb" data-tip="activity" aria-label="Help: Activity">?</button></h2><div x-html="renderActivityFeed(activityLog)"></div></section></template>
+        <template x-if="isView('live')"><section id="panel-context-flow" class="panel full-width">
+            <h2>🧠 Context Flow <button class="shb" data-tip="context-flow" aria-label="Help: Context Flow">?</button><span class="panel-ts" x-text="panelTs.flow ? '⟳ '+panelTs.flow : ''"></span></h2><div x-html="renderContextFlow()"></div></section></template>
+        <!-- LOGS: 2 panels (streaming chronological) -->
+        <template x-if="isView('logs')"><section id="panel-router-log" class="panel">
+            <h2>📋 Router Log <button class="shb" data-tip="router-log" aria-label="Help: Router Log">?</button></h2><div class="log-scroll" x-html="renderRouterLog()"></div></section></template>
+        <template x-if="isView('logs')"><section id="panel-fleet-health-log" class="panel">
+            <h2>🏥 Fleet Health <button class="shb" data-tip="fleet-health" aria-label="Help: Health">?</button></h2><div class="log-scroll" x-html="renderFleetHealthLog(fleetHealthLog)"></div></section></template>
+        <template x-if="isView('logs')"><section id="panel-ticket-log" class="panel">
+            <h2>📋 Ticket Log <button class="shb" data-tip="ticket-log" aria-label="Help: Tickets">?</button></h2><div class="log-scroll" x-html="renderTicketLog(ticketLog)"></div></section></template>
+        <!-- OPS: 6 panels (monitoring + analytics) -->
+        <section id="panel-github" class="panel" x-show="isView('ops')">
+            <h2>🐙 GitHub <button class="shb" data-tip="github" aria-label="Help: GitHub">?</button><span class="panel-ts" x-text="panelTs.github ? '⟳ '+panelTs.github : ''"></span></h2><div x-html="renderGitHubMonitor(githubData)"></div></section>
+        <section id="panel-quotas" class="panel" x-show="isView('ops')">
+            <h2>📊 Quotas <button class="shb" data-tip="quotas" aria-label="Help: Quotas">?</button><span class="panel-ts" x-text="panelTs.quotas ? '⟳ '+panelTs.quotas : ''"></span></h2><div x-html="renderQuotaPanel(liveQuotas, quotas)"></div></section>
+
+        <section id="panel-governance" class="panel" x-show="isView('ops')">
+            <h2>🛡️ Governance <button class="shb" data-tip="governance" aria-label="Help: Governance">?</button></h2><div x-html="renderGovernancePanel(governanceState)"></div></section>
+        <section id="panel-goal-health" class="panel" x-show="isView('ops')">
+            <h2>🎯 Goal Health <button class="shb" data-tip="goal-health" aria-label="Help: Goal Health">?</button><span class="panel-ts" x-text="panelTs.goals ? '⟳ '+panelTs.goals : ''"></span></h2><div x-html="renderGoalHealthPanel(goalHealth)"></div></section>
+        <section id="panel-llm-context" class="panel" x-show="isView('ops')">
+            <h2>📐 LLM Context <button class="shb" data-tip="llm-context" aria-label="Help: LLM">?</button></h2><div x-html="renderLLMContext()"></div></section><section id="panel-anneal-queue" class="panel" x-show="isView('ops')"><h2>🧵 Anneal Queue <button class="shb" data-tip="governance" aria-label="Help: Anneal Queue">?</button></h2><div id="anneal-queue-target" x-init="if(typeof registerAnnealQueuePanel==='function'){registerAnnealQueuePanel($el)}"></div></section><section id="panel-goal-coverage" class="panel" x-show="isView('ops')"><h2>🎯 Goal Coverage (G1..G9) <button class="shb" data-tip="governance" aria-label="Help: Goal Coverage">?</button></h2><div id="goal-coverage-target" x-init="if(typeof registerGoalCoveragePanel==='function'){registerGoalCoveragePanel($el)}"></div></section><section id="panel-hamr-offload" class="panel" x-show="isView('ops')"><h2>📡 HAMR Offload KPIs <button class="shb" data-tip="governance" aria-label="Help: HAMR Offload KPIs">?</button></h2><div id="hamr-offload-target" x-init="if(typeof registerHamrOffloadPanel==='function'){registerHamrOffloadPanel($el)}"></div></section><section id="panel-hamr-coverage" class="panel" x-show="isView('ops')"><h2>💸 HAMR Cost Coverage (G3) <button class="shb" data-tip="governance" aria-label="Help: HAMR Cost Coverage">?</button></h2><div id="hamr-coverage-target" x-init="if(typeof registerHamrPanel==='function'){registerHamrPanel($el)}"></div></section><section id="panel-merge-evidence" class="panel" x-show="isView('ops')"><h2>🔗 Merge Evidence <button class="shb" data-tip="governance" aria-label="Help: Merge Evidence">?</button></h2><div id="merge-evidence-target" x-init="if(typeof registerMergeEvidencePanel==='function'){registerMergeEvidencePanel($el)}"></div></section><section id="panel-fleet-cost" class="panel" x-show="isView('ops')"><h2>🚀 Fleet Net Cost-of-Quality (G3) <button class="shb" data-tip="governance" aria-label="Help: Fleet Net Cost-of-Quality">?</button></h2><div id="fleet-cost-target" x-init="if(typeof registerFleetCostPanel==='function'){registerFleetCostPanel($el)}"></div></section>
+
+        <!-- FLEET: 6 panels (inventory + config + health) -->
+        <template x-if="isView('fleet')"><section id="panel-fleet-health" class="panel">
+            <h2>🏥 Fleet Health <button class="shb" data-tip="fleet-health" aria-label="Help: Health">?</button></h2><div class="log-scroll" x-html="renderFleetHealthLog(fleetHealthLog)"></div></section></template>
+        <template x-if="isView('fleet')"><section id="panel-devices" class="panel">
+            <h2>🏗️ Devices <button class="shb" data-tip="devices" aria-label="Help: Devices">?</button></h2><div x-html="renderDeviceCards(devices)"></div></section></template>
+        <template x-if="isView('fleet')"><section id="panel-services" class="panel">
+            <h2>⚡ Services <button class="shb" data-tip="services" aria-label="Help: Services">?</button></h2><div x-html="renderServiceCards(services)"></div></section></template>
+        <template x-if="isView('fleet')"><section id="panel-fleet-setup" class="panel"><h2>🛠 Fleet Setup</h2><div id="fleet-setup-target" x-init="registerFleetSetupPanel&&registerFleetSetupPanel($el)"></div></section></template>
+        <template x-if="isView('fleet')"><section id="panel-settings" class="panel">
+            <h2>⚙️ Fleet Resources <button class="shb" data-tip="settings" aria-label="Help: Resources">?</button></h2><div id="settings-content" x-html="renderSettingsPanel(loadFleetResources(), window._lastProbeResults, window._hostInfo)" x-init="fetchHostInfo().then(h=>{window._hostInfo=h;$el.innerHTML=renderSettingsPanel(loadFleetResources(),window._lastProbeResults,h);})"></div><div id="settings-form-container"></div></section></template>
+        <template x-if="isView('fleet')"><section id="panel-config" class="panel">
+            <h2>⚙️ Config <button class="shb" data-tip="config" aria-label="Help: Config">?</button></h2><div x-html="renderConfigPanel(config, autoRefreshEnabled, tooltipsEnabled)"></div></section></template>
+        <template x-if="isView('fleet')"><section id="panel-test" class="panel">
+            <h2>🧪 Stress Test <button class="shb" data-tip="test-panel" aria-label="Help: Test">?</button></h2><div x-html="renderStressPanel(testRun)"></div></section></template>
+        <!-- WIKI: 2 panels -->
+        <template x-if="isView('wiki')"><section id="panel-wiki-metrics" class="panel">
+            <h2>📊 Metrics <button class="shb" data-tip="wiki-metrics" aria-label="Help: Metrics">?</button><span class="panel-ts" x-text="panelTs.wiki ? '⟳ '+panelTs.wiki : ''"></span></h2><div x-html="renderWikiMetrics(wikiMetrics, wikiHealth)"></div></section></template>
+        <template x-if="isView('wiki')"><section id="panel-wiki-reader" class="panel wiki-main">
+            <h2>📚 Research Wiki <button class="shb" data-tip="wiki-reader" aria-label="Help: Wiki">?</button></h2><div x-html="renderWikiReader(wikiPages)"></div></section></template>
+        <!-- COST: 1 panel --><template x-if="isView('cost')"><section id="panel-cost" class="panel full-width"><h2>💰 Cost + Token Telemetry <button class="shb" data-tip="cost" aria-label="Help: Cost">?</button><span class="panel-ts" x-text="panelTs.cost ? '⟳ '+panelTs.cost : ''"></span></h2><div x-html="renderTokenTelemetryPanel(tokenTelemetry)"></div><div x-html="renderQualityParityPanel(qualityParity)"></div><div x-html="renderTokenReconcilePanel(reconcileData)"></div><div x-html="renderCostMonitor(costData)"></div></section></template>
+        <!-- AGENTS --><template x-if="isView('agents')"><section id="panel-agents" class="panel full-width"><h2>🤖 Agents <button class="shb" data-tip="agents" aria-label="Help: Agents">?</button><span class="panel-ts" x-text="panelTs.agents ? '⟳ '+panelTs.agents : ''"></span></h2><div x-html="renderAgentInventory()"></div><hr class="panel-divider"><h3 class="panel-subheading">🔴 Live Sessions</h3><div x-html="renderTierCBanner(agentSessions)"></div><div x-html="renderConflictAlerts(agentSessions)"></div><div x-html="renderAgentSessions(agentSessions)"></div></section></template>
+        <template x-if="isView('help')"><section id="panel-help" class="panel full-width"><h2>📘 Help Center</h2><div x-html="renderHelpPanel(helpDevMode)"></div></section></template>
+    </main>
+    <footer class="footer"><span>Last refresh: <span x-text="lastRefresh"></span></span><span>megingjord v3.3.7</span></footer><aside id="app-tip" class="app-tip" x-show="activeTip" x-html="activeTip" x-transition.opacity></aside></body></html>

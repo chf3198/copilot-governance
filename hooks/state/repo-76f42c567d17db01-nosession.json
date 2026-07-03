@@ -1,0 +1,58 @@
+{
+  "active_branch": "main",
+  "admin_ops": {
+    "ci_green": true,
+    "commit": false,
+    "gh_release": false,
+    "issue_close": true,
+    "issue_linked": true,
+    "merge": false,
+    "pr_create": true,
+    "publish": false,
+    "push": true,
+    "release_integrity": false,
+    "version_check": false,
+    "visual_qa": false
+  },
+  "bash_call_ctr": 3,
+  "blast_radius": {
+    "files_edited_count": 158,
+    "provider_call_count": 11,
+    "push_count": 17
+  },
+  "current_phase": "ready",
+  "cwd": "/home/curtisfranks/megingjord-harness",
+  "drift": {
+    "branches": 0,
+    "branches_compliant": 0,
+    "commits": 0,
+    "commits_with_ticket": 0,
+    "edits_gated": 0,
+    "edits_ungated": 0
+  },
+  "flags": {
+    "code_touched": false,
+    "docs_touched": false,
+    "extension_touched": false,
+    "ui_touched": false
+  },
+  "repo_type": "website-static",
+  "roles": {
+    "admin": false,
+    "collaborator": true,
+    "consultant": true,
+    "manager": false
+  },
+  "routing": {
+    "backend": "auto",
+    "confidence": "high",
+    "lane": "free",
+    "rationale": "free selected from keyword score",
+    "recommended_model": "free-auto"
+  },
+  "session": {
+    "total_pushes": 17,
+    "total_reads_sensitive_paths": 0,
+    "total_writes": 158
+  }
+}

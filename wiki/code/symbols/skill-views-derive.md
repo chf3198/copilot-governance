@@ -1,0 +1,24 @@
+---
+title: "Skill Views Derive"
+type: code
+sub_layer: structural
+content_trust_score: 0.7
+created: "2026-06-17"
+updated: "2026-06-17"
+tags: [script, wiki-a]
+related: []
+status: generated
+source_file: "scripts/global/skill-views-derive.js"
+source_path: "scripts/global/skill-views-derive.js"
+source_sha256: 04ae306274d319cc8746dfee9021409141428a73796f202764ae94df59742b25
+last_updated: "2026-06-17"
+generated_by_run: local
+---
+
+# Skill Views Derive
+
+> **Source**: `scripts/global/skill-views-derive.js` | **Type**: script | **Trust**: 0.7
+
+## Invisible Character Scan
+
+  none

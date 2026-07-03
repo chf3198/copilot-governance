@@ -1,0 +1,42 @@
+/* Shared panel animation styles — Epic #1339 C5 (#1356).
+ * Reusable transient highlights for SSE-driven panels.
+ * GPU-accelerated (opacity/transform/filter); no layout shift.
+ * WCAG 4.5:1 contrast preserved (brightness + drop-shadow, not color-only).
+ */
+
+/* Anneal queue: new-event pulse on the panel container */
+.aq-row-new {
+  animation: aq-pulse 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: opacity, filter;
+}
+
+@keyframes aq-pulse {
+  0%   { opacity: 1; filter: drop-shadow(0 0 6px #3b82f6) brightness(1.1); }
+  35%  { opacity: 1; filter: drop-shadow(0 0 12px #2563eb) brightness(1.2); }
+  100% { opacity: 1; filter: none; }
+}
+
+/* Baton flow: active-role indicator transition */
+.bf-active-transition {
+  animation: bf-transition 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+
+@keyframes bf-transition {
+  0%   { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 4px #10b981); }
+  40%  { opacity: 1; transform: scale(1.05); filter: drop-shadow(0 0 10px #059669); }
+  100% { opacity: 1; transform: scale(1); filter: none; }
+}
+
+/* Reduced-motion fallback: snap-to-state */
+@media (prefers-reduced-motion: reduce) {
+  .aq-row-new,
+  .bf-active-transition {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1;
+  }
+  .aq-row-new { filter: drop-shadow(0 0 4px #3b82f6); }
+  .bf-active-transition { filter: drop-shadow(0 0 4px #10b981); }
+  *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+}

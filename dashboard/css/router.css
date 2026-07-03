@@ -1,0 +1,77 @@
+.router-stats {
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.lane-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.4rem; font-size: 0.82rem;
+  padding: 0.15rem 0.25rem; border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.lane-row:hover {
+  background: color-mix(in srgb, var(--blue) 6%, transparent);
+}
+
+.lane-label { flex: 0 0 120px; font-weight: 500; white-space: nowrap; }
+.lane-count {
+  flex: 0 0 28px; text-align: center; font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.lane-bar {
+  flex: 1; height: 16px; background: var(--bg);
+  border-radius: 4px; overflow: hidden;
+}
+
+.lane-fill {
+  height: 100%; transition: width 0.3s ease; border-radius: 4px;
+}
+.lane-fill.free { background: linear-gradient(90deg, #4ade80, #22c55e); }
+.lane-fill.fleet { background: linear-gradient(90deg, #facc15, #eab308); }
+.lane-fill.premium { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+.router-timestamp {
+  font-size: 0.72rem; color: var(--text-muted); text-align: right;
+  margin-top: 0.25rem;
+}
+
+.router-empty {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0.5rem; gap: 0.5rem;
+}
+.router-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  border: 3px solid var(--border); display: flex;
+  flex-direction: column; align-items: center; justify-content: center;
+}
+.router-ring span { font-size: 1.2rem; font-weight: 700; color: var(--text-muted); }
+.router-ring small { font-size: 0.6rem; color: var(--text-muted); }
+.router-lanes { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: center; }
+.lane-chip {
+  font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 12px;
+  background: var(--bg); border: 1px solid var(--border);
+}
+.lane-chip.free { border-color: var(--green); color: var(--green); }
+.lane-chip.fleet { border-color: var(--yellow); color: var(--yellow); }
+.lane-chip.premium { border-color: var(--red); color: var(--red); }
+.router-note { font-size: 0.72rem; color: var(--text-muted); font-style: italic; }
+
+.router-log table {
+  width: 100%; border-collapse: collapse; font-size: 0.78rem;
+}
+.router-log th {
+  text-align: left; color: var(--text-muted); padding: 0.2rem 0.4rem;
+  border-bottom: 1px solid var(--border); font-size: 0.72rem;
+}
+.router-log td {
+  padding: 0.2rem 0.4rem; border-bottom: 1px solid var(--border);
+}
+.log-agent { color: var(--blue); }
+.log-model { color: var(--text-muted); font-size: 0.72rem; }
+.router-log-empty {
+  padding: 0.5rem; color: var(--text-muted); font-size: 0.82rem;
+}

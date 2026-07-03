@@ -1,0 +1,54 @@
+/* Fleet Topology SVG + resource cards + legend */
+
+.topo-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.4rem;
+  overflow: hidden;
+}
+
+.topo-svg { width: 100%; height: auto; max-height: 100px; }
+.topo-node { cursor: pointer; transition: stroke-width 0.2s, filter 0.2s; }
+.topo-node:hover { stroke-width: 3.5; filter: brightness(1.2); }
+.topo-node:focus { outline: none; stroke: var(--blue); stroke-width: 3; }
+.topo-empty { color: var(--text-muted); font-style: italic; padding: 0.3rem; }
+
+.topo-legend {
+  display: flex; gap: 0.6rem; padding: 0.2rem 0.4rem 0;
+  font-size: 0.68rem; color: var(--text-muted); flex-wrap: wrap;
+}
+
+.topo-legend .dot {
+  display: inline-block; width: 7px; height: 7px;
+  border-radius: 50%; margin-right: 2px; vertical-align: middle;
+}
+
+.topo-legend .dot.green { background: var(--green); }
+.topo-legend .dot.yellow { background: var(--yellow); }
+.topo-legend .dot.red { background: var(--red); }
+.topo-legend .dot.grey { background: var(--text-muted); }
+
+.topo-legend .line {
+  display: inline-block; width: 12px; height: 2px;
+  margin-right: 2px; vertical-align: middle;
+}
+
+.topo-legend .line.green { background: var(--green); }
+.topo-legend .line.grey { background: var(--text-muted); border-top: 1px dashed var(--text-muted); height: 0; }
+.topo-unr { color: var(--text-muted); font-style: italic; }
+
+/* Resource Monitor — compact stack */
+.resource-stack { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.res-card {
+  display: flex; align-items: center; gap: 0.35rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.3rem 0.5rem; font-size: 0.8rem;
+  transition: border-color 0.15s;
+}
+
+.res-card:hover { border-color: var(--blue); }
+
+.resource-icon { font-size: 0.9rem; }
+.res-detail { color: var(--text-muted); font-size: 0.72rem; margin-left: auto; }

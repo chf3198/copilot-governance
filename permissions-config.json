@@ -1,0 +1,44 @@
+{
+  "locations": {
+    "/home/curtisfranks/devenv-ops": {
+      "tool_approvals": [
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "printf"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "node"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "python3"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "gh label"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "gh issue"
+          ]
+        },
+        {
+          "kind": "commands",
+          "commandIdentifiers": [
+            "git checkout"
+          ]
+        }
+      ]
+    }
+  }
+}

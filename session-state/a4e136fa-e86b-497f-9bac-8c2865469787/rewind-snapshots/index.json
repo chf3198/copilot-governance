@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "snapshotId": "6c88c355-f3e1-4af7-b924-b5fec2d65073",
+      "eventId": "c69dfc69-5a21-428f-9977-db4f7ef32e44",
+      "userMessage": "Fix the 30 Copilot skills that failed to load.  Feel free to reference the Claude skills that should mirror your own, as part of this harness' overall governance.",
+      "timestamp": "2026-05-17T20:36:45.937Z",
+      "fileCount": 0,
+      "gitCommit": "484c849521e9728acb7ce3f82f308cde38588862",
+      "gitBranch": "main",
+      "backupHashes": [],
+      "files": {}
+    },
+    {
+      "snapshotId": "b2454147-4b2b-4c49-ae52-fffc9b63100a",
+      "eventId": "5b59f198-27cd-4069-8f36-3b6159f1e88f",
+      "userMessage": "Stop blocked: uncommitted changes; Admin baton incomplete.",
+      "timestamp": "2026-05-17T20:47:54.352Z",
+      "fileCount": 23,
+      "gitCommit": "484c849521e9728acb7ce3f82f308cde38588862",
+      "gitBranch": "feat/1828-state-taxonomy-refinement",
+      "backupHashes": [
+        "358a62d23bd83e9b-1779050874285",
+        "380e01ab888110da-1779050874286",
+        "2b355b99f7bb6ef5-1779050874287",
+        "fe96c48508ab3eb0-1779050874288",
+        "963236b74abe127c-1779050874288",
+        "e87dce7898b1b15e-1779050874291",
+        "3fe365eece35299a-1779050874292",
+        "973193d441f71257-1779050874294",
+        "8345e0081e560b3c-1779050874301",
+        "2292d6cd367c338a-1779050874305",
+        "017bcf2f1af9ac90-1779050874309",
+        "67c62b6fbac4161b-1779050874315",
+        "b831ef6d2edd7243-1779050874317",
+        "12563e2b40b4a8cd-1779050874318",
+        "59d08852b5bd4592-1779050874319",
+        "29c97ed71d04673e-1779050874320",
+        "ddb73e66862b8dba-1779050874320",
+        "2e562604e12b5d22-1779050874324",
+        "668d5a5a2a5424dd-1779050874325",
+        "ca3ee57bb2ad3909-1779050874327",
+        "3b22d4bfe9e34ecd-1779050874328",
+        "c368e11bdb71f29a-1779050874349",
+        "47b5c0ed9c50bf00-1779050874352"
+      ],
+      "files": {
+        "ac81d97796bba201a08dadae8c6ab14e": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:358a62d23bd83e9b3a005f6643936e39ce4cbb22",
+          "backupFile": "358a62d23bd83e9b-1779050874285",
+          "size": 5620,
+          "mtime": "2026-05-17T20:45:48.041Z",
+          "mode": 33188
+        },
+        "8065ce0c8a530f07b17772390c150273": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:380e01ab888110da65b4879176c339725855815b",
+          "backupFile": "380e01ab888110da-1779050874286",
+          "size": 11307,
+          "mtime": "2026-05-17T20:46:38.975Z",
+          "mode": 33188
+        },
+        "592885389168f2b8c08bf77ed5c5fed6": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:2b355b99f7bb6ef55f4d59a1d29a4a022351bd7d",
+          "backupFile": "2b355b99f7bb6ef5-1779050874287",
+          "size": 2855,
+          "mtime": "2026-05-17T20:44:07.469Z",
+          "mode": 33188
+        },
+        "51a9798ef0114e9246253e18428ca8da": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:fe96c48508ab3eb084942c610d948a6d316dddfc",
+          "backupFile": "fe96c48508ab3eb0-1779050874288",
+          "size": 2095,
+          "mtime": "2026-05-17T20:44:07.475Z",
+          "mode": 33188
+        },
+        "00d560eface8702b924fb2547053c3b8": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:963236b74abe127c6650b872b3197a235875eff2",
+          "backupFile": "963236b74abe127c-1779050874288",
+          "size": 6940,
+          "mtime": "2026-05-17T20:44:07.323Z",
+          "mode": 33188
+        },
+        "0c08b1077252482799672dce97fabc96": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:e87dce7898b1b15e4254d439b499c7eefb13bf42",
+          "backupFile": "e87dce7898b1b15e-1779050874291",
+          "size": 2839,
+          "mtime": "2026-05-17T20:44:07.331Z",
+          "mode": 33188
+        },
+        "5cb8c1de6549a36e914412cfe3ee9224": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:3fe365eece35299a59b1e7039c491683584e4dac",
+          "backupFile": "3fe365eece35299a-1779050874292",
+          "size": 1362,
+          "mtime": "2026-05-17T20:44:07.337Z",
+          "mode": 33188
+        },
+        "1461d62bad12471422ec7e6e7577be63": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:973193d441f71257971f346ae7e5cd72fb0ae120",
+          "backupFile": "973193d441f71257-1779050874294",
+          "size": 1101,
+          "mtime": "2026-05-17T20:44:07.340Z",
+          "mode": 33188
+        },
+        "973c5febe2be9e6543f35334ce1a0b30": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:8345e0081e560b3cf0c3180fca159dc806a0a32f",
+          "backupFile": "8345e0081e560b3c-1779050874301",
+          "size": 999,
+          "mtime": "2026-05-17T20:44:07.344Z",
+          "mode": 33188
+        },
+        "c97a8c00b44acb9aa5a0da316d035d93": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:2292d6cd367c338a8b0ba4ddeba4a1af9e3fb71a",
+          "backupFile": "2292d6cd367c338a-1779050874305",
+          "size": 2747,
+          "mtime": "2026-05-17T20:44:07.392Z",
+          "mode": 33188
+        },
+        "f3af197e709da4f70034425d955c6d02": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:017bcf2f1af9ac9095f92b4e5b5c1d2036b60a0a",
+          "backupFile": "017bcf2f1af9ac90-1779050874309",
+          "size": 2460,
+          "mtime": "2026-05-17T20:44:07.479Z",
+          "mode": 33188
+        },
+        "33b25c1b7f8a9f49913a40f29f8019ff": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:67c62b6fbac4161bfaf7306800af25f28d9fb7b2",
+          "backupFile": "67c62b6fbac4161b-1779050874315",
+          "size": 2233,
+          "mtime": "2026-05-17T20:44:07.494Z",
+          "mode": 33188
+        },
+        "4cb71130db7bfb334d0b5bbc44334a49": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:b831ef6d2edd724308a652e2cd363b9534a0cb50",
+          "backupFile": "b831ef6d2edd7243-1779050874317",
+          "size": 10980,
+          "mtime": "2026-05-17T20:44:07.416Z",
+          "mode": 33188
+        },
+        "42814b5c239e20741e7a4e02fbfd2cb4": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:12563e2b40b4a8cd63192e2b129bd0bde416b7ec",
+          "backupFile": "12563e2b40b4a8cd-1779050874318",
+          "size": 2006,
+          "mtime": "2026-05-17T20:44:07.482Z",
+          "mode": 33188
+        },
+        "5df4141bf2b1f78618a1c5f6c82cf962": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:59d08852b5bd4592d18296a92b624d2efafbcf50",
+          "backupFile": "59d08852b5bd4592-1779050874319",
+          "size": 2387,
+          "mtime": "2026-05-17T20:44:07.486Z",
+          "mode": 33188
+        },
+        "bff7942c7debe564aa16ff1851e18eec": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:29c97ed71d04673e2c11416919e5745ee748ef9c",
+          "backupFile": "29c97ed71d04673e-1779050874320",
+          "size": 4590,
+          "mtime": "2026-05-17T20:44:07.425Z",
+          "mode": 33188
+        },
+        "4838bbc104ca91f7ca27c9e9cbe1c6a7": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:ddb73e66862b8dba80696714aeb2fb32981f1d15",
+          "backupFile": "ddb73e66862b8dba-1779050874320",
+          "size": 5390,
+          "mtime": "2026-05-17T20:44:07.435Z",
+          "mode": 33188
+        },
+        "8cd7c1c598e8e0ebb686096e6f2b6ebb": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:2e562604e12b5d222aa1d13d7b35de3f1794ba50",
+          "backupFile": "2e562604e12b5d22-1779050874324",
+          "size": 3488,
+          "mtime": "2026-05-17T20:44:07.440Z",
+          "mode": 33188
+        },
+        "186f7802f8c8b65d955b07908ceea7a7": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:668d5a5a2a5424dda83c38a2545a76bf1ff2fbbc",
+          "backupFile": "668d5a5a2a5424dd-1779050874325",
+          "size": 3039,
+          "mtime": "2026-05-17T20:44:07.445Z",
+          "mode": 33188
+        },
+        "7e97a46d202e8fdfa2db1fad2d70d094": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:ca3ee57bb2ad3909598a964da2ebb849ffb52e8f",
+          "backupFile": "ca3ee57bb2ad3909-1779050874327",
+          "size": 3408,
+          "mtime": "2026-05-17T20:44:07.450Z",
+          "mode": 33188
+        },
+        "f0e5214ff839ad791efb3088b421d230": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:3b22d4bfe9e34ecd2a78cf3399ccd05413e4909e",
+          "backupFile": "3b22d4bfe9e34ecd-1779050874328",
+          "size": 1406,
+          "mtime": "2026-05-17T20:44:07.487Z",
+          "mode": 33188
+        },
+        "4b355684f8562217b87f9c33b0c89c7d": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:c368e11bdb71f29a70dccff52c0a46b515e9412b",
+          "backupFile": "c368e11bdb71f29a-1779050874349",
+          "size": 3693,
+          "mtime": "2026-05-17T20:44:07.458Z",
+          "mode": 33188
+        },
+        "f7bc3b443c4ce0f3fced584b808c4198": {
+          "gitStatus": " M",
+          "contentHash": "git-sha1:47b5c0ed9c50bf0072f728c612ad90a2cd796b7c",
+          "backupFile": "47b5c0ed9c50bf00-1779050874352",
+          "size": 4878,
+          "mtime": "2026-05-17T20:44:07.464Z",
+          "mode": 33188
+        }
+      }
+    }
+  ],
+  "filePathMap": {
+    "ac81d97796bba201a08dadae8c6ab14e": "/home/curtisfranks/devenv-ops/instructions/epic-governance.instructions.md",
+    "8065ce0c8a530f07b17772390c150273": "/home/curtisfranks/devenv-ops/instructions/role-baton-routing.instructions.md",
+    "592885389168f2b8c08bf77ed5c5fed6": "/home/curtisfranks/devenv-ops/skills/docs-drift-maintenance/SKILL.md",
+    "51a9798ef0114e9246253e18428ca8da": "/home/curtisfranks/devenv-ops/skills/fleet-portable-config/SKILL.md",
+    "00d560eface8702b924fb2547053c3b8": "/home/curtisfranks/devenv-ops/skills/github-ops-excellence/SKILL.md",
+    "0c08b1077252482799672dce97fabc96": "/home/curtisfranks/devenv-ops/skills/github-ops-tree-router/SKILL.md",
+    "5cb8c1de6549a36e914412cfe3ee9224": "/home/curtisfranks/devenv-ops/skills/github-projects-agile-linkage/SKILL.md",
+    "1461d62bad12471422ec7e6e7577be63": "/home/curtisfranks/devenv-ops/skills/github-release-incident-flow/SKILL.md",
+    "973c5febe2be9e6543f35334ce1a0b30": "/home/curtisfranks/devenv-ops/skills/github-review-merge-admin/SKILL.md",
+    "c97a8c00b44acb9aa5a0da316d035d93": "/home/curtisfranks/devenv-ops/skills/global-skills-bootstrap/SKILL.md",
+    "f3af197e709da4f70034425d955c6d02": "/home/curtisfranks/devenv-ops/skills/llm-wiki-ops-portable/SKILL.md",
+    "33b25c1b7f8a9f49913a40f29f8019ff": "/home/curtisfranks/devenv-ops/skills/llm-wiki-ops/SKILL.md",
+    "4cb71130db7bfb334d0b5bbc44334a49": "/home/curtisfranks/devenv-ops/skills/playwright-vision-low-resource/SKILL.md",
+    "42814b5c239e20741e7a4e02fbfd2cb4": "/home/curtisfranks/devenv-ops/skills/release-version-integrity/SKILL.md",
+    "5df4141bf2b1f78618a1c5f6c82cf962": "/home/curtisfranks/devenv-ops/skills/repo-onboarding-standards/SKILL.md",
+    "bff7942c7debe564aa16ff1851e18eec": "/home/curtisfranks/devenv-ops/skills/repo-profile-governance/SKILL.md",
+    "4838bbc104ca91f7ca27c9e9cbe1c6a7": "/home/curtisfranks/devenv-ops/skills/repo-standards-router/SKILL.md",
+    "8cd7c1c598e8e0ebb686096e6f2b6ebb": "/home/curtisfranks/devenv-ops/skills/role-admin-execution/SKILL.md",
+    "186f7802f8c8b65d955b07908ceea7a7": "/home/curtisfranks/devenv-ops/skills/role-baton-orchestrator/SKILL.md",
+    "7e97a46d202e8fdfa2db1fad2d70d094": "/home/curtisfranks/devenv-ops/skills/role-manager-execution/SKILL.md",
+    "f0e5214ff839ad791efb3088b421d230": "/home/curtisfranks/devenv-ops/skills/secret-exposure-prevention/SKILL.md",
+    "4b355684f8562217b87f9c33b0c89c7d": "/home/curtisfranks/devenv-ops/skills/web-regression-governance/SKILL.md",
+    "f7bc3b443c4ce0f3fced584b808c4198": "/home/curtisfranks/devenv-ops/skills/workflow-self-anneal/SKILL.md"
+  }
+}

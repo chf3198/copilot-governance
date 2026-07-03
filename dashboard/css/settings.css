@@ -1,0 +1,40 @@
+/* Settings Panel — fleet resource management */
+.settings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; table-layout: fixed; }
+.settings-table th { text-align: left; padding: 6px 8px; border-bottom: 2px solid var(--border); }
+.settings-table th:nth-child(1) { width: 18%; }
+.settings-table th:nth-child(2) { width: 13%; }
+.settings-table th:nth-child(3) { width: 8%; }
+.settings-table th:nth-child(4) { width: 24%; }
+.settings-table th:nth-child(5) { width: 13%; }
+.settings-table th:nth-child(6) { width: 10%; }
+.settings-table th:nth-child(7) { width: 9%; }
+.settings-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.settings-row:hover { background: var(--hover-bg, rgba(255,255,255,0.05)); }
+.settings-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.settings-actions button, .btn-label {
+  padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+  background: var(--panel-bg); border: 1px solid var(--border); color: var(--text);
+}
+.settings-actions button:hover, .btn-label:hover { border-color: var(--accent, #58a6ff); }
+.settings-empty { padding: 24px; text-align: center; color: var(--muted); }
+.settings-form { padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin: 12px 0; }
+#settings-form-container:empty { display: none; }
+.settings-form label { display: block; margin: 8px 0; font-size: 0.85rem; }
+.settings-form input, .settings-form select {
+  display: block; width: 100%; padding: 6px 8px; margin-top: 4px;
+  background: var(--input-bg, #0d1117); color: var(--text); border: 1px solid var(--border);
+  border-radius: 4px; font-size: 0.85rem;
+}
+.settings-form input[type="checkbox"] { display: inline; width: auto; margin-right: 6px; }
+.form-btns { display: flex; gap: 8px; margin-top: 12px; }
+.form-btns button { padding: 6px 16px; border-radius: 6px; cursor: pointer; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.dot-ok { background: #3fb950; } .dot-err { background: #f85149; } .dot-warn { background: #d29922; }
+.auth-ok { color: #3fb950; font-size: 0.8rem; }
+.auth-missing { color: #f85149; cursor: pointer; font-size: 0.8rem; text-decoration: underline dotted; }
+.host-badge { background: #1f6feb; color: #fff; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+.host-row { background: rgba(31,111,235,0.06); }
+.settings-lock-bar { margin-bottom: 10px; }
+.settings-lock-btn { padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.settings-lock-btn.locked { border-color: #d29922; color: #d29922; }
+.settings-lock-btn.unlocked { border-color: #3fb950; color: #3fb950; }

@@ -1,0 +1,76 @@
+{
+  "profiles": {
+    "web-app": {
+      "description": "Web applications (React, Next, Vue, static sites)",
+      "gates": {
+        "commit": { "ticket_ref": "deny", "branch_naming": "deny" },
+        "pr": { "visual_qa": true, "lighthouse_check": true },
+        "release": { "tag_required": true, "visual_qa_required": true }
+      },
+      "lint": {
+        "agnostic": ["line-limit", "readability", "secret-scan"],
+        "language": ["eslint", "stylelint"],
+        "project": ["lighthouse", "html-validate"]
+      }
+    },
+    "vscode-extension": {
+      "description": "VS Code extensions with packaging and marketplace publish",
+      "gates": {
+        "commit": { "ticket_ref": "deny", "branch_naming": "deny" },
+        "pr": { "extension_test": true, "version_bump": true },
+        "release": { "vsce_publish": true, "integrity_check": true }
+      },
+      "lint": {
+        "agnostic": ["line-limit", "readability", "secret-scan"],
+        "language": ["eslint", "tsc-noEmit"],
+        "project": ["vsce-ls", "activation-events"]
+      }
+    },
+    "cli-library": {
+      "description": "CLI tools, SDKs, and shared libraries",
+      "gates": {
+        "commit": { "ticket_ref": "deny", "branch_naming": "deny" },
+        "pr": { "unit_tests": true, "api_compat": true },
+        "release": { "semver_check": true, "changelog_required": true }
+      },
+      "lint": {
+        "agnostic": ["line-limit", "readability", "secret-scan"],
+        "language": ["eslint-or-ruff"],
+        "project": ["api-extractor", "type-check"]
+      }
+    },
+    "infra-automation": {
+      "description": "Infrastructure scripts, CI/CD, DevOps tooling",
+      "gates": {
+        "commit": { "ticket_ref": "deny", "branch_naming": "deny" },
+        "pr": { "dry_run_test": true },
+        "release": { "tag_required": true }
+      },
+      "lint": {
+        "agnostic": ["line-limit", "readability", "secret-scan"],
+        "language": ["shellcheck", "ruff"],
+        "project": ["action-lint"]
+      }
+    }
+  },
+  "closure_evidence": {
+    "required": ["github_evidence_block", "consultant_closeout_present"],
+    "recommended": ["test_coverage_delta", "docs_updated"],
+    "github_evidence_block": "PR link + CI status (pass/fail)",
+    "consultant_closeout_present": "## CONSULTANT_CLOSEOUT section with Signed-by present",
+    "test_coverage_delta": "Coverage % before/after (soft requirement)",
+    "docs_updated": "Link to updated doc or explicit 'N/A' with reason"
+  },
+  "baton_independence": {
+    "rule": "ADMIN_HANDOFF agent must differ from COLLABORATOR_HANDOFF agent",
+    "detection": "Compare Signed-by field in each baton section",
+    "violation_action": "Flag as governance violation; block status:done transition"
+  },
+  "detection_order": [
+    "vscode-extension",
+    "web-app",
+    "cli-library",
+    "infra-automation"
+  ],
+  "fallback": "cli-library"
+}

@@ -1,0 +1,29 @@
+{
+  "_doc": "Universal seed articles shipped with plugin. Personal articles exist in wiki/ but are not seed content.",
+  "concepts": [
+    "agent-drift",
+    "baton-protocol",
+    "context-flow",
+    "governance-enforcement",
+    "linting-governance",
+    "model-routing",
+    "protocol-enforcement",
+    "self-annealing",
+    "wiki-pattern"
+  ],
+  "sources": [
+    "copilot-governance-actions",
+    "copilot-hooks-api",
+    "copilot-skills-system",
+    "js-code-quality-practices",
+    "karpathy-llm-wiki-pattern",
+    "nodejs-project-organization"
+  ],
+  "excluded_personal": {
+    "entities": ["openclaw", "penguin-1", "windows-laptop", "tailscale-mesh", "copilot-pro"],
+    "sources": [
+      "dashboard-comparable-tools", "dashboard-world-class-research",
+      "devenv-fleet-topology", "free-tier-inventory", "hardware-evaluation"
+    ]
+  }
+}

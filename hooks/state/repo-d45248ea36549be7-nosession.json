@@ -1,0 +1,1 @@
+{"cwd": "/home/curtisfranks/devenv-ops-3090", "admin_ops": {"version_check": true, "commit": true, "push": true, "pr_create": true, "ci_green": true, "merge": true, "release_integrity": true, "issue_linked": true}, "active_branch": "chore/3090-gitignore-tabignore", "active_ticket": "3090"}

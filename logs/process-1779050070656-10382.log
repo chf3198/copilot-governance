@@ -1,0 +1,210 @@
+2026-05-17T20:34:30.671Z [INFO] Shell completions: no writable completion directory found for bash, skipping
+2026-05-17T20:34:30.674Z [INFO] Session indexing debug: SESSION_INDEXING=false, repository=chf3198/megingjord-harness
+2026-05-17T20:34:30.718Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/repo-scope.json: hooks: hooks must be an object
+2026-05-17T20:34:30.720Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/governance-profiles.json: hooks: hooks must be an object
+2026-05-17T20:34:30.722Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-f571e3612e6ec2f2.json: hooks: hooks must be an object
+2026-05-17T20:34:30.722Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-da154bb93372f13f.json: hooks: hooks must be an object
+2026-05-17T20:34:30.723Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-b478c2f68e3511bd.json: hooks: hooks must be an object
+2026-05-17T20:34:30.724Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-973bed6722325ba3.json: hooks: hooks must be an object
+2026-05-17T20:34:30.724Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-8f7fa09c5b4f09f1.json: hooks: hooks must be an object
+2026-05-17T20:34:30.725Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-89a47a06955885d6.json: hooks: hooks must be an object
+2026-05-17T20:34:30.726Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-85ee1e89bdb6248f.json: hooks: hooks must be an object
+2026-05-17T20:34:30.726Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-85a54151e7f90a8e.json: hooks: hooks must be an object
+2026-05-17T20:34:30.727Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-7907673abf180920.json: hooks: hooks must be an object
+2026-05-17T20:34:30.727Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-77f6f3993e35c8e9.json: hooks: hooks must be an object
+2026-05-17T20:34:30.728Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-629e90f5ebbd4d3d.json: hooks: hooks must be an object
+2026-05-17T20:34:30.729Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-57185020ad17424f.json: hooks: hooks must be an object
+2026-05-17T20:34:30.729Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-49b5a9f7fe1ba622.json: hooks: hooks must be an object
+2026-05-17T20:34:30.731Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-27fa799ed25f41f0.json: hooks: hooks must be an object
+2026-05-17T20:34:30.731Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-1bf55f49968ecca6.json: hooks: hooks must be an object
+2026-05-17T20:34:30.732Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-0bdf21d8968bce04.json: hooks: hooks must be an object
+2026-05-17T20:34:30.771Z [INFO] Workspace initialized: a4e136fa-e86b-497f-9bac-8c2865469787 (checkpoints: 0)
+2026-05-17T20:34:30.777Z [INFO] Starting Copilot CLI: 1.0.48
+2026-05-17T20:34:30.777Z [INFO] Node.js version: v24.15.0
+2026-05-17T20:34:30.779Z [INFO] Registering foreground session: a4e136fa-e86b-497f-9bac-8c2865469787
+2026-05-17T20:34:30.932Z [INFO] ICU native addon loaded
+2026-05-17T20:34:30.996Z [INFO] Login status unknown
+2026-05-17T20:34:31.294Z [INFO] Unregistering foreground session: a4e136fa-e86b-497f-9bac-8c2865469787
+2026-05-17T20:34:31.294Z [INFO] Registering foreground session: a4e136fa-e86b-497f-9bac-8c2865469787
+2026-05-17T20:34:31.336Z [INFO] Init suggestion check completed
+2026-05-17T20:34:31.356Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/repo-scope.json: hooks: hooks must be an object
+2026-05-17T20:34:31.357Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/governance-profiles.json: hooks: hooks must be an object
+2026-05-17T20:34:31.358Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-f571e3612e6ec2f2.json: hooks: hooks must be an object
+2026-05-17T20:34:31.358Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-da154bb93372f13f.json: hooks: hooks must be an object
+2026-05-17T20:34:31.358Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-b478c2f68e3511bd.json: hooks: hooks must be an object
+2026-05-17T20:34:31.359Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-973bed6722325ba3.json: hooks: hooks must be an object
+2026-05-17T20:34:31.359Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-8f7fa09c5b4f09f1.json: hooks: hooks must be an object
+2026-05-17T20:34:31.359Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-89a47a06955885d6.json: hooks: hooks must be an object
+2026-05-17T20:34:31.359Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-85ee1e89bdb6248f.json: hooks: hooks must be an object
+2026-05-17T20:34:31.360Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-85a54151e7f90a8e.json: hooks: hooks must be an object
+2026-05-17T20:34:31.360Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-7907673abf180920.json: hooks: hooks must be an object
+2026-05-17T20:34:31.360Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-77f6f3993e35c8e9.json: hooks: hooks must be an object
+2026-05-17T20:34:31.361Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-629e90f5ebbd4d3d.json: hooks: hooks must be an object
+2026-05-17T20:34:31.361Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-57185020ad17424f.json: hooks: hooks must be an object
+2026-05-17T20:34:31.361Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-49b5a9f7fe1ba622.json: hooks: hooks must be an object
+2026-05-17T20:34:31.362Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-27fa799ed25f41f0.json: hooks: hooks must be an object
+2026-05-17T20:34:31.362Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-1bf55f49968ecca6.json: hooks: hooks must be an object
+2026-05-17T20:34:31.363Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-0bdf21d8968bce04.json: hooks: hooks must be an object
+2026-05-17T20:34:31.434Z [INFO] Remote session access enabled
+2026-05-17T20:34:31.456Z [INFO] Welcome chf3198 (via COPILOT_GITHUB_TOKEN)!
+2026-05-17T20:34:31.841Z [ERROR] Starting remote MCP client for github-mcp-server with url: https://api.individual.githubcopilot.com/mcp/readonly
+2026-05-17T20:34:31.842Z [ERROR] Creating MCP client for github-mcp-server...
+2026-05-17T20:34:31.844Z [ERROR] Connecting MCP client for github-mcp-server...
+2026-05-17T20:34:32.005Z [INFO] No update needed, current version is 1.0.48, fetched latest release is v1.0.48
+2026-05-17T20:34:32.086Z [WARNING] /home/curtisfranks/.copilot/agents/architect.agent.md: unknown field ignored: handoffs
+2026-05-17T20:34:32.086Z [WARNING] /home/curtisfranks/.copilot/agents/implementer.agent.md: unknown field ignored: handoffs
+2026-05-17T20:34:32.086Z [WARNING] /home/curtisfranks/.copilot/agents/planner.agent.md: unknown field ignored: handoffs
+2026-05-17T20:34:32.086Z [WARNING] /home/curtisfranks/.copilot/agents/router.agent.md: unknown field ignored: handoffs
+2026-05-17T20:34:32.087Z [ERROR] /home/curtisfranks/.copilot/agents/router-policy.md: custom agent markdown frontmatter is malformed: missing or malformed YAML frontmatter
+2026-05-17T20:34:32.089Z [INFO] Using default model: gpt-5.4
+2026-05-17T20:34:32.349Z [ERROR] MCP client for github-mcp-server connected, took 506ms
+2026-05-17T20:34:32.350Z [ERROR] Started MCP client for remote server github-mcp-server
+2026-05-17T20:34:32.353Z [ERROR] GitHub MCP server configured after authentication
+2026-05-17T20:34:32.542Z [ERROR] Connecting to IDE MCP server: Visual Studio Code (/home/curtisfranks/devenv-ops)
+2026-05-17T20:34:32.689Z [ERROR] Connected to IDE MCP server: Visual Studio Code
+2026-05-17T20:34:32.722Z [INFO] Memory enablement check: enabled
+2026-05-17T20:36:45.860Z [INFO]  
+2026-05-17T20:36:45.861Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:36:45.861Z [INFO] --- End of group ---
+2026-05-17T20:36:45.904Z [INFO]  
+2026-05-17T20:36:45.904Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:36:45.904Z [INFO] --- End of group ---
+2026-05-17T20:36:45.906Z [INFO]  
+2026-05-17T20:36:45.907Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:36:45.907Z [INFO] --- End of group ---
+2026-05-17T20:36:45.910Z [INFO] --- Start of group: Completion request configuration:  ---
+2026-05-17T20:36:45.910Z [INFO] --- End of group ---
+2026-05-17T20:36:45.910Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:36:46.150Z [INFO]  
+2026-05-17T20:36:46.150Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:36:46.150Z [INFO] --- End of group ---
+2026-05-17T20:36:46.151Z [INFO] Using WebSocket responses with model: gpt-5.4
+2026-05-17T20:36:46.158Z [INFO] --- Start of group: Completion request configuration:  ---
+2026-05-17T20:36:46.159Z [INFO] --- End of group ---
+2026-05-17T20:36:46.161Z [INFO]  
+2026-05-17T20:36:46.161Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:36:46.162Z [INFO] --- End of group ---
+2026-05-17T20:36:46.372Z [INFO] CompactionProcessor: Utilization 18.7% (50837/272000 tokens) below threshold 80%
+2026-05-17T20:36:46.375Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:36:47.796Z [INFO] --- End of group ---
+2026-05-17T20:36:47.818Z [INFO] Session named: "Fix Copilot Skills Loading"
+2026-05-17T20:36:51.949Z [INFO] --- End of group ---
+2026-05-17T20:36:52.445Z [INFO] CompactionProcessor: Utilization 19.0% (51752/272000 tokens) below threshold 80%
+2026-05-17T20:36:52.448Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:37:05.428Z [INFO] --- End of group ---
+2026-05-17T20:37:23.503Z [INFO] CompactionProcessor: Utilization 22.3% (60564/272000 tokens) below threshold 80%
+2026-05-17T20:37:23.506Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:37:32.149Z [INFO] --- End of group ---
+2026-05-17T20:37:52.277Z [INFO] CompactionProcessor: Utilization 23.7% (64497/272000 tokens) below threshold 80%
+2026-05-17T20:37:52.279Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:38:05.318Z [INFO] --- End of group ---
+2026-05-17T20:38:07.172Z [INFO] CompactionProcessor: Utilization 26.1% (71085/272000 tokens) below threshold 80%
+2026-05-17T20:38:07.176Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:38:12.018Z [INFO] --- End of group ---
+2026-05-17T20:38:16.266Z [INFO] CompactionProcessor: Utilization 26.6% (72229/272000 tokens) below threshold 80%
+2026-05-17T20:38:16.268Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:38:32.423Z [INFO] --- End of group ---
+2026-05-17T20:38:39.285Z [INFO] CompactionProcessor: Utilization 27.6% (75005/272000 tokens) below threshold 80%
+2026-05-17T20:38:39.288Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:38:51.705Z [INFO] --- End of group ---
+2026-05-17T20:38:56.606Z [INFO] CompactionProcessor: Utilization 28.7% (78047/272000 tokens) below threshold 80%
+2026-05-17T20:38:56.611Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:39:09.230Z [INFO] --- End of group ---
+2026-05-17T20:39:13.456Z [INFO] CompactionProcessor: Utilization 29.6% (80460/272000 tokens) below threshold 80%
+2026-05-17T20:39:13.459Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:39:46.469Z [INFO] --- End of group ---
+2026-05-17T20:39:47.773Z [INFO] CompactionProcessor: Utilization 29.7% (80894/272000 tokens) below threshold 80%
+2026-05-17T20:39:47.777Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:39:52.624Z [INFO] --- End of group ---
+2026-05-17T20:39:52.854Z [INFO] CompactionProcessor: Utilization 29.9% (81206/272000 tokens) below threshold 80%
+2026-05-17T20:39:52.856Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:39:58.743Z [INFO] --- End of group ---
+2026-05-17T20:40:00.792Z [INFO] CompactionProcessor: Utilization 30.0% (81642/272000 tokens) below threshold 80%
+2026-05-17T20:40:00.795Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:40:06.849Z [INFO] --- End of group ---
+2026-05-17T20:41:53.430Z [INFO] CompactionProcessor: Utilization 30.5% (83079/272000 tokens) below threshold 80%
+2026-05-17T20:41:53.432Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:42:04.138Z [INFO] --- End of group ---
+2026-05-17T20:42:21.979Z [INFO] CompactionProcessor: Utilization 30.7% (83591/272000 tokens) below threshold 80%
+2026-05-17T20:42:21.981Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:42:27.749Z [INFO] --- End of group ---
+2026-05-17T20:42:33.040Z [INFO] CompactionProcessor: Utilization 30.9% (83915/272000 tokens) below threshold 80%
+2026-05-17T20:42:33.042Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:42:33.543Z [INFO] [Octokit] GET /repos/chf3198/megingjord-harness/pulls?head=chf3198%3Afix%2F1829-copilot-skill-loads&state=open&per_page=1 - 200 with id CDA0:D360F:569000E:14BC7862:6A0A2839 in 358ms
+2026-05-17T20:42:39.443Z [INFO] --- End of group ---
+2026-05-17T20:42:42.531Z [INFO] CompactionProcessor: Utilization 31.3% (85052/272000 tokens) below threshold 80%
+2026-05-17T20:42:42.534Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:42:46.986Z [INFO] --- End of group ---
+2026-05-17T20:42:48.075Z [INFO] CompactionProcessor: Utilization 31.4% (85457/272000 tokens) below threshold 80%
+2026-05-17T20:42:48.076Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:42:51.079Z [INFO] --- End of group ---
+2026-05-17T20:42:51.808Z [INFO] CompactionProcessor: Utilization 31.6% (86030/272000 tokens) below threshold 80%
+2026-05-17T20:42:51.810Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:42:58.009Z [INFO] --- End of group ---
+2026-05-17T20:42:59.347Z [INFO] CompactionProcessor: Utilization 32.3% (87983/272000 tokens) below threshold 80%
+2026-05-17T20:42:59.348Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:43:08.260Z [INFO] --- End of group ---
+2026-05-17T20:43:10.003Z [INFO] CompactionProcessor: Utilization 32.5% (88512/272000 tokens) below threshold 80%
+2026-05-17T20:43:10.005Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:43:14.569Z [INFO] --- End of group ---
+2026-05-17T20:43:15.774Z [INFO] CompactionProcessor: Utilization 32.9% (89408/272000 tokens) below threshold 80%
+2026-05-17T20:43:15.776Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:43:22.241Z [INFO] --- End of group ---
+2026-05-17T20:43:23.424Z [INFO] CompactionProcessor: Utilization 35.3% (96118/272000 tokens) below threshold 80%
+2026-05-17T20:43:23.425Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:43:29.828Z [INFO] --- End of group ---
+2026-05-17T20:43:30.219Z [INFO] CompactionProcessor: Utilization 35.5% (96444/272000 tokens) below threshold 80%
+2026-05-17T20:43:30.221Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:44:07.007Z [INFO] --- End of group ---
+2026-05-17T20:44:07.676Z [INFO] CompactionProcessor: Utilization 36.9% (100319/272000 tokens) below threshold 80%
+2026-05-17T20:44:07.680Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:44:08.131Z [INFO] [Octokit] GET /repos/chf3198/megingjord-harness/pulls?head=chf3198%3Afeat%2F1828-state-taxonomy-refinement&state=open&per_page=1 - 200 with id 51B5:940DF:593F150:15827AB3:6A0A2898 in 379ms
+2026-05-17T20:44:23.186Z [INFO] --- End of group ---
+2026-05-17T20:44:25.483Z [INFO] CompactionProcessor: Utilization 37.2% (101121/272000 tokens) below threshold 80%
+2026-05-17T20:44:25.486Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:44:35.124Z [INFO] --- End of group ---
+2026-05-17T20:47:10.284Z [INFO] CompactionProcessor: Utilization 37.6% (102169/272000 tokens) below threshold 80%
+2026-05-17T20:47:10.287Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:18.455Z [INFO] --- End of group ---
+2026-05-17T20:47:21.012Z [INFO] CompactionProcessor: Utilization 40.2% (109318/272000 tokens) below threshold 80%
+2026-05-17T20:47:21.021Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:24.357Z [INFO] --- End of group ---
+2026-05-17T20:47:25.516Z [INFO] CompactionProcessor: Utilization 41.5% (112825/272000 tokens) below threshold 80%
+2026-05-17T20:47:25.519Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:27.917Z [INFO] --- End of group ---
+2026-05-17T20:47:28.635Z [INFO] CompactionProcessor: Utilization 42.3% (114965/272000 tokens) below threshold 80%
+2026-05-17T20:47:28.637Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:39.165Z [INFO] --- End of group ---
+2026-05-17T20:47:40.878Z [INFO] Memory stored successfully: subject="skills", durationMs=1041
+2026-05-17T20:47:41.155Z [INFO] CompactionProcessor: Utilization 42.3% (115169/272000 tokens) below threshold 80%
+2026-05-17T20:47:41.156Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:44.567Z [INFO] --- End of group ---
+2026-05-17T20:47:46.572Z [INFO] CompactionProcessor: Utilization 42.5% (115707/272000 tokens) below threshold 80%
+2026-05-17T20:47:46.574Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:49.648Z [ERROR] IDE disconnected unexpectedly: Visual Studio Code (source: lock file deleted)
+2026-05-17T20:47:53.105Z [INFO] --- End of group ---
+2026-05-17T20:47:54.023Z [INFO]  
+2026-05-17T20:47:54.023Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:47:54.024Z [INFO] --- End of group ---
+2026-05-17T20:47:54.079Z [INFO]  
+2026-05-17T20:47:54.079Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:47:54.079Z [INFO] --- End of group ---
+2026-05-17T20:47:54.081Z [INFO]  
+2026-05-17T20:47:54.081Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:47:54.081Z [INFO] --- End of group ---
+2026-05-17T20:47:54.082Z [INFO]  
+2026-05-17T20:47:54.083Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:47:54.083Z [INFO] --- End of group ---
+2026-05-17T20:47:54.083Z [INFO] Using WebSocket responses with model: gpt-5.4
+2026-05-17T20:47:54.084Z [INFO] --- Start of group: Completion request configuration:  ---
+2026-05-17T20:47:54.086Z [INFO] --- End of group ---
+2026-05-17T20:47:54.086Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:54.095Z [INFO] --- Start of group: Completion request configuration:  ---
+2026-05-17T20:47:54.097Z [INFO] --- End of group ---
+2026-05-17T20:47:54.103Z [INFO]  
+2026-05-17T20:47:54.104Z [INFO] --- Start of group: configured settings: ---
+2026-05-17T20:47:54.104Z [INFO] --- End of group ---
+2026-05-17T20:47:54.170Z [INFO] CompactionProcessor: Utilization 42.6% (115840/272000 tokens) below threshold 80%
+2026-05-17T20:47:54.177Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-17T20:47:55.595Z [INFO] --- End of group ---
+2026-05-17T20:47:56.644Z [INFO] Unregistering foreground session: a4e136fa-e86b-497f-9bac-8c2865469787

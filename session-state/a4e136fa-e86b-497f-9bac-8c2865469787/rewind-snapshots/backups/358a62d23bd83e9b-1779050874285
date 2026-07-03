@@ -1,0 +1,106 @@
+---
+name: Epic Governance
+description: Rules governing epic lifecycle — status advancement, role label, progress tracking, and close conditions.
+applyTo: "**"
+---
+
+# Epic Governance
+
+## Epic vs. Child Ticket — Role Boundary (Rule E2 v2 — Epic #1828)
+
+- Epic carries `role:manager` (default, throughout `backlog | triage | in-progress | dormant | deferred`) OR `role:consultant` (transient, **only during `status:review`** phase preceding terminal close to compose the CONSULTANT_EPIC_CLOSEOUT artifact).
+- Collaborator and Admin roles **never** apply to Epics — those roles act on child tickets, not the Epic itself. The orchestrator-worker contract holds: Manager (and during closeout-review, Consultant) own the Epic; workers own the children.
+- At terminal (`status:done` / `status:cancelled`): role label removed.
+
+## Epic Status Advancement Rules
+
+| Epic Status | Condition to Enter | Allowed Role |
+|---|---|---|
+| `backlog` | Created; no children started | `role:manager` |
+| `triage` | Manager scoping children; at least one child exists | `role:manager` |
+| `in-progress` | First child ticket moves to `status:in-progress` | `role:manager` |
+| `dormant` | Active goal; no current work; awaits external trigger or 90d review | `role:manager` |
+| `deferred` | Active goal; externally blocked; no ETA | `role:manager` |
+| `review` | All children are terminal (closed); epic-level closeout pending | `role:consultant` (transient) |
+| `done` + closed | CONSULTANT_EPIC_CLOSEOUT emitted; all children confirmed terminal | (no role) |
+| `cancelled` | Manager authority; **goal invalidated** (NOT used for stalled work) | (no role) |
+
+Epic status is advanced by the Manager agent at each gate — it does **not** auto-advance.
+
+### Epic-only states (dormant + deferred)
+
+- `dormant`: Manager pauses an Epic when a milestone closes and no immediate next step exists. Comment must name the trigger that would resume work.
+- `deferred`: Manager marks Epic blocked by external constraint (e.g., third-party beta, plan tier). Comment must name the blocker + ETA condition.
+- Both require `role:manager` (Epic invariant).
+- Both receive a 90-day review: Manager posts an `EPIC_REVIEW` comment with verdict (stay-dormant, reclassify, or cancel).
+- Transitions: `in-progress ↔ dormant`, `in-progress ↔ deferred`, `dormant ↔ deferred`, `dormant → triage` on resume, `deferred → in-progress` when blocker clears, `dormant → cancelled` only after review affirms goal no longer applies.
+
+### `status:in-progress → status:dormant` auto-transition (per #1342)
+
+An Epic at `status:in-progress` auto-transitions to `status:dormant` when ALL of the following hold for ≥7 days:
+
+1. No child ticket is at `status:in-progress` (or has had its status change in that window).
+2. No linked PR has activity (commit, review, comment) in the last 7 days.
+3. No Manager comment posted in the last 7 days containing the marker `EPIC_ACTIVE: <reason>` overriding the auto-transition.
+
+Operator can tune the 7-day window via `EPIC_DORMANT_AFTER_DAYS` env var on the workflow.
+
+Auto-transition posts an `EPIC_AUTO_PAUSE` comment naming the implicit resume trigger (the next child action) and swaps `status:in-progress → status:dormant`. Idempotent.
+
+**Inverse transition** (`dormant → in-progress`): triggered when a child ticket moves to `status:in-progress` OR a new PR is opened against any linked child. Mirrors the entry rule.
+
+## Epic Progress Comment Protocol
+
+When any child ticket is closed, the Manager posts a progress update to the epic:
+
+```
+## Epic Progress Update — #<child-number> Complete
+
+- Ticket: #N — <title>
+- Closed: <date>
+- Deliverables: <brief summary>
+- Remaining children: #X, #Y, #Z
+```
+
+Evidence integrity: progress updates must cover every closed child exactly once; `CONSULTANT_CLOSEOUT` must reference the full linked-child set; any `PR #N` must resolve to a real PR.
+
+## Epic Close Conditions
+
+An epic may close **only when ALL of these are true**:
+
+1. All child tickets are in terminal state (`done`/`cancelled`, issue `CLOSED`)
+2. Epic is at `status:review` with `role:consultant`
+3. CONSULTANT_CLOSEOUT comment posted on the epic
+4. Epic-level resolution label applied (`resolution:released` or `resolution:cancelled`)
+5. Evidence-integrity verification passes or has an explicit Manager-approved emergency override
+
+## Re-scope-before-close rule
+
+- If original epic ACs cannot be completed, Manager must publish an explicit re-scope artifact (deferred scope + follow-on child tickets) before review/close.
+- Post-hoc scope normalization at Consultant closeout is forbidden.
+
+## Epic-child linkage (Sub-issues primitive)
+
+New Epics SHOULD use GitHub's native **Sub-issues** primitive to link children
+to the parent Epic. The legacy `Refs Epic #N` prose convention remains valid
+for backward compatibility but is deprecated for new Epics. Sub-issues
+provides:
+
+- Native parent/child API (REST + GraphQL) and progress rollup.
+- Eliminates prose-collision trap class at the relationship layer (see #1614
+  for the legacy-regex hardening path and #1631 for the migration plan).
+- Up to 100 children per parent, 8 levels of nesting.
+
+Migration guide: `docs/howto/sub-issues-migration.md`. Validator behavior
+follows #1631 AC5 follow-on (closeout-schema prefers Sub-issue link over
+prose-scan; prose-scan fallback retained).
+
+## Branch Naming
+
+Branches are created for child tickets only: `<type>/<child-issue-number>-<slug>`
+
+## Forbidden
+
+- Epic carrying any role other than `role:manager`
+- Epic closing while any child is still open
+- Child ticket branch named after the epic number

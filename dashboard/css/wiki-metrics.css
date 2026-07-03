@@ -1,0 +1,24 @@
+/* Wiki metrics panel styles */
+.wiki-metrics { display: flex; flex-direction: column; gap: 0.4rem; }
+.wiki-metrics-empty { color: var(--text-muted); font-style: italic; font-size: 0.82rem; }
+.wm-grade-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.wm-grade { font-size: 1.1rem; font-weight: 800; min-width: 2rem; text-align: center; }
+.wm-score { font-size: 0.82rem; color: var(--text-muted); }
+.wm-total { font-size: 0.82rem; font-weight: 600; }
+.wm-last { font-size: 0.72rem; margin-left: auto; }
+.wm-details { border: 1px solid var(--border); border-radius: 6px; padding: 0.25rem 0.5rem; }
+.wm-details summary { font-size: 0.78rem; cursor: pointer; color: var(--text-muted); }
+.wm-reasons { margin: 0.2rem 0 0 1rem; padding: 0; font-size: 0.75rem; color: var(--text-muted); }
+.wm-section-title { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem; }
+.wm-bars { display: flex; flex-direction: column; gap: 0.2rem; }
+.wm-row { display: flex; align-items: center; gap: 0.4rem; }
+.wm-lbl { font-size: 0.72rem; width: 6rem; flex-shrink: 0; color: var(--text); text-transform: capitalize; }
+.wm-bar-wrap { flex: 1; background: var(--surface); border-radius: 3px; height: 8px; overflow: hidden; border: 1px solid var(--border); }
+.wm-bar { height: 100%; background: var(--blue); border-radius: 3px; transition: width 0.4s; }
+.wm-count { font-size: 0.68rem; color: var(--text-muted); width: 2rem; text-align: right; }
+.wm-issue-group { border: 1px solid var(--border); border-radius: 6px; padding: 0.25rem 0.5rem; margin-top: 0.2rem; }
+.wm-issue-group summary { font-size: 0.78rem; cursor: pointer; }
+.wm-issue-list { margin: 0.2rem 0 0 1rem; padding: 0; font-size: 0.72rem; color: var(--text-muted); }
+.wm-issue-list code { background: var(--bg); padding: 0.05rem 0.25rem; border-radius: 3px; }
+.wm-all-ok { font-size: 0.78rem; color: var(--green); margin-top: 0.2rem; }
+.wiki-muted { color: var(--text-muted); }

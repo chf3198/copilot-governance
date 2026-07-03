@@ -1,0 +1,76 @@
+{
+  "_description": "Canonical label manifest. Single source of truth for label-provision.js and label-rules.js. Refs #2785.",
+  "_note": "Add new labels here first; provisioner + lint enforcement stay in sync automatically.",
+  "version": 1,
+  "labels": [
+    { "name": "type:bug",      "color": "d73a4a", "description": "Defect report",                          "group": "type" },
+    { "name": "type:doc",      "color": "c5def5", "description": "Documentation work",                     "group": "type" },
+    { "name": "type:epic",     "color": "5319e7", "description": "Large initiative spanning multiple issues","group": "type" },
+    { "name": "type:research", "color": "fbca04", "description": "Investigation or evaluation",             "group": "type" },
+    { "name": "type:story",    "color": "0075ca", "description": "User-facing feature or capability",       "group": "type" },
+    { "name": "type:task",     "color": "0e8a16", "description": "Internal/technical work item",            "group": "type" },
+
+    { "name": "status:backlog",     "color": "ededed", "description": "Not yet started",                                                 "group": "status" },
+    { "name": "status:queued",      "color": "fbca04", "description": "Child of active Epic; awaiting Manager pickup",                   "group": "status" },
+    { "name": "status:triage",      "color": "e4e669", "description": "Manager scoping AC and gates",                                    "group": "status" },
+    { "name": "status:ready",       "color": "c2e0c6", "description": "Scoped, estimated, ready to pull",                                "group": "status" },
+    { "name": "status:in-progress", "color": "fef2c0", "description": "Actively being worked",                                          "group": "status" },
+    { "name": "status:testing",     "color": "f9d0c4", "description": "Admin running CI/gates",                                          "group": "status" },
+    { "name": "status:review",      "color": "bfdadc", "description": "PR open, awaiting review",                                        "group": "status" },
+    { "name": "status:done",        "color": "0e8a16", "description": "Merged and verified",                                             "group": "status" },
+    { "name": "status:cancelled",   "color": "b60205", "description": "Abandoned; Manager authority",                                    "group": "status" },
+    { "name": "status:dormant",     "color": "c5def5", "description": "Epic active goal; no current work; review every 90d or trigger", "group": "status" },
+    { "name": "status:deferred",    "color": "bfd4f2", "description": "Epic active goal; externally blocked, no ETA",                   "group": "status" },
+    { "name": "status:blocked",     "color": "b60205", "description": "Waiting on external dependency",                                  "group": "status" },
+
+    { "name": "priority:P0", "color": "d73a49", "description": "Critical — blocks everything", "group": "priority" },
+    { "name": "priority:P1", "color": "b60205", "description": "Blocks release",               "group": "priority" },
+    { "name": "priority:P2", "color": "ff9f1c", "description": "Important",                    "group": "priority" },
+    { "name": "priority:P3", "color": "c2e0c6", "description": "Nice to have",                 "group": "priority" },
+
+    { "name": "role:manager",     "color": "6f42c1", "description": "Manager baton holder",                          "group": "role" },
+    { "name": "role:collaborator","color": "6f42c1", "description": "Collaborator baton holder",                      "group": "role" },
+    { "name": "role:admin",       "color": "6f42c1", "description": "Admin baton holder",                            "group": "role" },
+    { "name": "role:consultant",  "color": "6f42c1", "description": "Consultant baton holder",                       "group": "role" },
+    { "name": "role:it",          "color": "0e8a16", "description": "IT operations baton holder",                    "group": "role" },
+    { "name": "role:red-team",    "color": "d73a4a", "description": "Adversarial cross-family reviewer",              "group": "role" },
+    { "name": "role:client",      "color": "0075ca", "description": "Design direction + UAT confirmation",            "group": "role" },
+    { "name": "role:archived",    "color": "ededed", "description": "Closed >30 days; excluded from all baton queries","group": "role" },
+
+    { "name": "area:agents",      "color": "1d76db", "description": "Custom agents",                          "group": "area" },
+    { "name": "area:dashboard",   "color": "1d76db", "description": "Fleet monitoring web app",               "group": "area" },
+    { "name": "area:governance",  "color": "1d76db", "description": "Governance, compliance, workflow enforcement","group": "area" },
+    { "name": "area:hooks",       "color": "1d76db", "description": "Hook scripts and governance",            "group": "area" },
+    { "name": "area:infra",       "color": "1d76db", "description": "Infrastructure and DevOps",              "group": "area" },
+    { "name": "area:instructions","color": "1d76db", "description": "Global instructions",                    "group": "area" },
+    { "name": "area:knowledge",   "color": "1d76db", "description": "LLM Wiki knowledge system",              "group": "area" },
+    { "name": "area:scripts",     "color": "1d76db", "description": "Bootstrap and utility scripts",          "group": "area" },
+    { "name": "area:skills",      "color": "1d76db", "description": "Copilot skills",                         "group": "area" },
+
+    { "name": "lane:code-change",        "color": "0052cc", "description": "Full 4-role baton (code, deploy, infra)",             "group": "lane" },
+    { "name": "lane:config-only",        "color": "e4e669", "description": "Reduced baton: Admin+Consultant only (trivial config)","group": "lane" },
+    { "name": "lane:docs-research",      "color": "5319e7", "description": "Reduced baton: Manager+Consultant only (docs/research)","group": "lane" },
+    { "name": "lane:no-code-remediation","color": "e4e669", "description": "Issue-only drift normalization; no repo edits",        "group": "lane" },
+    { "name": "lane:trivial",            "color": "0052cc", "description": "Reduced baton: trivial config/typo/formatting changes", "group": "lane" },
+    { "name": "lane:research",           "color": "e4e669", "description": "Investigation/spike; no implementation deliverable",   "group": "lane" },
+
+    { "name": "resolution:cancelled",         "color": "b60205", "description": "Work abandoned; goal invalidated",     "group": "resolution" },
+    { "name": "resolution:completed",         "color": "0075ca", "description": "Work completed successfully",           "group": "resolution" },
+    { "name": "resolution:released",          "color": "0075ca", "description": "Work shipped to production/main",       "group": "resolution" },
+    { "name": "resolution:research-delivered","color": "ededed", "description": "Research findings posted on ticket",   "group": "resolution" },
+    { "name": "resolution:superseded",        "color": "ededed", "description": "Overtaken by events: scope moot as capability shipped elsewhere; distinct from duplicate (not identical) and completed (not performed)", "group": "resolution" },
+
+    { "name": "signal:contested-superseded",  "color": "d93f0b", "description": "Superseded-close verdict is contested; routed to the #2990 propose-only queue for Manager adjudication (never auto-closes)", "group": "signal" },
+    { "name": "signal:close-eligible",        "color": "0e8a16", "description": "Epic active; every child terminal → owner review pending. Surface-only signal (complements the #3350 close-time veto; never auto-closes)", "group": "signal" },
+    { "name": "signal:exempt-review",         "color": "fbca04", "description": "Exempt-but-idle epic surfaced for owner review (velocity-relative threshold). Surface-only; never closes; defers to #2920 for dormant epics", "group": "signal" },
+
+    { "name": "phase-gate:phase-1",        "color": "5319e7", "description": "Phase-1 implementation child of a research-first Epic","group": "phase-gate" },
+    { "name": "phase-gate:research-first", "color": "5319e7", "description": "Research-first Epic; Phase 0 must complete before Phase 1","group": "phase-gate" },
+
+    { "name": "governance:close-without-merge",   "color": "ff6f61", "description": "Advisory: issue closed status:done without merged PR on main","group": "governance" },
+    { "name": "consultant:cross-team-needed",     "color": "fbca04", "description": "Epic closeout requires cross-team Consultant signing","group": "consultant" },
+    { "name": "consultant:cross-team-in-progress","color": "1d76db", "description": "Cross-team Consultant has claimed and is signing closeout","group": "consultant" },
+    { "name": "merge-bypass:admin-exception",     "color": "b60205", "description": "Admin override of branch-protection bypass; requires justification","group": "merge-bypass" },
+    { "name": "merge-evidence-override:approved", "color": "f9d0c4", "description": "PR explicitly does not close the linked issue (e.g. multi-session slice)","group": "merge-evidence" }
+  ]
+}

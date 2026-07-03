@@ -1,0 +1,32 @@
+/* Ticket Log panel styles */
+.tlog-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
+.tlog-empty { color: var(--text-muted); font-size: 0.85rem;
+  padding: 1rem; text-align: center; }
+.tlog-section { display: flex; flex-direction: column; gap: 0.25rem; }
+.tlog-heading { font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--text-muted); padding: 0.2rem 0; }
+.tlog-row { display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.3rem 0.5rem; border-radius: 4px;
+  font-size: 0.82rem; background: var(--surface2); }
+.tlog-row.tl-active { border-left: 2px solid var(--accent); }
+.tlog-row.tl-closed { opacity: 0.65; }
+.tlog-row.tl-cancelled { opacity: 0.5; text-decoration: line-through; }
+.tlog-row.tl-backlog { border-left: 2px solid var(--text-muted); }
+.tlog-row.tl-todo { border-left: 2px solid #6c8ebf; }
+.tlog-row.tl-ready-for-testing { border-left: 2px solid #d6a942; }
+.tlog-row.tl-testing { border-left: 2px solid #b85c00; }
+.tlog-row.tl-passed-testing { border-left: 2px solid #27ae60; }
+.tlog-row.tl-done { opacity: 0.65; }
+.tlog-id { font-weight: 700; color: var(--accent); min-width: 2.8rem; }
+.tlog-epic { font-size: 0.72rem; color: var(--text-muted); }
+.tlog-title { flex: 1; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.tlog-badges { display: flex; gap: 0.3rem; margin-left: auto; flex-shrink: 0; }
+.tlog-role { font-size: 0.7rem; padding: 0.1rem 0.4rem;
+  border-radius: 3px; background: var(--surface3); }
+.tlog-agent { font-size: 0.72rem; color: var(--text-muted); }
+.tlog-status { font-size: 0.85rem; flex-shrink: 0; }
+.tlog-closed-group { margin-top: 0.5rem; }
+.tlog-closed-group > summary { font-size: 0.8rem;
+  color: var(--text-muted); cursor: pointer; padding: 0.2rem 0; }

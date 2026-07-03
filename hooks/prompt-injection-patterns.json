@@ -1,0 +1,64 @@
+{
+  "_comment": "Prompt injection detection patterns for injection_guard.py (#2905, G-20). Deployed via hooks/ rsync.",
+  "scan_tools": [
+    "read_file", "Read",
+    "fetch_webpage", "WebFetch",
+    "navigate_page", "read_page",
+    "vscode-websearchforcopilot_webSearch",
+    "github_text_search", "github_repo"
+  ],
+  "max_scan_bytes": 65536,
+  "min_matches_to_warn": 1,
+  "patterns": [
+    {
+      "id": "P01",
+      "pattern": "(?i)ignore\\s+(?:all\\s+)?(?:previous|prior|earlier|above)\\s+(?:instructions|rules|directives|constraints)",
+      "label": "ignore-prior-instructions"
+    },
+    {
+      "id": "P02",
+      "pattern": "(?i)<\\s*/?\\s*(?:system|instructions|prompt|directive)\\s*>",
+      "label": "xml-injection-tag"
+    },
+    {
+      "id": "P03",
+      "pattern": "(?i)your\\s+(?:new|real|actual|true)\\s+(?:instructions|rules|task|goal|purpose|objective)",
+      "label": "goal-hijack"
+    },
+    {
+      "id": "P04",
+      "pattern": "(?i)(?:jailbreak|DAN\\s+mode|developer\\s+mode|god\\s+mode|unrestricted\\s+mode|do\\s+anything\\s+now)",
+      "label": "jailbreak"
+    },
+    {
+      "id": "P05",
+      "pattern": "(?i)forget\\s+(?:everything|all)\\s+(?:you|that|I\\s+said|your)",
+      "label": "memory-wipe"
+    },
+    {
+      "id": "P06",
+      "pattern": "(?m)^#+\\s*(?:SYSTEM\\s+OVERRIDE|NEW\\s+INSTRUCTIONS|ACTUAL\\s+TASK|REAL\\s+PROMPT)\\s*[:：]?",
+      "label": "markdown-system-override"
+    },
+    {
+      "id": "P07",
+      "pattern": "(?i)do\\s+not\\s+(?:follow|obey|respect|adhere\\s+to)\\s+your\\s+(?:guidelines|rules|instructions|training|alignment)",
+      "label": "rule-bypass-directive"
+    },
+    {
+      "id": "P08",
+      "pattern": "(?i)(?:^|\\n)\\s*(?:SYSTEM|ASSISTANT|USER|HUMAN)\\s*:\\s*(?:ignore|override|disregard|bypass)",
+      "label": "role-impersonation"
+    },
+    {
+      "id": "P09",
+      "pattern": "(?i)\\bprompt\\s+injection\\s+(?:test|payload|attack|attempt)\\b",
+      "label": "self-identified-injection"
+    },
+    {
+      "id": "P10",
+      "pattern": "(?i)you\\s+are\\s+now\\s+(?:a|an)?\\s*(?:unrestricted|jailbroken|free|uncensored|unfiltered|evil|malicious)",
+      "label": "persona-override"
+    }
+  ]
+}

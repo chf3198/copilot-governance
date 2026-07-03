@@ -1,0 +1,59 @@
+{
+  "active_branch": "main",
+  "admin_ops": {
+    "ci_green": false,
+    "commit": false,
+    "gh_release": false,
+    "issue_close": false,
+    "issue_linked": true,
+    "merge": false,
+    "pr_create": false,
+    "publish": false,
+    "push": false,
+    "release_integrity": false,
+    "version_check": false,
+    "visual_qa": false
+  },
+  "bash_call_ctr": 10,
+  "blast_radius": {
+    "files_edited_count": 0,
+    "provider_call_count": 0,
+    "push_count": 0
+  },
+  "current_phase": "manager",
+  "cwd": "/home/curtisfranks/agentic-classroom",
+  "drift": {
+    "branches": 0,
+    "branches_compliant": 0,
+    "commits": 0,
+    "commits_with_ticket": 0,
+    "edits_gated": 0,
+    "edits_ungated": 0
+  },
+  "flags": {
+    "code_touched": true,
+    "docs_touched": false,
+    "extension_touched": false,
+    "ui_touched": false
+  },
+  "repo_type": "generic",
+  "roles": {
+    "admin": false,
+    "collaborator": true,
+    "consultant": true,
+    "manager": false
+  },
+  "routing": {
+    "backend": "ollama",
+    "cascade_result": {
+      "confidence": null,
+      "escalation_needed": true,
+      "reason": "HTTP 400",
+      "tier": "local"
+    },
+    "confidence": "high",
+    "lane": "fleet",
+    "rationale": "fleet selected from keyword score",
+    "recommended_model": "fleet-coding-local"
+  }
+}

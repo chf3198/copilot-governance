@@ -1,0 +1,95 @@
+{
+  "probed_at": "2026-06-12T20:10:43.914Z",
+  "schema_version": 2,
+  "tailscale": {
+    "available": true
+  },
+  "fleet": {
+    "36gbwinresource": {
+      "reachable": true,
+      "models": [
+        "qwen3:32b",
+        "qwen2.5-coder:32b",
+        "qwen2.5-coder:7b-instruct-q3_K_S",
+        "granite-code:3b",
+        "starcoder2:3b",
+        "qwen2.5-coder:7b"
+      ]
+    },
+    "windows-laptop": {
+      "reachable": true,
+      "models": [
+        "qwen2.5-coder:1.5b",
+        "granite-code:3b",
+        "starcoder2:3b",
+        "granite-code:20b",
+        "deepseek-coder-v2:lite",
+        "qwen2.5:7b-instruct",
+        "qwen2.5-coder:7b"
+      ]
+    },
+    "penguin-1": {
+      "reachable": false
+    }
+  },
+  "cloudflare": {
+    "account": {
+      "available": true
+    },
+    "reachability": {
+      "reachable": true,
+      "authenticated": true
+    }
+  },
+  "r2": {
+    "available": true
+  },
+  "wrangler": {
+    "available": true,
+    "version": "4.100.0"
+  },
+  "github_oidc": {
+    "eligible": true,
+    "caveat": "heuristic-only"
+  },
+  "mcp": {
+    "rag_server": {
+      "reachable": false,
+      "url": null
+    },
+    "client": {
+      "available": false,
+      "reason": "MCP SDK not installed"
+    }
+  },
+  "npm_trusted_publishing": {
+    "eligible": false,
+    "reason": "npm-not-authenticated"
+  },
+  "providers": {
+    "anthropic": {
+      "available": true,
+      "http_status": 200
+    },
+    "openai": {
+      "available": true,
+      "http_status": 200
+    },
+    "groq": {
+      "available": true,
+      "http_status": 200
+    },
+    "cerebras": {
+      "available": true,
+      "http_status": 200
+    },
+    "google_ai_studio": {
+      "available": true,
+      "http_status": 200
+    },
+    "openrouter": {
+      "available": true,
+      "http_status": 200
+    }
+  }
+}

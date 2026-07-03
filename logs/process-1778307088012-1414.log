@@ -1,0 +1,230 @@
+2026-05-09T06:11:28.015Z [INFO] Shell completions: no writable completion directory found for bash, skipping
+2026-05-09T06:11:28.478Z [INFO] Session indexing debug: SESSION_INDEXING=false, repository=undefined
+2026-05-09T06:11:28.531Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/repo-scope.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.534Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/governance-profiles.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.543Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-da154bb93372f13f.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.544Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-b478c2f68e3511bd.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.545Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-85a54151e7f90a8e.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.546Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-7907673abf180920.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.547Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-629e90f5ebbd4d3d.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.547Z [ERROR] Invalid hook configuration in /home/curtisfranks/.copilot/hooks/state/repo-27fa799ed25f41f0.json: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "undefined",
+    "path": [
+      "hooks"
+    ],
+    "message": "Required"
+  }
+]
+2026-05-09T06:11:28.633Z [INFO] Workspace initialized: 344b4e15-a3f2-4d62-b953-fc592625e2f0 (checkpoints: 0)
+2026-05-09T06:11:28.643Z [INFO] Starting Copilot CLI: 1.0.44
+2026-05-09T06:11:28.643Z [INFO] Node.js version: v24.15.0
+2026-05-09T06:11:29.299Z [INFO] No update needed, current version is 1.0.44, fetched latest release is v1.0.44
+2026-05-09T06:11:29.306Z [WARNING] /home/curtisfranks/.copilot/agents/architect.agent.md: unknown field ignored: handoffs
+2026-05-09T06:11:29.306Z [WARNING] /home/curtisfranks/.copilot/agents/implementer.agent.md: unknown field ignored: handoffs
+2026-05-09T06:11:29.306Z [WARNING] /home/curtisfranks/.copilot/agents/planner.agent.md: unknown field ignored: handoffs
+2026-05-09T06:11:29.306Z [WARNING] /home/curtisfranks/.copilot/agents/router.agent.md: unknown field ignored: handoffs
+2026-05-09T06:11:29.306Z [ERROR] /home/curtisfranks/.copilot/agents/router-policy.md: custom agent markdown frontmatter is malformed: missing or malformed YAML frontmatter
+2026-05-09T06:11:29.348Z [ERROR] Starting remote MCP client for github-mcp-server with url: https://api.individual.githubcopilot.com/mcp/readonly
+2026-05-09T06:11:29.348Z [ERROR] Creating MCP client for github-mcp-server...
+2026-05-09T06:11:29.350Z [ERROR] Connecting MCP client for github-mcp-server...
+2026-05-09T06:11:29.752Z [ERROR] MCP client for github-mcp-server connected, took 403ms
+2026-05-09T06:11:29.753Z [ERROR] Started MCP client for remote server github-mcp-server
+2026-05-09T06:11:29.753Z [ERROR] GitHub MCP server configured after authentication
+2026-05-09T06:11:30.016Z [INFO] Using default model: gpt-5.4
+2026-05-09T06:11:31.002Z [INFO] Memory enablement check: enabled
+2026-05-09T06:11:31.951Z [INFO]  
+2026-05-09T06:11:31.952Z [INFO] --- Start of group: configured settings: ---
+2026-05-09T06:11:31.952Z [INFO] --- End of group ---
+2026-05-09T06:11:32.162Z [INFO]  
+2026-05-09T06:11:32.162Z [INFO] --- Start of group: configured settings: ---
+2026-05-09T06:11:32.162Z [INFO] --- End of group ---
+2026-05-09T06:11:32.171Z [INFO] --- Start of group: Completion request configuration:  ---
+2026-05-09T06:11:32.177Z [INFO] --- End of group ---
+2026-05-09T06:11:33.939Z [INFO] CompactionProcessor: Utilization 13.6% (36903/272000 tokens) below threshold 80%
+2026-05-09T06:11:33.942Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-09T06:11:34.382Z [ERROR] error (Request-ID 6D62:2EE2F8:13CC4C:18429B:69FED012)
+2026-05-09T06:11:34.383Z [ERROR] {
+  "status": 429,
+  "headers": {},
+  "requestID": "00000-cf89fddc-1f2a-4a47-a41e-539e815e2a23",
+  "error": {
+    "message": "Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+    "code": "user_weekly_rate_limited"
+  },
+  "code": "user_weekly_rate_limited",
+  "request_id": "00000-cf89fddc-1f2a-4a47-a41e-539e815e2a23",
+  "ghRequestId": "6D62:2EE2F8:13CC4C:18429B:69FED012",
+  "name": "CAPIError",
+  "message": "429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+  "stack": "CAPIError: 429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).\n    at t.fromAPIError (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1266:1046)\n    at egt.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1931:15435)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TBe.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1949:3368)\n    at async t.runAgenticLoop (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2962:4654)\n    at async t.processQueuedItems (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:12149)\n    at async t.processQueue (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:3372)\n    at async t.send (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2958:3971)\n    at async uFa (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7462:2330)\n    at async cLt (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7421:732)"
+}
+2026-05-09T06:11:41.267Z [INFO] --- End of group ---
+2026-05-09T06:11:41.268Z [INFO] CompactionProcessor: Utilization 13.6% (36903/272000 tokens) below threshold 80%
+2026-05-09T06:11:41.271Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-09T06:11:41.717Z [ERROR] error (Request-ID 6D62:2EE2F8:13DE76:18585F:69FED016)
+2026-05-09T06:11:41.719Z [ERROR] {
+  "status": 429,
+  "headers": {},
+  "requestID": "00000-ba4a5d3b-54e6-463a-9b16-102e3f9bb37a",
+  "error": {
+    "message": "Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+    "code": "user_weekly_rate_limited"
+  },
+  "code": "user_weekly_rate_limited",
+  "request_id": "00000-ba4a5d3b-54e6-463a-9b16-102e3f9bb37a",
+  "ghRequestId": "6D62:2EE2F8:13DE76:18585F:69FED016",
+  "name": "CAPIError",
+  "message": "429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+  "stack": "CAPIError: 429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).\n    at t.fromAPIError (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1266:1046)\n    at egt.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1931:15435)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TBe.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1949:3368)\n    at async t.runAgenticLoop (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2962:4654)\n    at async t.processQueuedItems (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:12149)\n    at async t.processQueue (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:3372)\n    at async t.send (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2958:3971)\n    at async uFa (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7462:2330)\n    at async cLt (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7421:732)"
+}
+2026-05-09T06:11:49.470Z [INFO] --- End of group ---
+2026-05-09T06:11:49.471Z [INFO] CompactionProcessor: Utilization 13.6% (36903/272000 tokens) below threshold 80%
+2026-05-09T06:11:49.472Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-09T06:11:49.921Z [ERROR] error (Request-ID 6D62:2EE2F8:13F349:187168:69FED01E)
+2026-05-09T06:11:49.922Z [ERROR] {
+  "status": 429,
+  "headers": {},
+  "requestID": "00000-c90bb0c9-1be1-47f4-a196-dd49d1e0158c",
+  "error": {
+    "message": "Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+    "code": "user_weekly_rate_limited"
+  },
+  "code": "user_weekly_rate_limited",
+  "request_id": "00000-c90bb0c9-1be1-47f4-a196-dd49d1e0158c",
+  "ghRequestId": "6D62:2EE2F8:13F349:187168:69FED01E",
+  "name": "CAPIError",
+  "message": "429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+  "stack": "CAPIError: 429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).\n    at t.fromAPIError (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1266:1046)\n    at egt.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1931:15435)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TBe.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1949:3368)\n    at async t.runAgenticLoop (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2962:4654)\n    at async t.processQueuedItems (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:12149)\n    at async t.processQueue (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:3372)\n    at async t.send (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2958:3971)\n    at async uFa (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7462:2330)\n    at async cLt (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7421:732)"
+}
+2026-05-09T06:11:58.510Z [INFO] --- End of group ---
+2026-05-09T06:11:58.510Z [INFO] CompactionProcessor: Utilization 13.6% (36903/272000 tokens) below threshold 80%
+2026-05-09T06:11:58.511Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-09T06:11:58.987Z [ERROR] error (Request-ID 6D62:2EE2F8:140868:188B33:69FED026)
+2026-05-09T06:11:58.988Z [ERROR] {
+  "status": 429,
+  "headers": {},
+  "requestID": "00000-f6e909bb-0850-4073-9602-25a4f86b521c",
+  "error": {
+    "message": "Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+    "code": "user_weekly_rate_limited"
+  },
+  "code": "user_weekly_rate_limited",
+  "request_id": "00000-f6e909bb-0850-4073-9602-25a4f86b521c",
+  "ghRequestId": "6D62:2EE2F8:140868:188B33:69FED026",
+  "name": "CAPIError",
+  "message": "429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+  "stack": "CAPIError: 429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).\n    at t.fromAPIError (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1266:1046)\n    at egt.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1931:15435)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TBe.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1949:3368)\n    at async t.runAgenticLoop (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2962:4654)\n    at async t.processQueuedItems (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:12149)\n    at async t.processQueue (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:3372)\n    at async t.send (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2958:3971)\n    at async uFa (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7462:2330)\n    at async cLt (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7421:732)"
+}
+2026-05-09T06:12:14.598Z [INFO] --- End of group ---
+2026-05-09T06:12:14.599Z [INFO] CompactionProcessor: Utilization 13.6% (36903/272000 tokens) below threshold 80%
+2026-05-09T06:12:14.601Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-09T06:12:15.705Z [ERROR] error (Request-ID 6D62:2EE2F8:143019:18BB77:69FED02F)
+2026-05-09T06:12:15.706Z [ERROR] {
+  "status": 429,
+  "headers": {},
+  "requestID": "00000-57ccb681-a02c-42e3-8a47-e42a2bb09231",
+  "error": {
+    "message": "Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+    "code": "user_weekly_rate_limited"
+  },
+  "code": "user_weekly_rate_limited",
+  "request_id": "00000-57ccb681-a02c-42e3-8a47-e42a2bb09231",
+  "ghRequestId": "6D62:2EE2F8:143019:18BB77:69FED02F",
+  "name": "CAPIError",
+  "message": "429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+  "stack": "CAPIError: 429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).\n    at t.fromAPIError (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1266:1046)\n    at egt.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1931:15435)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TBe.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1949:3368)\n    at async t.runAgenticLoop (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2962:4654)\n    at async t.processQueuedItems (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:12149)\n    at async t.processQueue (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:3372)\n    at async t.send (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2958:3971)\n    at async uFa (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7462:2330)\n    at async cLt (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7421:732)"
+}
+2026-05-09T06:12:36.540Z [INFO] --- End of group ---
+2026-05-09T06:12:36.541Z [INFO] CompactionProcessor: Utilization 13.6% (36903/272000 tokens) below threshold 80%
+2026-05-09T06:12:36.543Z [INFO] --- Start of group: Sending request to the AI model ---
+2026-05-09T06:12:37.318Z [ERROR] error (Request-ID 6D62:2EE2F8:1466B6:18FD84:69FED040)
+2026-05-09T06:12:37.318Z [ERROR] {
+  "status": 429,
+  "headers": {},
+  "requestID": "00000-85cc84b5-7b82-4086-9150-79be17d2b605",
+  "error": {
+    "message": "Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+    "code": "user_weekly_rate_limited"
+  },
+  "code": "user_weekly_rate_limited",
+  "request_id": "00000-85cc84b5-7b82-4086-9150-79be17d2b605",
+  "ghRequestId": "6D62:2EE2F8:1466B6:18FD84:69FED040",
+  "name": "CAPIError",
+  "message": "429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).",
+  "stack": "CAPIError: 429 Sorry, you've exceeded your weekly rate limit. Please review our [Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).\n    at t.fromAPIError (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1266:1046)\n    at egt.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1931:15435)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async TBe.getCompletionWithTools (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:1949:3368)\n    at async t.runAgenticLoop (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2962:4654)\n    at async t.processQueuedItems (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:12149)\n    at async t.processQueue (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2960:3372)\n    at async t.send (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:2958:3971)\n    at async uFa (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7462:2330)\n    at async cLt (file:///home/curtisfranks/.cache/copilot/pkg/linux-x64/1.0.44/app.js:7421:732)"
+}
+2026-05-09T06:13:12.479Z [INFO] --- End of group ---
+2026-05-09T06:13:12.481Z [INFO] Rate limit exceeded after 5 retries, will fail job but skip Sentry reporting

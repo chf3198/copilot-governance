@@ -1,0 +1,11 @@
+id: 344b4e15-a3f2-4d62-b953-fc592625e2f0
+cwd: /home/curtisfranks/devenv-ops
+git_root: /home/curtisfranks/devenv-ops
+repository: chf3198/megingjord-harness
+host_type: github
+branch: feat/1146-rd-protocol-v2
+user_named: false
+summary_count: 0
+created_at: 2026-05-09T06:11:28.603Z
+updated_at: 2026-05-09T06:11:32.002Z
+name: "respond with: ack"

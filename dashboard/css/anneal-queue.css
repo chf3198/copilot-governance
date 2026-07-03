@@ -1,0 +1,44 @@
+.anneal-queue-panel {
+  background: #0d1117;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.anneal-queue-panel .aq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.anneal-queue-panel article {
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.anneal-queue-panel h3 {
+  color: #58a6ff;
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.anneal-queue-panel p,
+.anneal-queue-panel li,
+.anneal-queue-panel span,
+.anneal-queue-panel strong {
+  color: #e6edf3;
+}
+
+.anneal-queue-panel ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.anneal-queue-panel li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}

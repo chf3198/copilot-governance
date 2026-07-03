@@ -1,0 +1,54 @@
+/* demo.css — Demo mode overlay styles */
+#demo-banner {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  padding: 0.5rem 1rem;
+  background: #1a1a2e; color: #e2e8f0; font-size: 0.85rem;
+  border-bottom: 2px solid #7c3aed;
+}
+#demo-banner strong { color: #a78bfa; }
+#demo-banner button, #demo-banner a {
+  padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.8rem;
+  background: #7c3aed; color: #fff; border: none; cursor: pointer; text-decoration: none;
+}
+#demo-banner a { background: #059669; }
+#demo-picker {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+}
+.demo-picker-card {
+  background: #1e293b; color: #e2e8f0;
+  padding: 2rem; border-radius: 12px; max-width: 480px; width: 90%;
+  border: 1px solid #334155;
+}
+.demo-picker-card h2 { margin: 0 0 1rem; font-size: 1.2rem; }
+.demo-picker-card ul {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.demo-picker-card button {
+  width: 100%; padding: 0.75rem 1rem; text-align: left;
+  background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+  color: #e2e8f0; cursor: pointer; display: flex; flex-direction: column; gap: 0.2rem;
+}
+.demo-picker-card button:hover { border-color: #7c3aed; background: #1a1a2e; }
+.demo-picker-card button span { font-size: 0.8rem; color: #94a3b8; }
+#demo-glossary {
+  position: fixed; right: 0; top: 0; bottom: 0; z-index: 250; width: 300px;
+  background: #1e293b; color: #e2e8f0;
+  padding: 1.5rem; overflow-y: auto;
+  border-left: 1px solid #334155; box-shadow: -4px 0 20px rgba(0,0,0,0.4);
+}
+#demo-glossary h3 { margin: 0 0 1rem; }
+#demo-glossary dl { margin: 0; }
+#demo-glossary dt { font-weight: 600; color: #a78bfa; margin-top: 0.75rem; }
+#demo-glossary dd { margin: 0.25rem 0 0; font-size: 0.85rem; color: #94a3b8; }
+#demo-glossary-close {
+  margin-top: 1.5rem; width: 100%; padding: 0.5rem;
+  background: #334155; border: none; color: #e2e8f0; border-radius: 4px; cursor: pointer;
+}
+/* Scenario picker: full-width card buttons for reliable click targets */
+.demo-picker-card button[data-name] {
+  width: 100%; cursor: pointer; text-align: left;
+}

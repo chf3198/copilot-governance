@@ -1,0 +1,4 @@
+{
+  "_note": "Allow-list of scheduled workflows expected to be skipped/failing (#3522, ADR-020 §D5). Key = 'repo/workflow-name'; value = reason string (required — silence must be auditable). Orphaned entries (target no longer exists) are flagged 'stale-allowlist' each run so a suppression can never outlive its target.",
+  "_example": "chf3198-somerepo/deprecated-cron.yml"
+}

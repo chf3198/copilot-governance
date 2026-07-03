@@ -1,0 +1,58 @@
+{
+  "active_branch": "feat/3403-adjudicate-first-s6-s7",
+  "admin_ops": {
+    "ci_green": false,
+    "commit": true,
+    "gh_release": false,
+    "issue_close": false,
+    "issue_linked": false,
+    "merge": false,
+    "pr_create": true,
+    "publish": false,
+    "push": false,
+    "release_integrity": false,
+    "version_check": false,
+    "visual_qa": false
+  },
+  "bash_call_ctr": 9,
+  "blast_radius": {
+    "files_edited_count": 6,
+    "provider_call_count": 0,
+    "push_count": 0
+  },
+  "current_phase": "ready",
+  "cwd": "/home/curtisfranks/devenv-ops/.claude/worktrees/3403-adjudicate-first-s6-s7",
+  "drift": {
+    "branches": 0,
+    "branches_compliant": 0,
+    "commits": 0,
+    "commits_with_ticket": 0,
+    "edits_gated": 0,
+    "edits_ungated": 0
+  },
+  "flags": {
+    "code_touched": true,
+    "docs_touched": true,
+    "extension_touched": false,
+    "ui_touched": false
+  },
+  "repo_type": "website-static",
+  "roles": {
+    "admin": false,
+    "collaborator": true,
+    "consultant": false,
+    "manager": false
+  },
+  "routing": {
+    "backend": "auto",
+    "confidence": "medium",
+    "lane": "free",
+    "rationale": "default",
+    "recommended_model": "Auto"
+  },
+  "session": {
+    "total_pushes": 0,
+    "total_reads_sensitive_paths": 0,
+    "total_writes": 6
+  }
+}

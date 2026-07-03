@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "generatedDoc": "docs/provider-capability-registry.md",
+  "confidenceLevels": ["exact_request", "aggregate", "derived", "estimated", "unavailable", "mixed"],
+  "ownerBoundary": "Runtime records describe agent surfaces; provider records describe serving paths.",
+  "runtimes": [
+    { "id": "codex", "toolsMcp": "yes", "hooks": "yes", "agentsSkills": "yes", "sandboxApproval": "strong", "cost": "provider-mediated", "telemetryConfidence": "mixed", "citations": ["https://developers.openai.com/codex/config-reference", "https://developers.openai.com/codex/agent-approvals-security"] },
+    { "id": "claude-code", "toolsMcp": "yes", "hooks": "yes", "agentsSkills": "yes", "sandboxApproval": "strong", "cost": "anthropic-plan-or-api", "telemetryConfidence": "mixed", "citations": ["https://docs.anthropic.com/en/docs/claude-code/hooks", "https://docs.anthropic.com/en/docs/claude-code/settings"] },
+    { "id": "copilot", "toolsMcp": "tools-only", "hooks": "yes", "agentsSkills": "yes", "sandboxApproval": "cloud-sandbox", "cost": "plan-limited", "telemetryConfidence": "estimated", "citations": ["https://docs.github.com/en/copilot/concepts/coding-agent/mcp-and-coding-agent", "https://docs.github.com/en/copilot/using-github-copilot/coding-agent/about-assigning-tasks-to-copilot"] },
+    { "id": "openclaw-fleet", "toolsMcp": "custom", "hooks": "harness", "agentsSkills": "no", "sandboxApproval": "local-fleet", "cost": "zero-cost-local", "telemetryConfidence": "derived", "citations": ["scripts/global/openclaw-chat.js", "scripts/global/fleet-via-hamr.js"] },
+    { "id": "hamr", "toolsMcp": "mcp-capable", "hooks": "harness", "agentsSkills": "no", "sandboxApproval": "wrapper-mediated", "cost": "signed-observability", "telemetryConfidence": "derived", "citations": ["instructions/hamr-routing.instructions.md", "scripts/global/hamr-provider-wrapper.js"] }
+  ],
+  "providers": [
+    { "id": "openai-compatible", "toolsMcp": "api-tools", "hooks": "no", "agentsSkills": "no", "sandboxApproval": "api-key-scoped", "cost": "provider-usage", "telemetryConfidence": "mixed", "citations": ["https://platform.openai.com/docs/guides/rate-limits", "instructions/hamr-routing.instructions.md"] },
+    { "id": "anthropic", "toolsMcp": "api-tools", "hooks": "no", "agentsSkills": "no", "sandboxApproval": "api-key-scoped", "cost": "messages-cache-usage", "telemetryConfidence": "exact_request", "citations": ["https://docs.anthropic.com/en/api/messages-examples", "https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching"] },
+    { "id": "ollama", "toolsMcp": "api-tools", "hooks": "no", "agentsSkills": "no", "sandboxApproval": "local-host", "cost": "zero-cost-local", "telemetryConfidence": "exact_request", "citations": ["https://docs.ollama.com/openai", "scripts/global/ollama-direct.js"] },
+    { "id": "openrouter", "toolsMcp": "api-tools", "hooks": "no", "agentsSkills": "no", "sandboxApproval": "api-key-scoped", "cost": "key-limits-credits", "telemetryConfidence": "aggregate", "citations": ["https://openrouter.ai/docs/api-reference/api-reference/limits", "scripts/global/token-provider-adapters.js"] },
+    { "id": "litellm", "toolsMcp": "proxy-tools", "hooks": "callbacks", "agentsSkills": "no", "sandboxApproval": "proxy-policy", "cost": "budget-spend-tracking", "telemetryConfidence": "derived", "citations": ["https://docs.litellm.ai/", "config/litellm-config.yaml"] },
+    { "id": "fleet", "toolsMcp": "local-api", "hooks": "harness", "agentsSkills": "no", "sandboxApproval": "tailscale-local", "cost": "zero-cost-local", "telemetryConfidence": "derived", "citations": ["inventory/devices.json", "scripts/global/fleet-via-hamr.js"] }
+  ]
+}

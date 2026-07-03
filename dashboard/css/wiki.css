@@ -1,0 +1,59 @@
+/* Wiki Health Panel + Reader Styles */
+
+.wiki-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--green);
+}
+.wiki-card.degraded { border-left-color: var(--yellow); }
+
+.wiki-head {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-bottom: 0.4rem; font-size: 0.88rem;
+}
+.wiki-head .badge { margin-left: auto; }
+
+.wiki-row { display: flex; gap: 0.75rem; margin-bottom: 0.35rem; }
+.wiki-stat {
+  display: flex; flex-direction: column; align-items: center;
+  font-size: 1.1rem; font-weight: 700; color: var(--text);
+  background: var(--bg); border-radius: 6px; padding: 0.25rem 0.6rem;
+  flex: 1; text-align: center;
+}
+.wiki-stat small { font-size: 0.65rem; font-weight: 400; color: var(--text-muted); }
+.wiki-stat.degraded { color: var(--yellow); }
+.wiki-stat.healthy { color: var(--green); }
+
+.wiki-issues { font-size: 0.78rem; margin-bottom: 0.25rem; }
+.wiki-tag {
+  display: inline-block; background: color-mix(in srgb, var(--yellow) 15%, var(--bg));
+  border: 1px solid var(--yellow); border-radius: 4px;
+  padding: 0.1rem 0.4rem; margin: 0.1rem; font-size: 0.72rem;
+  color: var(--text);
+}
+.wiki-ok { color: var(--green); font-size: 0.78rem; }
+.wiki-ts { font-size: 0.72rem; color: var(--text-muted); }
+.wiki-empty { color: var(--text-muted); font-style: italic; padding: 0.3rem; }
+.wiki-actions { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; }
+.wiki-view-btn {
+  background: var(--surface); color: var(--blue); border: 1px solid var(--blue);
+  border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.75rem;
+  cursor: pointer;
+}
+.wiki-view-btn:hover { background: color-mix(in srgb, var(--blue) 12%, var(--bg)); }
+.wiki-view-btn:focus-visible { box-shadow: var(--focus-ring); }
+
+/* Wiki Reader */
+.wiki-reader { max-height: 70vh; overflow-y: auto; scrollbar-width: thin; }
+.wiki-summary { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+.wiki-section { margin-bottom: 0.3rem; }
+.wiki-section summary {
+  cursor: pointer; font-weight: 600; font-size: 0.85rem;
+  padding: 0.3rem 0.4rem; border-radius: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+}
+.wiki-list { padding: 0.2rem 0 0.2rem 1.2rem; margin: 0; }
+.wiki-list li { font-size: 0.8rem; padding: 0.1rem 0; }
+.wiki-link { color: var(--blue); text-decoration: none; }
+.wiki-link:hover { text-decoration: underline; }
+.wiki-link:focus-visible { box-shadow: var(--focus-ring); border-radius: 2px; }
