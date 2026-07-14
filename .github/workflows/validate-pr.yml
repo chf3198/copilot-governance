@@ -64,6 +64,25 @@ jobs:
           fi
           echo "All instruction files non-empty."
 
+  validate-baton-e2e:
+    name: Baton full-cycle e2e fixture (#2064)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # End-to-end fixture for the full Manager->Collaborator->Admin->Consultant
+      # baton cycle. Deterministic + offline (node built-ins only); exit 1 on any
+      # regression => red CI. No retries by design (see the spec's AC5 retry note).
+      # Requires the baton tooling dependency-closure to be present in the tree
+      # (baton-comment-build.js + baton-artifact-builder.js + baton-artifact-schema.js
+      # + baton-progression-parity.js + label-lint-close-protection.js + signer-alias).
+      - name: Run baton-e2e cycle fixture
+        run: node scripts/baton-e2e.spec.js
+
   validate-no-secrets:
     name: Check for accidental secret patterns
     runs-on: ubuntu-latest
