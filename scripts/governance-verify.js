@@ -97,6 +97,24 @@ if (process.env.ACCOUNTABLE_TEAM_ADVISORY !== '0') {
   } catch (_) { /* advisory only: never break governance-verify on this path */ }
 }
 
+// Advisory-first Epic-completion bundling-drift checks (Epic #3800; detector reuse-first).
+// Default-on but NEVER contributes to `issues` — it only adds advisory hints, so the
+// pass/fail verdict is unchanged. Set EPIC_CHILD_BATON_ADVISORY=0 to silence.
+const epicChildBatonAdvisories = [];
+if (process.env.EPIC_CHILD_BATON_ADVISORY !== '0') {
+  try {
+    const ecbt = require('./epic-child-baton-traceability');
+    const mirrorDir = path.join(root, 'copilot-governance', 'wiki', 'work-log', 'tickets');
+    const fallbackDir = path.join(__dirname, '..', 'wiki', 'work-log', 'tickets');
+    const scanDir = fs.existsSync(mirrorDir) ? mirrorDir : fallbackDir;
+    const { warnings } = ecbt.auditEpics(ecbt.scanMirror(scanDir));
+    for (const w of warnings) {
+      epicChildBatonAdvisories.push(w);
+      hints.push({ code: `advisory_${w.code}`, file: w.file, ticket: w.child ?? w.epic, advisory: true });
+    }
+  } catch (_) { /* advisory only: never break governance-verify on this path */ }
+}
+
 const result = {
   checkedTickets: all.size,
   failedChecks: issues.length,
@@ -104,6 +122,7 @@ const result = {
   issues,
   remediationHints: hints,
   accountableTeamAdvisories: accountableAdvisories,
+  epicChildBatonAdvisories,
   runAt: new Date().toISOString(),
 };
 
@@ -115,6 +134,10 @@ if (asJson) {
   if (accountableAdvisories.length) {
     console.log(`Ownership advisories (non-blocking): ${accountableAdvisories.length}`);
     accountableAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
+  }
+  if (epicChildBatonAdvisories.length) {
+    console.log(`Epic-child baton advisories (non-blocking): ${epicChildBatonAdvisories.length}`);
+    epicChildBatonAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
   }
 }
 process.exit(issues.length ? 1 : 0);

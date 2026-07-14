@@ -85,5 +85,15 @@ test('regression: #2345 family (post-remediation) produces zero bundling warning
   assert.deepStrictEqual(auditEpics(fam).warnings, []);
 });
 
+test('wiring contract: exports the { auditEpics, scanMirror } interface governance-verify.js requires', () => {
+  const mod = require('./epic-child-baton-traceability');
+  assert.strictEqual(typeof mod.auditEpics, 'function', 'auditEpics must be exported');
+  assert.strictEqual(typeof mod.scanMirror, 'function', 'scanMirror must be exported');
+  // scanMirror on a non-existent dir returns [] (no throw) — governance-verify relies on this.
+  assert.deepStrictEqual(mod.scanMirror('/no/such/dir/xyz'), []);
+  // auditEpics on that empty scan is a no-op advisory (never throws, always returns {warnings}).
+  assert.deepStrictEqual(mod.auditEpics(mod.scanMirror('/no/such/dir/xyz')), { warnings: [] });
+});
+
 console.log(`\nepic-child-baton-traceability.spec: ${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);
