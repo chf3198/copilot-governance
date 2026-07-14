@@ -25,7 +25,9 @@ const fs = require('fs');
 const path = require('path');
 
 const SCRIPT_REF_RE = /scripts\/([a-z0-9][a-z0-9-]*)(?:\.spec)?\.js\b/g;
-const REQUIRE_RE = /require\(\s*['"]\.\/([a-z0-9][a-z0-9-]*)['"]\s*\)/g;
+// Tolerate an optional `.js` extension in the require specifier — Node accepts both
+// require('./x') and require('./x.js'), and enforced specs in this repo use both forms.
+const REQUIRE_RE = /require\(\s*['"]\.\/([a-z0-9][a-z0-9-]*)(?:\.spec)?(?:\.js)?['"]\s*\)/g;
 
 function readIf(p) {
   try {
@@ -65,12 +67,16 @@ function scriptRefsIn(txt) {
   return names;
 }
 
-// require('./x') edges declared in scripts/<base>.js and scripts/<base>.spec.js.
+// Outgoing edges from scripts/<base>.js and scripts/<base>.spec.js — a base "uses" another script if
+// it `require('./x')`s it OR names `scripts/x.js` as a path string (e.g. spawnSync('node',
+// ['scripts/x.js'])). Scanning path strings in reached bodies (not just enforced roots) catches
+// child_process-style invocation, so a validator exercised by an enforced spec via spawn is ENFORCED.
 function requireEdges(scriptsDir, base) {
   const edges = new Set();
   for (const suffix of ['.js', '.spec.js']) {
     const txt = readIf(path.join(scriptsDir, base + suffix));
     for (const m of txt.matchAll(REQUIRE_RE)) edges.add(m[1]);
+    for (const n of scriptRefsIn(txt)) if (n !== base) edges.add(n);
   }
   return [...edges];
 }

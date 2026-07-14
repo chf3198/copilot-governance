@@ -47,8 +47,15 @@ function writeFixture() {
   mk('scripts/alpha.js', "require('./alpha-dep');\nmodule.exports={};\n");     // direct via workflow
   mk('scripts/alpha-dep.js', 'module.exports={};\n');                          // transitive from alpha
   mk('scripts/beta.js', 'module.exports={};\n');                              // direct via registry name
-  mk('scripts/beta.spec.js', "require('./beta-spec-dep');\n");                 // spec pulls a helper
-  mk('scripts/beta-spec-dep.js', 'module.exports={};\n');                      // transitive from beta spec
+  mk(
+    'scripts/beta.spec.js',
+    "require('./beta-spec-dep');\n" + // plain require
+      "require('./beta-ext-dep.js');\n" + // require WITH .js extension
+      "spawnSync('node', ['scripts/beta-spawn-dep.js']);\n" // path-string (child_process) invocation
+  );
+  mk('scripts/beta-spec-dep.js', 'module.exports={};\n');                      // transitive: plain require
+  mk('scripts/beta-ext-dep.js', 'module.exports={};\n');                       // transitive: require('./x.js')
+  mk('scripts/beta-spawn-dep.js', 'module.exports={};\n');                     // transitive: spawn path-string
   mk('scripts/gamma.js', 'module.exports={};\n');                             // direct via hook-script
   mk('scripts/delta.js', 'module.exports={};\n');                             // direct via git-hook
   mk('scripts/orphan.js', "require('./orphan-dep');\nmodule.exports={};\n");   // unwired
@@ -72,12 +79,21 @@ ok('classifies wired vs unwired across workflow/hook/registry/transitive roots',
     const res = audit.audit(rootDir);
     assert.deepStrictEqual(
       res.enforced,
-      ['alpha', 'alpha-dep', 'beta', 'beta-spec-dep', 'delta', 'gamma'],
+      [
+        'alpha',
+        'alpha-dep',
+        'beta',
+        'beta-ext-dep',
+        'beta-spawn-dep',
+        'beta-spec-dep',
+        'delta',
+        'gamma',
+      ],
       'enforced set mismatch'
     );
     assert.deepStrictEqual(res.unwired, ['orphan', 'orphan-dep'], 'unwired set mismatch');
-    assert.strictEqual(res.checkedValidators, 8);
-    assert.strictEqual(res.enforcedCount, 6);
+    assert.strictEqual(res.checkedValidators, 10);
+    assert.strictEqual(res.enforcedCount, 8);
     assert.strictEqual(res.unwiredCount, 2);
 
     const byName = Object.fromEntries(res.report.map(r => [r.validator, r]));
@@ -85,6 +101,9 @@ ok('classifies wired vs unwired across workflow/hook/registry/transitive roots',
     assert.strictEqual(byName['alpha-dep'].wiring.via, 'transitive');
     assert.strictEqual(byName['alpha-dep'].wiring.from, 'alpha');
     assert.strictEqual(byName['beta-spec-dep'].wiring.via, 'transitive');
+    // require('./x.js') with extension and spawn path-string both count as edges.
+    assert.strictEqual(byName['beta-ext-dep'].wiring.via, 'transitive');
+    assert.strictEqual(byName['beta-spawn-dep'].wiring.via, 'transitive');
     assert.strictEqual(byName['orphan'].wiring.via, 'none');
     // alpha's provenance names the workflow root.
     assert.ok(byName['alpha'].wiring.roots.some(r => r.kind === 'workflow'));

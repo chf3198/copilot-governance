@@ -24,17 +24,21 @@ workflow), so it cannot silently rot into the very category it detects.
 - **Low.** Additive: one new validator + spec + registry line + one advisory workflow. No existing
   validator, gate, or workflow semantics changed. CLI is non-blocking. Fully reversible (mirror repo,
   unprotected main).
-- **False-positive posture.** The audit reports 12 UNWIRED on the current tree; these are genuine (e.g.
-  the baton closure is unreachable because its entry spec `baton-e2e.spec.js` is not tracked on main).
-  Reported as an advisory burndown, not a block — correct posture. Wiring/retiring those 12 is
-  downstream burndown work (explicit non-goal here), each its own ticket.
+- **False-positive posture.** An initial draft over-reported 12 UNWIRED because its `require`-only edge
+  model missed the enforced `baton-e2e.spec.js` fixture's `require('./x.js')` (extension) and
+  `spawnSync(['scripts/x.js'])` (child_process) loads. Review caught this; the edge model was corrected
+  to be extension-tolerant and to follow path-strings in reached bodies (a completeness fix within the
+  same reachability taxonomy, not a design change), and the regression spec now covers both forms.
+  Corrected result: **1 UNWIRED — `governance-verify`**, a genuine, high-signal finding (the primary
+  governance validator is wired into no CI/hook/registry path). Reported as advisory, not a block —
+  correct posture. This tightening is exactly why the audit ships with its regression spec.
 
 ## Recommendations (follow-on, not blockers)
 
-1. Burn down the 12 unwired validators — wire each into a workflow/hook/registry or retire it; then
-   flip this audit's UNWIRED count toward 0 and consider promoting to a hard block after soak.
-2. Investigate the untracked `baton-e2e.spec.js` referenced by `validate-pr.yml` (CI references a file
-   absent on main) — separate drift, out of scope for #3802.
+1. Burn down the single unwired validator `governance-verify` — add a CI job / self-test-registry entry
+   so it actually runs, then consider promoting this audit to a hard block after a low-FP soak.
+2. Re-run the audit whenever validators are added: its own CI job keeps the burndown count visible on
+   every PR, so new unwired validators surface immediately.
 
 ## Verdict
 
