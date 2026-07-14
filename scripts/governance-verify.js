@@ -118,6 +118,27 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first enforcement-surface telemetry (#3804; E1 `+telemetry`). Default-on but NEVER
+  // contributes to `issues` — it only records the enforcement surface (G8 observability) and adds an
+  // advisory hint when validators are unwired, so the pass/fail verdict is unchanged. The audit is run
+  // over THIS repo's scripts/ (path.resolve(__dirname,'..')), not the passed layout `root`, so it is
+  // correct under throwaway ticket-fixture roots too. Set ENFORCEMENT_TELEMETRY_ADVISORY=0 to silence.
+  let enforcementTelemetry = null;
+  if (process.env.ENFORCEMENT_TELEMETRY_ADVISORY !== '0') {
+    try {
+      const et = require('./enforcement-telemetry');
+      enforcementTelemetry = et.collect(path.resolve(__dirname, '..'));
+      if (enforcementTelemetry.unwiredCount > 0) {
+        hints.push({
+          code: 'advisory_enforcement_unwired',
+          count: enforcementTelemetry.unwiredCount,
+          unwired: enforcementTelemetry.unwired,
+          advisory: true,
+        });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -126,6 +147,7 @@ function verify(root, opts = {}) {
     remediationHints: hints,
     accountableTeamAdvisories: accountableAdvisories,
     epicChildBatonAdvisories,
+    enforcementTelemetry,
     runAt: new Date().toISOString(),
   };
 }
