@@ -4,6 +4,7 @@
   "validators": [
     { "name": "validator-discipline", "spec": "scripts/validator-discipline.spec.js" },
     { "name": "epic-child-baton-traceability", "spec": "scripts/epic-child-baton-traceability.spec.js" },
-    { "name": "accountable-team", "spec": "scripts/accountable-team.spec.js" }
+    { "name": "accountable-team", "spec": "scripts/accountable-team.spec.js" },
+    { "name": "signer-alias", "spec": "scripts/signer-alias.spec.js" }
   ]
 }

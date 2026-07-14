@@ -36,13 +36,14 @@ const TEAM_MODEL = 'claude-code:opus@anthropic';
 const TICKET = 2064;
 
 // --- Signer-registry provisioning (offline/CI self-containment) ----------------------
-// signer-alias.js loads its registry from <repo>/../inventory/team-model-signatures.json
-// — an OUT-OF-REPO path that is absent on a clean CI checkout (documented drift; see the
-// #2064 self-anneal follow-up). To keep this fixture hermetic we provision a MINIMAL,
-// secret-free registry (roleSurnames + seed only — NO cryptoKeys) at that exact path,
-// but ONLY when it is missing, and we remove ONLY what we created so a real local
-// registry is never clobbered.
-const REGISTRY_PATH = path.join(__dirname, '..', '..', 'inventory', 'team-model-signatures.json');
+// #3799-AC1: signer-alias.js now resolves its registry hermetically, preferring the
+// in-repo, tracked, secret-free alias subset at <repo>/inventory/team-model-signatures.json.
+// That tracked file ships on the branch, so on a clean archive checkout it already exists
+// and provisionRegistry() is a no-op (it only writes when the path is missing, and removes
+// ONLY what it created). The prior workaround wrote a fixture to the OUT-OF-REPO
+// <repo>/../inventory path; that patch is no longer needed now that the dependency closure
+// is tracked in-repo.
+const REGISTRY_PATH = path.join(__dirname, '..', 'inventory', 'team-model-signatures.json');
 const FIXTURE_REGISTRY = {
   defaultAliasSeed: 'Nova',
   roleSurnames: { manager: 'Mason', collaborator: 'Harper', admin: 'Reyes', consultant: 'Vale' },
