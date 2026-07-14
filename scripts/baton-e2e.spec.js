@@ -35,6 +35,35 @@ const CLI = path.join(__dirname, 'baton-comment-build.js');
 const TEAM_MODEL = 'claude-code:opus@anthropic';
 const TICKET = 2064;
 
+// --- Signer-registry provisioning (offline/CI self-containment) ----------------------
+// signer-alias.js loads its registry from <repo>/../inventory/team-model-signatures.json
+// — an OUT-OF-REPO path that is absent on a clean CI checkout (documented drift; see the
+// #2064 self-anneal follow-up). To keep this fixture hermetic we provision a MINIMAL,
+// secret-free registry (roleSurnames + seed only — NO cryptoKeys) at that exact path,
+// but ONLY when it is missing, and we remove ONLY what we created so a real local
+// registry is never clobbered.
+const REGISTRY_PATH = path.join(__dirname, '..', '..', 'inventory', 'team-model-signatures.json');
+const FIXTURE_REGISTRY = {
+  defaultAliasSeed: 'Nova',
+  roleSurnames: { manager: 'Mason', collaborator: 'Harper', admin: 'Reyes', consultant: 'Vale' },
+  substrateTeamMap: {},
+  registry: [{ team: 'claude-code', modelPattern: '.*', aliasSeed: 'Orla' }],
+};
+let _createdRegistryFile = false;
+let _createdRegistryDir = null;
+function provisionRegistry() {
+  if (fs.existsSync(REGISTRY_PATH)) return; // real registry present — use it, touch nothing.
+  const dir = path.dirname(REGISTRY_PATH);
+  if (!fs.existsSync(dir)) { fs.mkdirSync(dir, { recursive: true }); _createdRegistryDir = dir; }
+  fs.writeFileSync(REGISTRY_PATH, JSON.stringify(FIXTURE_REGISTRY, null, 2));
+  _createdRegistryFile = true;
+}
+function teardownRegistry() {
+  if (_createdRegistryFile) { try { fs.unlinkSync(REGISTRY_PATH); } catch (_) {} }
+  if (_createdRegistryDir) { try { fs.rmdirSync(_createdRegistryDir); } catch (_) {} }
+}
+provisionRegistry();
+
 let failures = 0;
 function test(name, fn) {
   try { fn(); console.log('  PASS ' + name); }
@@ -241,6 +270,7 @@ test('AC4 negative: close with no closeout in trail => reopen (guard fires)', ()
 });
 
 // ---- AC5: stress-surface self-report ------------------------------------------------
+teardownRegistry();
 console.log(failures
   ? `\n${failures} test(s) FAILED`
   : '\nAll baton-e2e cycle tests passed (AC1-AC5).');
