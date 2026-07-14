@@ -1,7 +1,7 @@
 ---
 name: repo-standards-router
-description: Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates.
-argument-hint: [primary-type: website-static|web-app|library-sdk|infra-automation|auto-detect] [policy-profile: strict|standard|light] [overlays: security|collaboration|release|observability]
+description: "Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates."
+argument-hint: "[primary-type: website-static|web-app|library-sdk|infra-automation|auto-detect] [policy-profile: strict|standard|light] [overlays: security|collaboration|release|observability]"
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -35,7 +35,7 @@ If the request includes GitHub workflow governance controls, hand off to `github
 1. Detect `primary_type` from runtime intent and repository artifacts.
 2. Detect `secondary_types` only when overlap is clear and evidence-backed.
 3. Apply `core-baseline` controls.
-4. Apply primary-type controls from [APP-TYPE-SKILL-TREE.md](../APP-TYPE-SKILL-TREE.md).
+4. Apply primary-type controls per the app-type classification (the `core-baseline` controls above plus the per-type overlays selected in steps 5-6).
 5. Apply selected overlays (`security`, `collaboration`, `release`, optional `observability`).
 6. Calibrate severity with `policy_profile`.
 7. Emit actionable controls and checks.
@@ -81,7 +81,7 @@ missing_controls:
 - <none or control gaps not yet covered by current branches>
 
 skills_to_run_next:
-- <none|repo-profile-governance|github-ops-tree-router|workflow-self-anneal>
+- <none|web-regression-governance|repo-profile-governance|github-ops-tree-router|workflow-self-anneal>
 
 decision:
 - <apply|defer|NO_CHANGE>
@@ -95,8 +95,8 @@ evolution_todos:
 
 ## App-type branch controls (summary)
 
-- `website-static`: SEO/schema sync, visual regression, responsive QA, WCAG AA baseline, performance budgets.
-- `web-app`: component/e2e testing, auth/session hardening, dependency controls, WCAG AA.
+- `website-static`: SEO/schema sync, visual regression, responsive QA, WCAG AA baseline, performance budgets; run `web-regression-governance` when runtime injection/DOM mutation risks exist.
+- `web-app`: component/e2e testing, auth/session hardening, dependency controls, WCAG AA; run `web-regression-governance` for route-level visual/DOM/runtime invariant enforcement.
 - `library-sdk`: compatibility policy, SemVer, changelog quality, consumer examples.
 - `infra-automation`: least privilege, pinned dependencies/actions, policy checks, runbooks.
 
@@ -127,3 +127,10 @@ Recommend adding a new branch only if all are true:
 1. Repeated need appears in at least 2 repositories.
 2. At least 3 controls are not covered by existing primary types + overlays.
 3. Risk is meaningful if left as ad-hoc guidance.
+
+## Cross-Team Artifact-Write Flag
+
+When routing a repo that authors config files consumed by another team's runtime
+(e.g., Codex team writing `.claude/settings.json`), flag the ticket for the
+cross-team artifact-write contract. See
+`instructions/cross-team-artifact-write.instructions.md`.

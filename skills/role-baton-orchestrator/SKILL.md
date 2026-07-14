@@ -1,7 +1,7 @@
 ---
 name: role-baton-orchestrator
-description: Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts.
-argument-hint: [context: new-task|post-failure|pre-merge|pre-release] [scope: code|ops|governance|mixed]
+description: "Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts."
+argument-hint: "[context: new-task|post-failure|pre-merge|pre-release] [scope: code|ops|governance|mixed]"
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -12,14 +12,31 @@ disable-model-invocation: false
 
 Provide deterministic role sequencing for end-to-end tasks while preventing overlap and instruction drift.
 
-## Sequence (fixed)
+## Sequence (fixed, per ticket)
 
 1. Manager
 2. Collaborator
 3. Admin
 4. Consultant
 
-Only one role may be active at a time.
+Only one role may be active **per ticket** at a time.
+Multiple tickets may have different active roles concurrently.
+
+## Parallel dispatch
+
+Manager may hand off N tickets to N different collaborators simultaneously.
+Each ticket carries its own baton independently. Constraints:
+- Each collaborator owns exactly one ticket at a time.
+- Admin merges are serialized (one PR at a time) to avoid conflicts.
+- Collaborators pull latest main before creating PR.
+
+## Research ticket lifecycle
+
+Research tickets skip branch/PR/merge. Baton sequence:
+1. Manager: scope research question, assign collaborator (fleet LLM).
+2. Collaborator: produce research, post findings on ticket.
+3. Admin: review storage placement (wiki/research/), no merge.
+4. Consultant: validate quality, close ticket.
 
 ## Entry criteria
 

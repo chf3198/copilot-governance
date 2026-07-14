@@ -1,7 +1,7 @@
 ---
 name: workflow-self-anneal
-description: Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended process and observed execution.
-argument-hint: [context: session-start|post-failure|pre-merge|post-release] [scope: workflow|stability|qa|git]
+description: "Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended process and observed execution."
+argument-hint: "[context: session-start|post-failure|pre-merge|post-release] [scope: workflow|stability|qa|git]"
 user-invocable: true
 disable-model-invocation: false
 ---
@@ -16,49 +16,44 @@ This skill optimizes _process reliability_, not model internals.
 
 ## Hard safety constraints
 
-1. No unbounded loops, recursive retries, or autonomous "improve forever" behavior.
-2. Maximum one anneal pass per invocation.
-3. Maximum three proposed documentation changes per invocation.
-4. Do not claim deploy/publish/release success without explicit verification evidence.
-5. Do not modify security/permission policy automatically; propose changes only.
-6. If evidence is insufficient, return `NO_CHANGE` with missing-evidence requirements.
+1. No unbounded loops or autonomous "improve forever" behavior.
+2. Max one anneal pass per invocation; max three proposed doc changes.
+3. No deploy/publish success claims without verification evidence.
+4. Do not modify security/permission policy automatically; propose only.
+5. If evidence insufficient, return `NO_CHANGE` with missing-evidence list.
 
 ## Trigger conditions
 
-Run this skill when any of the following is true:
+- Same failure pattern ≥2 times in 7 days.
+- Session crash/restart/tooling instability.
+- Instructions contradicted by observed actions.
+- Pre-merge gate requires hardening evidence.
+- Repeated carryover/blocked items across iterations.
+- PR/merge latency breaches targets or reopened issues trend up.
+- **Commits exist without linked GitHub issues** (process drift).
+- **Consultant check registry returns ≥1 FAIL on domain:governance**.
+- **Fleet check `fleet-002` (cost-budget) FAIL for ≥2 consecutive cycles**.
 
-- Same failure pattern appears at least twice in the last 7 days.
-- Session had crash/restart/tooling instability.
-- Instructions were contradicted by observed actions.
-- Pre-merge gate requires process hardening evidence.
-- Repeated carryover/blocked items appear across iterations.
-- PR review or merge latency repeatedly breaches team targets.
-- Reopened issues/defects trend upward.
+## Consultant Integration
+
+Self-anneal may be invoked automatically from `consultant-feedback.js` when `gov-002` (baton-artifact-presence) or `gov-003` (event-emission) FAIL — these are workflow process failures, not implementation bugs.
+Check IDs are managed in `scripts/global/consultant-checks.js` (3 domains: governance/tools/fleet).
 
 ## Input collection
 
-Collect only relevant evidence for current scope:
-
-- Recent execution artifacts (logs, errors, failing checks, screenshots, QA notes)
-- Existing instructions and workflow docs
-- Recent commits/PR notes if available
-
-If required artifacts are unavailable, declare exactly what is missing and stop.
+Collect: execution artifacts (logs, errors, checks), instructions/workflow docs, recent commits/PR notes. If unavailable, declare missing and stop.
 
 ## Analysis protocol
 
-1. **Detect mismatch**
-   - Compare expected behavior from instructions vs observed behavior in evidence.
-2. **Classify root cause**
-   - One of: `ambiguity`, `missing guardrail`, `stale instruction`, `tool fragility`, `human override`.
-3. **Assess recurrence risk**
-   - `low`, `medium`, `high` based on frequency and blast radius.
-4. **Detect Agile drift signals**
-   - Check trend indicators (carryover, blocked age, review latency, reopen rate).
-5. **Propose minimal fix**
-   - Prefer smallest docs/workflow delta that prevents recurrence.
-6. **Define verification gate**
-   - Add objective checks that confirm the fix works.
+1. **Detect mismatch**: expected vs observed behavior.
+2. **Classify root cause**: `ambiguity|missing guardrail|stale instruction|tool fragility|human override`.
+3. **Assess recurrence risk**: `low|medium|high` by frequency and blast radius.
+4. **Detect Agile drift signals**: carryover, blocked age, review/merge latency, reopen rate.
+   - **Ticket linkage**: `git log --oneline | wc -l` vs `--grep='#'`. If <80%, flag `ticket-linkage-drift`.
+   - **PR coverage**: commits vs `gh pr list --state all`. If 0 PRs, flag `pr-coverage-drift`.
+   - **Event gaps**: count events in `.dashboard/events.jsonl` per role transition. If <1 event per baton handoff, flag `event-emission-drift`.
+5. **Propose minimal fix**: smallest docs/workflow delta preventing recurrence.
+6. **Define verification gate**: objective checks confirming the fix.
 
 ## Output format (required)
 
@@ -68,77 +63,36 @@ Return exactly this structure:
 SELF_ANNEAL_REPORT
 context: <session-start|post-failure|pre-merge|post-release>
 scope: <workflow|stability|qa|git>
-
-observation:
-- ...
-
-expected_behavior:
-- ...
-
-mismatch:
-- ...
-
+observation: [...]
+expected_behavior: [...]
+mismatch: [...]
 root_cause: <ambiguity|missing guardrail|stale instruction|tool fragility|human override>
 risk: <low|medium|high>
-
 drift_signals:
-- metric: <carryover|blocked-age|review-latency|merge-latency|reopen-rate>
-   trend: <improving|stable|degrading>
-   evidence: <artifact reference>
-
+- metric: <carryover|blocked-age|review-latency|merge-latency|reopen-rate|ticket-linkage|pr-coverage>
+   trend: <improving|stable|degrading>  evidence: <artifact>
 proposed_changes:
-1) file: <path>
-   change_type: <add|edit|remove>
-   rationale: <why this is minimal and sufficient>
-   patch_summary: <short description>
-
+1) file: <path>  change_type: <add|edit|remove>  rationale: <why>
 verification_plan:
-- check: <objective check>
-  pass_condition: <measurable condition>
-
-decision:
-- <apply|defer|NO_CHANGE>
-
-missing_evidence:
-- <none or required artifacts>
+- check: <objective>  pass_condition: <measurable>
+decision: <apply|defer|NO_CHANGE>
+missing_evidence: <none or list>
 ```
 
 ## Change targeting guidance
 
-When possible, prioritize these targets:
-
-1. `docs/workflow/self-annealing.md`
-2. `docs/workflow/learnings.md`
-3. `docs/technical/system-stability.md`
-4. `docs/workflow/skills/AGILE-METRICS-PLAYBOOK.md`
-5. project-specific runbooks/checklists directly tied to failure mode
+Prioritize: project runbooks/checklists, workflow docs, system-stability docs, learnings docs.
 
 ## Stop conditions
 
-Stop immediately and return `NO_CHANGE` if:
+Return `NO_CHANGE` if: change cannot be validated objectively, evidence is missing, change expands permissions, or same fix was already applied.
 
-- Proposed change cannot be validated objectively.
-- Required evidence is missing.
-- Change would expand permissions or bypass approval controls.
-- The same recommendation was already applied and verified recently.
+For iterative anneal loops (refinement passes), call `shouldStop(...)` from `scripts/global/anneal-stop.js` after every iteration (Epic #1568 AC-5, #1574). Stop when: deterministic gates green, OR `iterations >= 3`, OR `|rubric_mean_delta| <= 0.5`. Continuation past a stop requires `ANNEAL_OVERRIDE_CONTINUE: rationale` comment from the operator and is logged as `event:kill-switch-bypass`.
 
 ## Quality bar
 
-A good anneal output is:
+Good anneal output is: **specific** (concrete artifacts), **minimal** (smallest viable delta), **testable** (pass/fail checks), **traceable** (rationale + risk), **trend-aware** (drift reducing).
 
-- **Specific**: references concrete behavior and artifacts
-- **Minimal**: smallest viable guardrail update
-- **Testable**: clear pass/fail checks
-- **Traceable**: explicit rationale and risk classification
-- **Trend-aware**: confirms drift is reduced across subsequent cycles
+## Visual verification rule (publish/UX scope)
 
-## Mandatory visual verification rule (publish/UX scope)
-
-When scope includes UX-rendered changes (`qa` or `workflow` affecting UI):
-
-1. Do not allow ticket closure or publish success claims from DOM/CI checks alone.
-2. Require at least one post-change visual inspection artifact (Claude Vision or equivalent) from live/UAT.
-3. Required pass evidence in `verification_plan`:
-   - `check`: visual rendering integrity
-   - `pass_condition`: primary hero/content sections visibly render, primary CTA visible, no major collapse/malformed layout
-4. If evidence is missing, decision must be `NO_CHANGE` or `defer` with explicit missing artifact list.
+For UX-rendered changes: require post-change visual inspection artifact. Do not allow ticket closure from DOM/CI checks alone. If visual evidence is missing, decision must be `defer`.
