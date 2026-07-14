@@ -1,0 +1,9 @@
+{
+  "$schema": "harness-self-test-registry/v1",
+  "description": "Validators that MUST run as regression checks (harness:self-test). Enforced by scripts/validator-discipline.js (#1893): any added/modified validator under scripts/ must appear here AND ship a sibling spec. This registry is itself a recursive entry (AC7).",
+  "validators": [
+    { "name": "validator-discipline", "spec": "scripts/validator-discipline.spec.js" },
+    { "name": "epic-child-baton-traceability", "spec": "scripts/epic-child-baton-traceability.spec.js" },
+    { "name": "accountable-team", "spec": "scripts/accountable-team.spec.js" }
+  ]
+}
