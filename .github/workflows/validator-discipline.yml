@@ -1,0 +1,34 @@
+name: validator-discipline
+
+# Tier-2 anneal #1893: a new/modified validator under scripts/ must ship with a sibling spec AND a
+# self-test registry entry. Runs the validator's own regression spec (hard) + an advisory scan of the
+# PR diff (advisory-first; does not block merge — promote to required after a low-FP soak, AC5).
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validator-discipline:
+    name: validator-discipline (self-test + advisory scan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Hard gate: the validator's own spec must stay green (harness:self-test regression, AC7).
+      - name: Self-test (regression)
+        run: node scripts/validator-discipline.spec.js
+
+      # Advisory: scan the PR diff for unguarded validators. Exits 0 by design (AC5 advisory-first).
+      - name: Advisory scan of PR diff
+        run: node scripts/validator-discipline.js --base=origin/${{ github.base_ref }}
