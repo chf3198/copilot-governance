@@ -1,0 +1,32 @@
+name: governance-verify
+
+# E1 §4.iii burndown #3803: wire the primary ticket/workflow governance validator so it actually runs
+# (it was reachable from no enforced root — the sole UNWIRED finding of enforcement-wiring-audit). Runs
+# the validator's regression spec (hard) + the validator itself against the repo (hard). Both must pass.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  governance-verify:
+    name: governance-verify (self-test + repo verify)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Hard gate: the validator's own regression spec (harness:self-test).
+      - name: Self-test (regression)
+        run: node scripts/governance-verify.spec.js
+
+      # Hard gate: the repo itself must pass governance-verify (flat-layout root = repo root).
+      - name: Verify repo governance
+        run: node scripts/governance-verify.js
