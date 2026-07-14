@@ -1,0 +1,33 @@
+name: enforcement-wiring-audit
+
+# E1 self-anneal #3802: surface "reconciled-to-done but never enforced" validators — ones present in
+# scripts/ but reachable from no enforced root (CI workflow / git hook / self-test registry). Runs the
+# audit's own regression spec (hard gate) plus the advisory burndown report (advisory-first; exits 0,
+# does not block merge — promote to required only after a low-FP soak, per the harness advisory norm).
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  enforcement-wiring-audit:
+    name: enforcement-wiring-audit (self-test + advisory burndown)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Hard gate: the audit's own regression spec must stay green (harness:self-test, #1893 discipline).
+      - name: Self-test (regression)
+        run: node scripts/enforcement-wiring-audit.spec.js
+
+      # Advisory: print the unwired-validator burndown. Exits 0 by design (#3802 advisory-first).
+      - name: Advisory unwired-validator burndown
+        run: node scripts/enforcement-wiring-audit.js
