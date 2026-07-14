@@ -3,7 +3,7 @@ name: Governance Auditor
 description: Post-merge and post-deploy governance enforcement. Audits CHANGELOG, README sync, community health, docs drift, and learnings.
 tools:
   - '*'
-model: Claude Sonnet 4 (copilot)
+model: Claude Sonnet 4.6 (copilot)
 ---
 
 # Governance Auditor

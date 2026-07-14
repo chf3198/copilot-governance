@@ -1,33 +1,23 @@
 #!/usr/bin/env python3
-"""PostToolUse hook: detect doc-trigger edits AND git commit/push commands.
-
-Two independent triggers:
-1. File edits to docs/config files -> standards reminder
-2. Terminal commands containing 'git commit' or 'git push' -> governance checklist
-"""
+"""PostToolUse hook: governance reminders for docs/release hygiene + context re-injection."""
 import json
 import re
 import sys
-from typing import Any, Iterable
+from pathlib import Path
 
-DOC_TRIGGER_RE = re.compile(
-    r"(^|/)(README\.md|CHANGELOG\.md|docs/|\.github/workflows/"
-    r"|package\.json|pyproject\.toml|Cargo\.toml|pom\.xml|\.vscodeignore)$"
-)
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
-GIT_COMMIT_RE = re.compile(r"\bgit\s+commit\b")
-GIT_PUSH_RE = re.compile(r"\bgit\s+push\b")
+from admin_patterns import RE_GIT_COMMIT, RE_GIT_PUSH, iter_strings
+from governance_state import ensure_state, mark_tool_activity, save_state
+from precompact_anchor import ANCHOR
+from wiki_wisdom import governance_enforcement, post_merge_checklist
 
+GOVERNANCE_ANCHOR_INTERVAL = 15
 
-def iter_strings(value: Any) -> Iterable[str]:
-    if isinstance(value, str):
-        yield value
-    elif isinstance(value, dict):
-        for v in value.values():
-            yield from iter_strings(v)
-    elif isinstance(value, list):
-        for v in value:
-            yield from iter_strings(v)
+DOC_TRIGGER_RE = re.compile(r"(^|/)(README\.md|CHANGELOG\.md|docs/|\.github/workflows/|\.github/CONTRIBUTING\.md|\.github/PULL_REQUEST_TEMPLATE\.md|package\.json|pyproject\.toml|Cargo\.toml|pom\.xml|\.vscodeignore)$")  # noqa: E501
+CODE_TRIGGER_RE = re.compile(r"(^|/)(mem-watchdog\.sh|install\.sh|mem-watchdog\.service|vscode-extension/.*\.(js|ts|json)|scripts/.*\.sh|tests/.*\.sh)$")  # noqa: E501
 
 
 def main() -> int:
@@ -37,49 +27,72 @@ def main() -> int:
         return 0
 
     tool = str(payload.get("tool_name", ""))
-    tool_input = payload.get("tool_input", {})
-    values = list(iter_strings(tool_input))
+    values = list(iter_strings(payload.get("tool_input", {})))
     joined = "\n".join(values)
 
+    cwd = str(payload.get("cwd", "")) or str(Path.cwd())
+    state = ensure_state(cwd)
+    mark_tool_activity(state, payload)
+
+    flags = state.get("flags", {})
+    ops = state.get("admin_ops", {})
+    repo_type = state.get("repo_type", "generic")
     messages = []
 
-    # Trigger 1: doc/config file edits
+    # Periodic governance anchor re-injection every N bash calls
+    if tool in {"run_in_terminal", "terminal", "runTerminalCommand", "Bash"}:
+        ctr = state.get("bash_call_ctr", 0) + 1
+        state["bash_call_ctr"] = 0 if ctr >= GOVERNANCE_ANCHOR_INTERVAL else ctr
+        if ctr >= GOVERNANCE_ANCHOR_INTERVAL:
+            messages.insert(0, f"[GOVERNANCE ANCHOR — periodic reminder] {ANCHOR}")
+
+    save_state(state)
+
     if any(DOC_TRIGGER_RE.search(v) for v in values):
+        messages.append(governance_enforcement())
+    if any(CODE_TRIGGER_RE.search(v) for v in values):
         messages.append(
-            "Standards reminder: validate version integrity, run relevant checks, "
-            "audit distributable artifacts for secret files, and sync docs to "
-            "behavior/config changes."
+            "Doc coverage matrix: root README, extension README, "
+            "CHANGELOG(s), design docs, contribution/governance docs."
         )
 
-    # Trigger 2: git commit or push in terminal
-    if tool in {"run_in_terminal", "terminal", "runTerminalCommand"}:
-        if GIT_PUSH_RE.search(joined):
+    if tool in {"run_in_terminal", "terminal", "runTerminalCommand", "Bash"}:
+        if RE_GIT_PUSH.search(joined):
+            messages.append(post_merge_checklist())
+        elif RE_GIT_COMMIT.search(joined):
             messages.append(
-                "Pre-push governance gate: have you run "
-                "scripts/docs-integrity-check.sh? The pre-push hook will run it "
-                "automatically, but verify: README badge, CHANGELOG version, "
-                "copilot-instructions test count, and ci.yml comment all match "
-                "actual npm test output."
-            )
-        elif GIT_COMMIT_RE.search(joined):
-            messages.append(
-                "Post-commit governance check: if this commit changes code behavior, "
-                "ensure CHANGELOG, README, system-stability.md, and copilot-instructions.md "
-                "are updated in the same commit or a follow-up before pushing."
+                "Post-commit: if behavior/config changed, update docs "
+                "in same commit or immediate follow-up."
             )
 
+    if flags.get("code_touched"):
+        if not state.get("roles", {}).get("manager"):
+            messages.append(
+                "Governance alert: code changes were made before Manager scope was recorded. "
+                "Create or link an issue and perform Manager handoff."
+            )
+        missing = [k for k in ("commit", "push", "pr_create", "ci_green", "merge") if not ops.get(k)]
+        if missing:
+            messages.append(f"Admin baton incomplete — missing: {', '.join(missing)}.")
+        if not ops.get("issue_linked"):
+            messages.append(
+                "Ticket gate: code was touched but no GitHub issue is linked. "
+                "Run `gh issue create` or reference an existing issue."
+            )
+
+    if repo_type == "vscode-extension" and flags.get("extension_touched"):
+        ext_missing = [k for k in ("publish", "release_integrity", "gh_release") if not ops.get(k)]
+        if ext_missing:
+            messages.append(f"Extension baton incomplete — missing: {', '.join(ext_missing)}.")
+
     if messages:
-        out = {
+        print(json.dumps({
             "hookSpecificOutput": {
                 "hookEventName": "PostToolUse",
                 "additionalContext": " | ".join(messages),
             },
-            "systemMessage": "Governance reminder injected after "
-            + ("doc edit" if len(messages) == 1 and "Standards" in messages[0]
-               else "git operation detected") + ".",
-        }
-        print(json.dumps(out))
-
+            "systemMessage": "Governance state updated; baton reminders injected.",
+        }))
     return 0
 
 

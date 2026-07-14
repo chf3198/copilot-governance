@@ -3,7 +3,7 @@ name: Release Reviewer
 description: Version integrity, CHANGELOG quality, artifact safety, and documentation synchronization reviewer.
 tools:
   - '*'
-model: Claude Sonnet 4 (copilot)
+model: Claude Sonnet 4.6 (copilot)
 ---
 
 # Release Reviewer

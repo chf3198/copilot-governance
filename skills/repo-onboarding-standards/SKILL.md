@@ -1,6 +1,9 @@
 ---
 name: repo-onboarding-standards
 description: Onboard any repository into a standardized Copilot + CI governance baseline. Use for new repos and first-time sessions to ensure immediate standards adoption.
+argument-hint: ""
+user-invocable: true
+disable-model-invocation: false
 ---
 
 # Repo Onboarding Standards
@@ -9,23 +12,27 @@ description: Onboard any repository into a standardized Copilot + CI governance 
 
 - First session in a new repository.
 - Existing repositories lacking standardized AI customization and release/security gates.
+- Requests like: "include all global-skills in your initialization process."
 
 ## Procedure
 
-1. Classify repository type and risk profile using existing routing skills.
-2. Generate baseline repo instructions (`.github/copilot-instructions.md`) with build/test/gate truth.
-3. Add targeted `.github/instructions/*.instructions.md` files for stack-specific rules.
-4. Verify CI has minimum baseline: lint/test, dependency/security review, artifact/release checks.
-5. Add or update release policy controls (version integrity, docs sync, packaging audit).
-6. For platforms that support exact-version install/pin, require version-selectability controls:
+1. Run `global-skills-bootstrap` in `mode=init` for repository scaffolding.
+2. **Provision canonical label taxonomy**: `node scripts/global/label-provision.js --repo=<owner/repo>`. This seeds all `type:*`, `status:*`, `priority:*`, `role:*`, `area:*`, `lane:*`, `resolution:*`, and governance labels required for the baton lifecycle. Manifest: `scripts/global/label-manifest.json` (Refs #2785).
+3. Classify repository type and risk profile using existing routing skills.
+3. Generate baseline repo instructions (`.github/copilot-instructions.md`) with build/test/gate truth.
+4. Add targeted `.github/instructions/*.instructions.md` files for stack-specific rules.
+5. Verify CI has minimum baseline: lint/test, dependency/security review, artifact/release checks.
+6. Add or update release policy controls (version integrity, docs sync, packaging audit).
+7. For platforms that support exact-version install/pin, require version-selectability controls:
 	- immutable artifact retention,
 	- exact-version install smoke checks,
 	- canonical version index/source alignment for update prompts,
 	- documented rollback and version-yank policy.
-7. Produce an onboarding report with required vs optional controls and evidence.
+8. Produce an onboarding report with required vs optional controls and evidence.
 
 ## Required handoffs
 
+- Run `global-skills-bootstrap` first for new repositories.
 - Route standards selection via `repo-standards-router`.
 - Route GitHub workflow governance controls via `github-ops-tree-router`.
 - Use `workflow-self-anneal` only post-failure/process mismatch.

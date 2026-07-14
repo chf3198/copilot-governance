@@ -2,11 +2,15 @@
 name: Planner
 description: Research and implementation planning agent. Read-only tools — cannot modify files. Produces structured plans with evidence.
 tools: []
-model: Claude Opus 4 (copilot)
+model: Claude Opus 4.6 (copilot)
 handoffs:
-  - label: Start Implementation
-    agent: agent
+  - label: ⚡ Implement Plan
+    agent: implementer
     prompt: Implement the plan outlined above. Follow the implementation steps in order.
+    send: false
+  - label: 🧠 Architect It
+    agent: architect
+    prompt: Implement the plan outlined above. This requires deep reasoning — use architectural rigor.
     send: false
 ---
 
