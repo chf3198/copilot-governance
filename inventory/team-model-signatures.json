@@ -1,0 +1,51 @@
+{
+  "$schema": "team-model-signatures/alias-subset-v1",
+  "_provenance": "In-repo, SECRET-FREE alias-resolution subset of the canonical team-model-signatures registry (#3799-AC1). Tracked so scripts/signer-alias.js resolves from a clean, .git-less archive checkout (hermetic baton tooling). Contains ONLY the fields signer-alias needs to derive a canonical alias — defaultAliasSeed, roleSurnames, substrateTeamMap, registry. It DELIBERATELY OMITS cryptoKeys and any signing material; the full registry with public keys stays out-of-repo at <repo>/../inventory/team-model-signatures.json and is preferred via BATON_SIGNER_REGISTRY / legacy path when present. Keep alias values in sync with the canonical registry when seeds change.",
+  "lastUpdated": "2026-07-14",
+  "defaultAliasSeed": "Nova",
+  "roleSurnames": {
+    "manager": "Mason",
+    "collaborator": "Harper",
+    "admin": "Reyes",
+    "consultant": "Vale",
+    "claude-code-team-manager-noting-overlap": "Mason"
+  },
+  "substrateTeamMap": {
+    "github-copilot": "copilot",
+    "codex-cli": "codex",
+    "codex-vscode-ide": "codex",
+    "claude-code-cli": "claude-code",
+    "openclaw-gateway": "openclaw",
+    "google": "antigravity",
+    "cursor-ide": "cursor"
+  },
+  "registry": [
+    { "team": "cursor", "modelPattern": ".*", "aliasSeed": "Cyrus" },
+    { "team": "codex", "modelPattern": "^gpt-5\\.4$", "aliasSeed": "Quill" },
+    { "team": "codex", "modelPattern": "gpt-5.*codex", "aliasSeed": "Caden" },
+    { "team": "copilot", "modelPattern": "^claude-[34]", "aliasSeed": "Soren" },
+    { "team": "copilot", "modelPattern": "sonnet", "aliasSeed": "Soren" },
+    { "team": "copilot", "modelPattern": "opus", "aliasSeed": "Orion" },
+    { "team": "copilot", "modelPattern": "gpt-5.*mini", "aliasSeed": "Milo" },
+    { "team": "copilot", "modelPattern": "gpt-5.*codex", "aliasSeed": "Coda" },
+    { "team": "copilot", "modelPattern": "gpt-5", "aliasSeed": "Gideon" },
+    { "team": "copilot", "modelPattern": "gpt-4", "aliasSeed": "Gage" },
+    { "team": "copilot", "modelPattern": "^o[0-9]", "aliasSeed": "Odell" },
+    { "team": "copilot", "modelPattern": "qwen", "aliasSeed": "Quenby" },
+    { "team": "copilot", "modelPattern": "gemini", "aliasSeed": "Gale" },
+    { "team": "copilot", "modelPattern": "mistral", "aliasSeed": "Marlow" },
+    { "team": "claude-code", "modelPattern": "sonnet", "aliasSeed": "Clio" },
+    { "team": "claude-code", "modelPattern": "opus", "aliasSeed": "Orla" },
+    { "team": "openclaw", "modelPattern": "qwen", "aliasSeed": "Quinn", "devicePattern": "^windows-laptop$" },
+    { "team": "openclaw", "modelPattern": "mistral", "aliasSeed": "Mira", "devicePattern": "^windows-laptop$" },
+    { "team": "openclaw", "modelPattern": "phi", "aliasSeed": "Fia", "devicePattern": "^windows-laptop$" },
+    { "team": "antigravity", "modelPattern": "gemini", "aliasSeed": "Apollo" },
+    { "team": "antigravity", "modelPattern": "claude-sonnet", "aliasSeed": "Aria" },
+    { "team": "antigravity", "modelPattern": "claude-opus", "aliasSeed": "Axel" },
+    { "team": "antigravity", "modelPattern": "claude-haiku", "aliasSeed": "Aiden" },
+    { "team": "*", "modelPattern": "qwen", "aliasSeed": "Quinn" },
+    { "team": "*", "modelPattern": "mistral", "aliasSeed": "Mira" },
+    { "team": "*", "modelPattern": "phi", "aliasSeed": "Fia" },
+    { "team": "*", "modelPattern": "gemma", "aliasSeed": "Gemma" }
+  ]
+}
