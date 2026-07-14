@@ -8,6 +8,7 @@
     { "name": "signer-alias", "spec": "scripts/signer-alias.spec.js" },
     { "name": "enforcement-wiring-audit", "spec": "scripts/enforcement-wiring-audit.spec.js" },
     { "name": "enforcement-telemetry", "spec": "scripts/enforcement-telemetry.spec.js" },
+    { "name": "mirror-admin-completion", "spec": "scripts/mirror-admin-completion.spec.js" },
     { "name": "governance-verify", "spec": "scripts/governance-verify.spec.js" }
   ]
 }
