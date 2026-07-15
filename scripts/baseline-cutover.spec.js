@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 /*
- * Regression spec for baseline-cutover (#3822) — hard gate (harness:self-test ticket-1893).
- * Node built-ins only; hermetic (no network, no gh, no live checkout mutation). Exits non-zero on any
- * failure. The module never mutates a checkout, so these tests exercise the pure classifier, the
- * strings-only recipe, and the CI-safe plan/verify paths.
+ * Regression spec for baseline-cutover (#3822, mode-aware #3823) — hard gate (harness:self-test #1893).
+ * Node built-ins only; hermetic (no network, no gh, no live-checkout mutation). Exits non-zero on any
+ * failure. The module never mutates a checkout; the temp-index divergence oracle uses os.tmpdir().
  */
 const assert = require('assert');
 const c = require('./baseline-cutover');
@@ -14,44 +13,60 @@ const it = (name, fn) => { fn(); n += 1; console.log(`  PASS ${name}`); };
 
 it('module selfTest() passes', () => { assert.strictEqual(c.selfTest(), true); });
 
-it('classifyCutover buckets safe / blocker / hold / absent', () => {
+it('classifyCutover buckets safe / modeDrift / content / originAhead / untracked / hold (#3823)', () => {
   const r = c.classifyCutover([
-    { path: 'x.js', existsOnOrigin: true, workingEqualsOrigin: true },
-    { path: 'y.js', existsOnOrigin: true, workingEqualsOrigin: false },
-    { path: 'h.js', existsOnOrigin: true, workingEqualsOrigin: false, hold: true },
-    { path: 'n.js', existsOnOrigin: false, workingEqualsOrigin: false },
+    { path: 'a.js', kind: 'safe' },
+    { path: 'm.js', kind: 'modeDrift' },
+    { path: 'x.js', kind: 'content' },
+    { path: 'o.js', kind: 'originAhead' },
+    { path: 'u.js', kind: 'untracked' },
+    { path: 'h.js', kind: 'content', hold: true },
   ]);
-  assert.deepStrictEqual(r.safe, ['x.js']);
-  assert.deepStrictEqual(r.blockers.map((b) => b.path), ['y.js']);
+  assert.deepStrictEqual(r.safe, ['a.js']);
+  assert.deepStrictEqual(r.modeDrift, ['m.js']);
+  assert.deepStrictEqual(r.contentBlockers.map((b) => b.path), ['x.js']);
+  assert.deepStrictEqual(r.originAhead, ['o.js']);
+  assert.deepStrictEqual(r.untracked, ['u.js']);
   assert.deepStrictEqual(r.holds, ['h.js']);
-  assert.deepStrictEqual(r.absent, ['n.js']);
 });
 
-it('a hold is never a blocker (kept dirty by design)', () => {
-  const r = c.classifyCutover([{ path: 'gv.js', existsOnOrigin: true, workingEqualsOrigin: false, hold: true }]);
-  assert.strictEqual(r.blockers.length, 0);
-  assert.deepStrictEqual(r.holds, ['gv.js']);
+it('mode drift and origin-ahead are NOT content blockers (the #3823 truthfulness fix)', () => {
+  const r = c.classifyCutover([{ path: 'm.js', kind: 'modeDrift' }, { path: 'o.js', kind: 'originAhead' }]);
+  assert.strictEqual(r.contentBlockers.length, 0);
+  assert.strictEqual(r.modeDrift.length, 1);
+  assert.strictEqual(r.originAhead.length, 1);
 });
 
-it('recipe is strings-only and contains invariant/health-gate/rollback (never executes git)', () => {
+it('an undocumented content divergence IS a blocker; a documented hold is not', () => {
+  const r = c.classifyCutover([
+    { path: 'drift.js', kind: 'content' },
+    { path: 'held.js', kind: 'content', hold: true },
+  ]);
+  assert.deepStrictEqual(r.contentBlockers.map((b) => b.path), ['drift.js']);
+  assert.deepStrictEqual(r.holds, ['held.js']);
+});
+
+it('recipe (strings-only) normalizes modes, warns on moving target, includes rollback, runs no git', () => {
   const r = c.recipe('/repo');
-  assert.ok(Array.isArray(r.reparkRecipe) && r.reparkRecipe.every((s) => typeof s === 'string'));
-  const joined = (r.reparkRecipe.concat(r.rollbackRecipe)).join('\n');
-  assert.ok(/HEALTH GATE/.test(joined), 'health gate present');
+  const joined = r.preconditions.concat(r.reparkRecipe, r.rollbackRecipe).join('\n');
+  assert.ok(/checkout -- \./.test(joined), 'mode-normalize / adopt-origin step present');
+  assert.ok(/moving target|must not advance|freeze/i.test(joined), 'moving-target warning present');
   assert.ok(/rollback|restore/i.test(joined), 'rollback present');
-  assert.ok(!/execFileSync|spawn/.test(joined), 'recipe carries no executable calls');
+  assert.ok(!/execFileSync|spawn/.test(joined), 'no executable calls embedded');
 });
 
-it('empty entry set is ready with invariant held', () => {
-  const r = c.classifyCutover([]);
-  assert.strictEqual(r.blockers.length, 0);
-  assert.strictEqual(r.absent.length, 0);
+it('plan discloses scale and is CI-safe (content-ready + shape) on the current cwd', () => {
+  const p = c.plan(process.cwd(), { holds: [] });
+  assert.ok(typeof p.ready === 'boolean');
+  assert.ok(typeof p.fullyClean === 'boolean');
+  assert.ok(typeof p.modeDriftCount === 'number' && typeof p.originAheadCount === 'number');
+  assert.ok(Array.isArray(p.contentBlockers));
 });
 
-it('verifyClean holds-out documented holds (pure over an injected status is not needed; shape check)', () => {
-  // verifyClean runs git; here we assert its contract shape on the current (possibly clean) cwd.
-  const v = c.verifyClean(process.cwd(), { holds: [] });
-  assert.ok(typeof v.clean === 'boolean' && Array.isArray(v.dirty));
+it('divergence returns an array and never throws on the current cwd (temp-index, non-mutating)', () => {
+  const d = c.divergence(process.cwd(), []);
+  assert.ok(Array.isArray(d));
+  for (const e of d) assert.ok(typeof e.path === 'string' && typeof e.kind === 'string');
 });
 
 console.log(`baseline-cutover.spec: ${n} passed, 0 failed`);
