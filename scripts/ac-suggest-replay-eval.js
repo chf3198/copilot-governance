@@ -9,8 +9,10 @@ const fs = require('fs');
 const path = require('path');
 const { classifyMeasurability } = require('./ac-suggest');
 
+// Corpus lives at <repo>/tests/fixtures — __dirname is <repo>/scripts, so ONE `..` (the prior
+// `../..` escaped the repo to $HOME/tests/fixtures, ENOENT). Fixed under #1299 reconciliation.
 const CORPUS = process.env.AC_SUGGEST_CORPUS ||
-  path.join(__dirname, '..', '..', 'tests', 'fixtures', 'ac-suggest-corpus.json');
+  path.join(__dirname, '..', 'tests', 'fixtures', 'ac-suggest-corpus.json');
 
 const FP_RATE_BAR = 0.05; // AC5: <5% false-positive rate
 
