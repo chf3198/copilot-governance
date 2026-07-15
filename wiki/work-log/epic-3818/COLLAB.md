@@ -147,3 +147,50 @@ idempotency guarantee that makes parallel + rollback sound.
 Sources: arxiv.org/pdf/1012.5030 · developersdigest.tech/blog/how-to-coordinate-multiple-ai-agents ·
 microservices.io/patterns/data/saga.html · temporal.io/blog/mastering-saga-patterns · conduktor.io
 saga glossary.
+
+---
+
+## Field notes (from live L1–L10 runs) — read before your first lot
+
+Hard-won gotchas that are NOT obvious from the happy-path steps above. Each cost a real session cycles.
+
+1. **Classify every drifted path — capture is not the only disposition.** Some paths that show as
+   `??` untracked on the canonical checkout (which sits on `feat/3026-…`, NOT main) *already exist on
+   `origin/main`*. For each such file: byte-identical → **no-op** (produces no diff, fine); differs and
+   the disk copy is **older/stale** → **HOLD** (do NOT overwrite main's superior version — that is a
+   discard-by-capture regression). Decide with:
+   `git cat-file -e origin/main:$f && git show origin/main:$f | cmp -s - <canonical>/$f`.
+   Real example: `governance-verify.js` disk copy was a stale 120-line version; main's 328-line
+   refactor superseded it → held, follow-up filed.
+
+2. **`progress.log` conflicts on EVERY rebase — resolve by UNION, never `--theirs`.** All lots append
+   to it, so parallel merges collide. `git checkout --theirs` (or `--ours`) silently drops the other
+   lots' lines. Rebuild the file as the union: `git show origin/main:…/progress.log` + your one lot
+   line. (`wiki/` is gitignored, so `git add wiki/...` prints "ignored" — but an already-tracked file's
+   edit still commits; use `git add -f` for new wiki files.)
+
+3. **`git diff origin/main..HEAD` lies once main advances (phantom `D`).** Other sessions merge fast;
+   files a *newer* main added appear as fake deletions in your branch. Verify your ACTUAL change against
+   your commit's own parent: `git diff --name-status HEAD~1..HEAD` (should be all `A` + the one
+   `progress.log` `M`). Rebase onto latest, union-resolve, and **merge immediately** before the next lot
+   lands.
+
+4. **Mode drift breaks the content-only assertion.** `install -D` copies the canonical `+x` bit, so
+   files land `100755`. For files already tracked on main at `100644`, reset the mode
+   (`chmod 644` + re-add) so they drop from the diff. New shebang/executable scripts staying `755` is
+   faithful; a data file (e.g. `*.json`) captured `755` is harmless but note it.
+
+5. **Captured `*.spec.js` may be RED for reasons that are NOT your capture.** Cross-lot deps
+   (`instructions/*` = L2) not yet merged, and pre-existing `path.resolve(__dirname,'..','..')`→`$HOME`
+   root-resolution bugs, make some specs fail. Prove it is baseline behavior by running the same spec
+   against the canonical checkout — identical failure ⇒ faithful capture, proceed + file a follow-up.
+   The **blocking** gates are governance-verify / validator-discipline / enforcement-wiring-audit + the
+   real CI workflows; those must be green.
+
+6. **The Stop hook will block on the standing baseline drift (known false-positive).**
+   `classify_internal_conflict` (client_arbitration_guard.py) is NOT #3810-baseline-aware, so it fires
+   `worktree-drift` on the pre-existing #3818 drift you are forbidden to touch. Its own policy is
+   "preserve-first … continue **without** client arbitration." Your session's own work is already
+   committed+merged, so evaluate from a clean cwd (the Stop hook reads `git status` in the session cwd;
+   a non-repo dir like `~` yields an empty uncommitted list → `type=none`). Do NOT revert/commit the
+   canonical drift to clear it — that violates capture-never-discard. Log evidence and move on.
