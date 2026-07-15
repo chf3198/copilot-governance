@@ -102,6 +102,63 @@ def attributable_delta(uncommitted: Iterable[str], baseline: Iterable[str]) -> l
     return [f for f in uncommitted if f not in base]
 
 
+# Expected-mutation allowlist (#3820): ephemeral runtime files that legitimately churn every session
+# and must NEVER be treated as drift or as an internal conflict — the GitOps "ignore expected
+# mutations" / helm-diff "ignore auto-added annotations" pattern. Prefix- or substring-matched against
+# `git status --porcelain` paths.
+EXPECTED_MUTATION_PREFIXES = (
+    ".megingjord/",
+    ".copilot/",
+    ".claude/",
+)
+EXPECTED_MUTATION_SUBSTRINGS = (
+    "session.id",
+    "session_baseline",
+    "governance_state",
+    "state_store",
+    "runtime_session",
+    "tool_activity",
+    "incidents.log",
+    "friction-events",
+)
+
+
+def is_expected_mutation(path: str) -> bool:
+    """True for ephemeral runtime files that legitimately churn and must be ignored by drift/conflict
+    classification (parity with GitOps exclusion lists / helm-diff annotation ignores)."""
+    p = str(path)
+    if any(p.startswith(pre) for pre in EXPECTED_MUTATION_PREFIXES):
+        return True
+    return any(s in p for s in EXPECTED_MUTATION_SUBSTRINGS)
+
+
+def session_attributable_subset(
+    uncommitted: Iterable[str],
+    baseline_record: object = None,
+    current_branch: Optional[str] = None,
+    admin_ops: object = None,
+) -> list[str]:
+    """The subset of `uncommitted` THIS session is accountable for — used to SCOPE internal-conflict
+    classification (#3820) so the `worktree-drift` catch-all in `classify_internal_conflict` never
+    fires on standing baseline drift (#3801). Reuses the #3810 baseline substrate:
+
+      * Empty tree                       -> [] (nothing to classify).
+      * Documented override (#3054)      -> [] (suppress; parity with should_block).
+      * Baseline resolves                -> attributable delta (uncommitted - baseline).
+      * Baseline unresolved (fail-safe)  -> FULL set (LEGACY); a real session conflict still classifies.
+
+    Expected-mutation ephemeral files are always removed (they are not conflicts). Order-preserving.
+    """
+    items = [str(f) for f in (uncommitted or []) if str(f).strip()]
+    if not items:
+        return []
+    if is_override(admin_ops):
+        return []
+    baseline = resolve_baseline(baseline_record, current_branch)
+    candidates = items if baseline is None else attributable_delta(items, baseline)
+    return [f for f in candidates if not is_expected_mutation(f)]
+
+
 def _code_files(candidates: Iterable[str]) -> list[str]:
     """Filter to code files subject to the Admin gate, excluding harness-managed .claude/ (#1960)."""
     return [

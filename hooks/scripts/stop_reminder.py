@@ -25,6 +25,7 @@ from client_arbitration_guard import (
     emit_incident,
     extract_assistant_text,
 )
+from session_baseline import session_attributable_subset
 
 
 def main() -> int:
@@ -85,7 +86,17 @@ def main() -> int:
     if msg:
         messages.append(msg)
 
-    conflict = classify_internal_conflict(uncommitted)
+    # #3820: classify only SESSION-ATTRIBUTABLE conflicts. Standing baseline drift (#3801) on the
+    # parked canonical checkout is not a session-created conflict, so the `worktree-drift` catch-all
+    # must not fire on it. Fail-safe: an unresolved/branch-mismatched baseline falls back to the full
+    # set (legacy), so a genuine session conflict still classifies. Ephemeral runtime files are ignored.
+    conflict_candidates = session_attributable_subset(
+        uncommitted,
+        baseline_record=state.get("baseline_uncommitted"),
+        current_branch=branch,
+        admin_ops=ops,
+    )
+    conflict = classify_internal_conflict(conflict_candidates)
     if conflict.get("type") != "none":
         emit_incident(
             "internal-conflict-auto-resolution-required",

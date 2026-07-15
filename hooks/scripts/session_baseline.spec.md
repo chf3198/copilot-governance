@@ -57,3 +57,27 @@ per #3801). Same disease #2005 cured for `detect_session_signals`.
 3. documented override → no block (#3054)
 4. baseline resolves → block only on the delta (AC1/AC2)
 5. baseline unresolved → block on full set (LEGACY, fail-safe) (AC4)
+
+## `session_attributable_subset` — scoping internal-conflict classification (#3820)
+
+`classify_internal_conflict` (client_arbitration_guard.py) is a `worktree-drift` catch-all that
+previously ran on the FULL `uncommitted` set in `stop_reminder.py`, so it false-positive-blocked
+session end on the parked `feat/3026` canonical checkout's standing baseline drift (#3801) with
+"unresolved internal conflict requires deterministic operator resolution."
+
+`session_attributable_subset(uncommitted, baseline_record, current_branch, admin_ops)` reuses the same
+#3810 substrate (`resolve_baseline` + `attributable_delta`) to return only the paths THIS session is
+accountable for; `stop_reminder.py` classifies that subset instead of the raw set. Same precedence:
+
+1. empty tree → `[]`
+2. documented override (#3054) → `[]` (suppress)
+3. baseline resolves → attributable delta (`uncommitted − baseline`)
+4. baseline unresolved / branch-mismatch → FULL set (LEGACY, fail-safe — a real session conflict still classifies)
+
+**Expected-mutation allowlist** (`is_expected_mutation`, `EXPECTED_MUTATION_PREFIXES/SUBSTRINGS`):
+ephemeral runtime files (`.megingjord/`, `.copilot/`, `.claude/`, `session.id`, `session_baseline`,
+`governance_state`, `state_store`, `runtime_session`, `tool_activity`, `incidents.log`,
+`friction-events`) are always removed — the GitOps "ignore expected mutations" / helm-diff
+"ignore auto-added annotations" pattern. Verified end-to-end: against the real 878-path standing drift
+a matching baseline yields subset `[]` → conflict type `none` (no block), while a newly-created
+`sync-residue` file still classifies (no weakening). `classify_internal_conflict` itself stays pure.
