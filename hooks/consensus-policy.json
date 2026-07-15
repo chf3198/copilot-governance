@@ -1,0 +1,7 @@
+{
+  "threshold": 93,
+  "min_models": 2,
+  "require_cross_family": true,
+  "agreement_band": 5,
+  "max_rounds": 3
+}
