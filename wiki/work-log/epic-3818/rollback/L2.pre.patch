@@ -1,0 +1,958 @@
+diff --git a/instructions/github-governance.instructions.md b/instructions/github-governance.instructions.md
+index 6b94d5e..ba254dd 100644
+--- a/instructions/github-governance.instructions.md
++++ b/instructions/github-governance.instructions.md
+@@ -15,17 +15,26 @@ applyTo: "**"
+ ## Commits and PR titles — Conventional Commits
+ 
+ - Format: `type(scope): imperative description` ≤72 chars.
+-- Allowed types: `feat` `fix` `chore` `content` `perf` `refactor` `docs` `style` `test`.
++- Allowed types: `feat` `fix` `chore` `content` `perf` `refactor` `docs` `style` `test` `skill` `hotfix`. (Canonical 11-type set; source of truth: `scripts/global/conventional-commits-enum.js` per #2304.)
+ - Branch naming: `<type>/<issue-number>-<short-slug>` (e.g. `fix/5-nav-contrast`).
+ 
+ ## Ticket lifecycle gates
+ 
+ - Every change needs a linked issue with taxonomy label (`type:*`), priority label, domain label, milestone, and project assignment before coding starts.
+-- PR requires `Closes #N`, milestone, labels, and gate-suite evidence.
++- PR body MUST include `Refs #N` for issue linkage AND one of the following merge-evidence
++  forms (per Epic #2295 Phase-1 P1.3):
++  - **Preferred**: `merge-evidence-deferred-final: #N` — satisfies `merge-evidence-pr-gate`
++    without auto-closing the issue on merge. Consultant retains explicit terminal-finalize
++    authority and closes via `gh issue close #N` after `CONSULTANT_CLOSEOUT`.
++  - **Backward-compat**: `Closes #N` (or `Fixes #N` / `Resolves #N`) — still accepted;
++    triggers GitHub auto-close on merge.
++  - Author the linkage on its own lines per the canonical block; gates resolve the accountable
++    ticket via `scripts/global/linkage-resolver.js` (prefer Closes / deferred-final, then the
++    first line-anchored `Refs #N`; `Refs Epic #N` is excluded). See
++    `docs/howto/canonical-linkage-block.md` (#1614).
+ - Issues must include: problem/objective, expected outcome, acceptance criteria.
+ - Large work is decomposed with sub-issues and `blocked by` / `blocking` dependencies.
+ - Templates required: at minimum bug, task, and epic forms. `blank_issues_enabled: false` in config.yml.
+-- For detailed lifecycle execution, if available, invoke the `github-ticket-lifecycle-orchestrator` skill.
+ 
+ ## Review and merge gates
+ 
+@@ -34,19 +43,17 @@ applyTo: "**"
+ - All review conversations resolved.
+ - Rulesets/branch protection requirements satisfied.
+ - Merge method follows repo policy.
+-- For detailed review/merge administration, if available, invoke the `github-review-merge-admin` skill.
+ 
+-## Actions & OpenSSF security baseline
++## Actions security baseline
+ 
+-- `GITHUB_TOKEN`: default to read-all permissions; grant write only per-job when required.
+-- Third-party actions: pin to full commit SHA, not tags.
++- `GITHUB_TOKEN`: default to read permissions; elevate per-job only when required.
++- Third-party actions: pin to full commit SHA where policy requires.
+ - Prefer OIDC over long-lived static cloud credentials.
+ - CODEOWNERS coverage for `.github/workflows/`.
+ - No auto-remediation that broadens permissions.
+-- Enable Dependabot alerts, secret scanning, and push protection on every public repo.
+-- Add `ossf/scorecard-action` to CI for public repos to track security posture.
+-- Private vulnerability reporting enabled via GitHub settings.
+-- For detailed Actions hardening, invoke `github-actions-security-hardening` skill.
++- **Label-lint enforcement**: `.github/workflows/label-lint.yml` runs on all `issues`
++  events and enforces ADR-010 label rules (single status, single role, no execution
++  role on terminal closed/backlog items). Violations post a comment and fail the check.
+ 
+ ## Release and incident flow
+ 
+@@ -56,18 +63,32 @@ applyTo: "**"
+ - Incident items include severity, impact, owner, and containment plan.
+ - Hotfix branch/PR linked to incident issue with validation evidence.
+ - Follow-up prevention tickets created before incident closure.
+-- For detailed release/incident procedures, if available, invoke the `github-release-incident-flow` skill.
+ 
+ ## Project linkage
+ 
+ - Project items have status, priority, iteration, and owner fields populated.
+ - Issue ↔ branch and issue ↔ PR linkage maintained in the Development panel.
+ - Built-in workflows: auto-add, status sync, auto-archive configured where available.
+-- For detailed Agile linkage setup, if available, invoke the `github-projects-agile-linkage` skill.
+ 
+ ## Capability-first routing
+ 
+-- Before recommending rulesets, merge queue, or plan-sensitive features, run `github-capability-resolver` to verify availability by plan/visibility/owner type.
+-- If available, route GitHub workflow governance requests through `github-ops-tree-router`.
+-- Use `github-ops-excellence` as the policy catalog overlay for calibrating strictness.
+-- For ruleset design/migration, invoke `github-ruleset-architecture` skill.
++- Before recommending rulesets or plan-sensitive features, run `github-capability-resolver` to verify availability.
++- Route workflow governance requests through `github-ops-tree-router`; invoke `github-ruleset-architecture` for ruleset design.
++- For workflow automation that compares actors, apply Team&Model-first identity resolution per `instructions/team-model-in-workflows.instructions.md`.
++
++## MCP server as standard tool surface
++
++The official GitHub MCP server (`github/github-mcp-server`) is the preferred
++GitHub tool surface across Claude Code / Copilot / Codex teams. MCP tools cover
++Issues, Pull Requests, Discussions, Projects v2, Sub-issues, Actions, and
++Repositories. Standardizing on MCP eliminates per-team REST/CLI adapter drift.
++
++- **Activation**: each team's skill MAY load the MCP server before composing
++  baton artifacts. `gh` CLI remains the supported fallback.
++- **Credentials**: MCP server requires a `GITHUB_TOKEN`. Every operator using
++  `gh` CLI already has one; no new credential surface.
++- **G5 portability**: integral to harness goals; air-gapped operators have no
++  GitHub access at baseline (consistent constraint, not an MCP gap).
++- **Opt-out**: `MEGINGJORD_MCP_DISABLED=1` (parity with `MEGINGJORD_HAMR_DISABLED`).
++  Skills detecting the opt-out fall back to `gh` CLI without behavior change.
++- **Adoption guide**: `docs/howto/mcp-server-adoption.md`.
+diff --git a/instructions/global-standards.instructions.md b/instructions/global-standards.instructions.md
+index 289fb48..f18db24 100644
+--- a/instructions/global-standards.instructions.md
++++ b/instructions/global-standards.instructions.md
+@@ -5,15 +5,122 @@ applyTo: "**"
+ ---
+ # Global Engineering Standards
+ 
++## Ticket-first governance
++
++- No code or config work without a linked GitHub issue (ticket-first gate).
++- Every commit message must reference `#N` (issue number). **IT-ops bypass (#2142)**: maintenance commits that touch tracked files but don't warrant Agile baton workflow (model pulls, fleet config updates, local-only environment changes) may set env var `MEGINGJORD_IT_OPS=1`, include literal `[it-ops]` in the commit subject, OR use `chore(it-ops):` Conventional-Commits prefix. The bypass emits an `allow` advisory naming the matched marker (not silent). IT role scope, boundary, and auto-auth contract: `skills/role-it-execution/SKILL.md` (#2318).
++- Branch naming: `<type>/<issue#>-<slug>` (e.g., `feat/62-multi-ticket-baton`).
++- Research tickets skip branching; findings posted as ticket comments.
++- Pull latest `main` into feature branch before creating PR.
++
++## Engineering standards
++
+ - Prefer root-cause fixes over detection-only band-aids.
+ - Prefer prevention over reaction: local guardrails first, CI backstops second.
+ - Never claim build, test, release, or publish success without explicit evidence.
+ - Keep changes minimal, localized, and reversible.
+ - Preserve public APIs unless change scope explicitly requires API updates.
++- When behavior or interfaces change, update documentation in the same change.
+ - Never expose secrets in repository files, packaged artifacts, logs, or generated examples.
+-- Before packaging/publishing, verify exclude rules (`.vscodeignore`, `.npmignore`, artifact manifests) block secret-bearing files. Run manifest listing commands (`vsce ls`, `npm pack --dry-run`) as preflight.
++- Before packaging/publishing, verify exclude rules block secret-bearing files.
+ - Use placeholders in docs and examples — never live tokens, keys, or credentials.
+-- Prevention first, detection second: local guardrails (exclude rules, pre-commit hooks) before CI scanning backstops.
+-- For versioned artifacts, enforce a single source of truth and verify version consistency (tag = manifest = changelog) before release.
++- For versioned artifacts, enforce version consistency (tag = manifest = changelog).
+ - Use deterministic checks and objective pass/fail gates whenever possible.
+-- If evidence is incomplete, state uncertainty and gather missing evidence before finalizing.
++- If evidence is incomplete, state uncertainty and gather missing evidence.
++
++## Deferred-finalize merge-evidence contract (Epic #2295 P1.3)
++
++PR bodies MUST include merge evidence for their linked issue. Two accepted forms:
++
++- **Preferred** — `merge-evidence-deferred-final: #N`: satisfies `merge-evidence-pr-gate`
++  WITHOUT triggering GitHub auto-close on merge. Consultant retains explicit terminal-finalize
++  authority and closes the issue via `gh issue close #N` after posting `CONSULTANT_CLOSEOUT`.
++- **Backward-compat** — `Closes #N` (or `Fixes #N` / `Resolves #N`): still accepted; triggers
++  GitHub auto-close on merge. Use only when Consultant-explicit-close is not required.
++
++Carve-out rationale: the deferred-finalize form resolves the PR-template vs merge-evidence-gate
++conflict (template says "use Refs, not Closes"; gate previously required Closes). Registry entry:
++`governance-carve-outs/index.md` entry `closes-vs-refs-deferred-final-carveout`.
++
++## Admin-merge bypass exception (Epic #2517)
++
++An `--admin` / branch-protection-bypass merge (a PR merged without all required checks green or
++required review met) MUST carry a formal exception, else it is a G1 governance violation:
++a `merge-bypass:admin-exception` label on the linked issue, OR a `BLOCKER_NOTE` in the PR body
++with `bypass_reason:` and `approver:` fields. Enforced post-merge by `merge-bypass-gates.yml`
++(`scripts/global/megalint/admin-merge-exception.js`). Relatedly, a multi-close PR that closes
++any issue **as cancelled** requires a per-issue `CANCELLATION: <reason>` comment
++(`batch-cancel-evidence.js`); batch completions keep the `resolved as part of batch with #N` form.
++
++## Goal-lens decision lint (required)
++
++- Apply this priority order to all governed decisions:
++	`G1 Governance > G2 Quality > G3 Zero Cost > G4 Privacy & Security > G5 Portability > G6 Resilience > G7 Throughput > G8 Observability > G9 Interoperability > G10 Maintainability`.
++- **Operator autonomy (cross-cutting, always-on principle — Epic #3391, not a ranked goal):** resolve
++	reversible / low-risk decisions autonomously (free cross-model panel, never a bare client prompt);
++	reach the human only at the 4 retained carve-outs (design / UAT / irreversible / security-weakening,
++	per `config/retained-human-touchpoints.json`); autonomy is HARD-subordinate to C-G1 (Governance) and
++	C-G4 (Privacy & Security); log the autonomy-vs-escalate decision (G8).
++- When tradeoffs occur, explicitly justify why a lower-priority goal overrides a higher one.
++- Keep the justification short and evidence-based in ticket comments, PR body, or closeout notes.
++
++## Canonical-main checkout policy (#2107)
++
++The main checkout (`${HOME}/devenv-ops/`) is canonical-only during sessions. Per Epic #2091 Phase-0 synthesis (`wiki/wisdom/project/research/harness-state-isolation.md` Fix #3):
++
++- **Writes permitted**: ONLY to paths matching `.gitignore` patterns (per-operator config: `.env`, `.env.local`, `.envrc`, `.npmrc`; tooling artifacts: `node_modules`, `dist`, `.cache`, `tmp`, `.dashboard`, `.log4brains`, etc.)
++- **Writes rejected**: tracked files (the codebase); branch switches off `main`; commits; `git stash` on tracked changes; `git worktree add` inside main checkout's working tree
++- **Enforcer**: `hooks/scripts/canonical_main_enforcer.py` invoked by `pretool_guard.py` (rejects deny-decision with redirect-to-worktree message)
++
++**Worktree pattern**: all team work happens in `${HOME}/devenv-ops-<team-or-ticket>/` worktrees. The main checkout is a canonical reference, not a workspace.
++
++**2026 secrets caveat**: industry is migrating secrets out of `.env` toward workload-identity (Bitwarden Secrets Manager, Infisical, Zylos). As Megingjord adopts a secrets manager, the `.gitignore`-allowlist should narrow.
++
++**Sync-direction trap (#2355)**: `scripts/sync.sh` copies `~/.copilot/ -> checkout` (the inverse of `scripts/deploy.sh`). Running it from canonical main while `~/.copilot/` is stale silently regresses tracked files to pre-merge content (root cause of #2355: 16 files reverted at 2026-05-27 22:14:10 across a single sync run, undoing merged PRs #2304 + #2308). The enforcer at `canonical_main_enforcer.py` intercepts Claude Code Edit/Write tool invocations but does NOT see shell-level `cp`/`rsync` inside script bodies. The shell-script blind spot is closed for `sync.sh` specifically: when invoked from canonical main without `--allow-canonical-write`, it exits 2, emits a v3 incident to `~/.megingjord/incidents.jsonl` (pattern_id `sync-sh-reverse-direction-regresses-main`), and prints a redirect to `npm run deploy:apply` (forward direction) or a worktree (for genuine inverse-reload use). Other inverse-direction scripts must adopt the same guard pattern; the blind spot is closed PER-SCRIPT, not class-wide. Coverage: `tests/sync-canonical-main-refuse.spec.js` (6 cases: refuse / JSONL-emit / override-dry-run / override-real-write / worktree / dry-run).
++
++## Cross-team GitHub tool surface
++
++- Default to the official GitHub MCP server (`github/github-mcp-server`) for
++	cross-team GitHub interactions. Falls back to `gh` CLI when MCP unavailable
++	or when `MEGINGJORD_MCP_DISABLED=1` is set.
++- See `instructions/github-governance.instructions.md` for the full contract
++	and `docs/howto/mcp-server-adoption.md` for the operator guide.
++
++## Decisional vs. actionable (Discussions vs. Issues)
++
++- **Issues**: actionable work with concrete deliverable + acceptance criteria.
++- **Discussions**: decisional questions, open design exploration, cross-team
++	protocol debates, tooling research — anything without a concrete AC yet.
++- When a Discussion crystallizes into a deliverable, convert it to an Issue
++	via `gh discussion view N --json` + `gh issue create`. Keep the Discussion
++	link in the Issue body so decisional rationale is preserved.
++- See `docs/howto/discussions-vs-issues.md` for category catalog and examples.
++
++## Codified rules-of-thumb (Epic #2399 AC3)
++
++Rules-of-thumb learned through real harness failures, promoted from operator-local
++memory to the canonical `instructions/` surface so **every** runtime (Copilot,
++Claude Code, Codex, Antigravity) inherits them — not just the operator holding the
++memory files. Each row points to the **verified** canonical home and its real
++disposition. `status` is honest per G1 (never claim "codified" for a rule that is
++still memory-only — the #1617 AC-wording-vs-shipped trap):
++
++- `codified` — the rule is stated in a resident/on-demand instruction file.
++- `documented-elsewhere` — the rule lives in a `docs/howto/` recipe or wiki page.
++- `memory-only` — promotion pending; the rule is still only in operator memory.
++
++| Rule-of-thumb | Canonical location | Status |
++|---|---|---|
++| Post all four baton artifacts **before** `gh pr create` | `role-baton-routing.instructions.md` §"Validation evidence — recent practice" | codified |
++| Consultant emits Tier-3 on a post-implementation G1–G9 goal violation | `workflow-resilience.instructions.md` §"Tier 3 — Consultant goal-failure escalation" | codified |
++| Signer aliases derive deterministically from team + model + role (never a default seed) | `team-model-signing.instructions.md` §"Alias derivation" | codified |
++| Client is design + UAT only — never route dev-flow questions to the client | `operator-identity-context.instructions.md` §"Core rules" (rules 2–3) | codified |
++| No calendar/"N-day soak" thresholds in agentic governance — use velocity-relative + replay-eval | `test-methodology-matrix.instructions.md` §"Stress promotion model"; `programmatic-governance.instructions.md` §Composition (Epic #1771) | codified |
++| `sync.sh` copies runtime **into** the checkout (inverse of `deploy.sh`); a stale runtime silently regresses tracked files | `global-standards.instructions.md` §"Canonical-main checkout policy" → Sync-direction trap (#2355) | codified |
++| Features use the optimal resource when available, fall back to the baseline tier when absent (optimal-with-fallback) | `harness-goals.instructions.md` §"Tier-graceful degradation" | codified |
++| Baton-governance regexes match the **first** `Team&Model:` / `role:NAME` / artifact string in a comment — prose usages pollute them; hyphenate in prose | operator memory (`feedback_*_prose_collision`); only a passing cross-ref in `programmatic-governance.instructions.md` §Composition — no canonical instruction home yet | memory-only |
++
++Source triage: `research/operator-memory-promotion-audit-2026-05-30.md` (Phase-0 #2413) —
++42 memory files scored on scope / type / incident-prevention; the 8 promotion candidates above
++plus 6 recovery recipes (routed to `docs/howto/`, not policy). When a `memory-only` row is
++promoted, flip its `status` here and update the originating memory file to point at the canonical location (Epic #2399 AC4).
+diff --git a/instructions/operator-identity-context.instructions.md b/instructions/operator-identity-context.instructions.md
+index 38665ae..5fbe278 100644
+--- a/instructions/operator-identity-context.instructions.md
++++ b/instructions/operator-identity-context.instructions.md
+@@ -6,16 +6,16 @@ applyTo: "**"
+ 
+ # Operator Identity Context
+ 
+-Load and apply the `operator-identity-context` skill at the start of every task.
+-
+ ## Core rules (always active)
+ 
+-1. **You are the operator.** You own manager, collaborator, admin, and consultant responsibilities. State management and single-thread execution routing are exclusively governed by the `role-baton-routing` instructions.
++1. **You are the operator.** You own manager, collaborator, admin, and consultant responsibilities, but execute them in a **single-thread baton sequence**:
++   - Manager (scope + plan + gates)
++   - Collaborator (implement + validate)
++   - Admin (git/release/runtime ops)
++   - Consultant (independent critique and risk review)
++   At most one role is active at a time.
+ 
+-2. **The user is the client.** Curtis / Hayden is consulted only for:
+-   - Design direction (colors, layout, copy preferences)
+-   - UAT visual confirmation (does it look right?)
+-   That is the complete list. Nothing else requires user involvement.
++2. **The user is the client.** Consult only for design direction and UAT visual confirmation. Nothing else requires user involvement.
+ 
+ 3. **Never ask the user to manually do anything.** If an automation gap exists, close it before declaring the task done. Acceptable research order:
+    - Check existing `scripts/` for established patterns
+@@ -24,14 +24,38 @@ Load and apply the `operator-identity-context` skill at the start of every task.
+    - Build Playwright UI automation if no API exists
+    - Only if a step is genuinely impossible to automate (hardware 2FA, anti-bot CAPTCHA with no bypass) — state that with explicit evidence and reduce the user's action to the absolute minimum
+ 
+-4. **Use repository/environment overlays for platform specifics.**
+-   - Treat global instructions as baseline.
+-   - Use repository-local instruction files and skills for machine/project specifics.
+-   - If global and repository instructions differ, apply repository instructions for that workspace.
++4. **Use repository/environment overlays for platform specifics.** Global instructions are baseline; repository-local instructions win on conflict.
+ 
+ 5. **Role router requirement:**
+-   - For non-trivial tasks, invoke `role-baton-orchestrator` first.
+-   - Use role skills for handoff clarity: `role-manager-execution`, `role-collaborator-execution`, `role-admin-execution`, `role-consultant-critique`.
+-
+-6. **Self-anneal check:** If you catch yourself writing "you will need to…", "please manually…", or "Hayden must…" — stop, invoke the research protocol from the `operator-identity-context` skill, and find the automation path instead.
+-
++   - Invoke `role-baton-orchestrator` at task start. Skip only for trivial tasks (single Q&A, read-only lookup, no state-changing tool calls).
++   - Each role emits a named handoff artifact (`MANAGER_HANDOFF`, `COLLABORATOR_HANDOFF`, `ADMIN_HANDOFF`, `CONSULTANT_CLOSEOUT`) before the next role begins.
++
++6. **Self-anneal check:** If you catch yourself writing "you will need to…", "please manually…", or "the user must…" — stop, invoke the research protocol from the `operator-identity-context` skill, and find the automation path instead.
++
++## Role taxonomy disambiguation
++
++**Operator** is a meta-term for the AI agent (Claude Code, Codex, etc.) that executes
++the four baton roles (Manager, Collaborator, Admin, Consultant) in single-thread
++sequence. It is NOT a distinct role in the 7-role taxonomy.
++
++The canonical 7-role set is enumerated in
++`instructions/role-baton-routing.instructions.md` §"Role Taxonomy". The full list:
++Manager / Collaborator / Admin / Consultant / IT / Red-Team / Client.
++Guest-Collaborator is reserved but not active.
++
++When reading baton artifacts: "operator" in prose refers to the AI agent entity,
++never to a baton-step role. Use the exact role name (e.g. "the admin role") when
++referring to a specific baton position.
++
++## Self-posting the approving CONSULTANT_CLOSEOUT is autonomously-resolvable (#3714)
++
++The operator owns all four baton roles (rule 1), so it authors the Consultant's
++`CONSULTANT_CLOSEOUT` itself. When that closeout carries a valid `cross_family_verdict`
++backed by a **verified** cross-family consensus receipt (`governance/cross-family-consensus.jsonl`,
++>=2 non-authoring families each able to REJECT), independence is satisfied by the receipt —
++**not** by asking the client. "May I self-post the approving closeout?" is therefore a
++**routine, autonomously-resolvable** decision (route the legitimacy question to the free
++cross-family panel / `fleet-decision-oracle`), NOT a design/UAT/irreversible/security-weakening
++carve-out. Escalating it to the client is the exact rule-2/rule-3 violation captured in the #1889 incident. A same-family closeout with **no** verified receipt still blocks
++(anti-self-approval preserved). Full contract: `feature-completion-governance.instructions.md`
++§"Self-posted CONSULTANT_CLOSEOUT — decision routing (#3714)".
+diff --git a/instructions/playwright-mcp-low-resource.instructions.md b/instructions/playwright-mcp-low-resource.instructions.md
+index e7a5c2c..98ebe38 100644
+--- a/instructions/playwright-mcp-low-resource.instructions.md
++++ b/instructions/playwright-mcp-low-resource.instructions.md
+@@ -8,7 +8,7 @@ When the task involves Playwright MCP, browser automation, visual QA, screenshot
+ 
+ 1. Apply the `playwright-vision-low-resource` skill first.
+ 2. Run preflight before browser actions:
+-   - `~/.gemini/antigravity/skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh`
++   - `~/.copilot/skills/playwright-vision-low-resource/scripts/preflight-playwright-mcp.sh`
+ 3. Use bounded retries:
+    - Maximum 2 retries for browser-context failures.
+ 4. Prefer local constrained profile by default:
+diff --git a/instructions/release-docs-hygiene.instructions.md b/instructions/release-docs-hygiene.instructions.md
+index e227e71..a282203 100644
+--- a/instructions/release-docs-hygiene.instructions.md
++++ b/instructions/release-docs-hygiene.instructions.md
+@@ -5,25 +5,27 @@ applyTo: "**"
+ ---
+ # Release and Docs Hygiene
+ 
+-- Before any release action, verify version consistency between tag, manifest, and changelog. Invoke `release-version-integrity` skill for systematic drift detection.
+-- Audit packaged artifact file lists before publish when packaging tools support manifest listing.
+-- Treat `.env`, key material, token files, and private config as non-distributable by default. Invoke `secret-exposure-prevention` skill when editing publish/package workflows.
+-- Run `docs-drift-maintenance` skill after any change to commands, CLI flags, configuration files, APIs, workflows, or user-facing behavior.
+-- Docs updates must ship with changes — not as follow-up.
+-- Map each changed surface to impacted docs (README, CHANGELOG, operational docs, runbooks).
+-- Keep wording precise, testable, and user-actionable. Verify docs match actual behavior after updates.
+-- Prefer automated versioning flows over manual multi-file version edits.
+-- Keep release notes factual and traceable to merged changes.
+-
+ ## Post-Merge / Post-Deploy Governance Checklist (Mandatory)
+ 
+ After every PR merge or deployment that changes user-facing behavior, run these governance steps before considering the task complete:
+ 
+-1. **CHANGELOG**: Add an entry for every shipped behavioral change. Extension changelog (`vscode-extension/CHANGELOG.md`) covers both extension and daemon changes.
++1. **CHANGELOG fragment**: For every shipped behavioral change, create a per-ticket fragment at `.changes/unreleased/<N>.md` (where `N` is the GitHub issue number). Aggregator (`node scripts/global/changelog-aggregate.js`) prepends fragments into `CHANGELOG.md` at release time. Direct edits to `CHANGELOG.md` remain valid (back-compat) but the fragment path is preferred — it eliminates merge conflicts when multiple PRs ship in parallel. For trivial PRs warranting no changelog entry, include `[skip-changelog]` in the PR description. Extension changelog (`vscode-extension/CHANGELOG.md`) covers both extension and daemon changes. See `docs/howto/changelog-fragments.md` for the author guide.
+ 2. **README sync**: If the change adds, removes, or modifies user-visible behavior (kill hierarchy, commands, settings, protection rules), update both `README.md` and `vscode-extension/README.md`.
+ 3. **Profile governance**: Run the `repo-profile-governance` skill to audit community health files (SUPPORT.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md), metadata (description, topics, homepage), and contribution surfaces (templates, CODEOWNERS).
+ 4. **Docs drift**: Run the `docs-drift-maintenance` skill to detect stale documentation that contradicts the new behavior.
+ 5. **Learnings**: If the change revealed a significant discovery, add an entry to `docs/workflow/learnings.md`.
+ 6. **Release integrity**: If the merge changes extension or package behavior, run `release-version-integrity` to validate tag/manifest/changelog alignment, then publish the new version.
++7. **Artifact attestation**: Tag-triggered releases MUST produce both cosign-bundle signature AND GitHub Artifact Attestation (Sigstore-backed; via `actions/attest-build-provenance`). C13 (#999) enables the parallel attestation signal alongside the existing cosign path.
++
++Do not consider a PR merge or deployment task complete until steps 1-7 are explicitly addressed (either completed or confirmed not applicable).
++
++## Tech-Writer sub-phase (lane:code-change)
++
++`COLLABORATOR_HANDOFF` for `lane:code-change` tickets MUST include a `doc-coverage:` block
++declaring each required surface as `UPDATED: <path>` or `N/A: <surface> — <reason>`.
++Required surfaces per `area:*` label are defined in `config/doc-coverage-matrix.yml`.
++Validator: `scripts/global/megalint/doc-coverage.js`. Escape hatch: `DOC_COVERAGE_GATE_ADVISORY=1`.
++
++## Merge-time documentation governance
+ 
+-Do not consider a PR merge or deployment task complete until steps 1-6 are explicitly addressed (either completed or confirmed not applicable).
++For the operator-facing runbook describing how Epic #2148 children (C0+C1+C2+C3+C5+C7) compose into the four-surface merge-time documentation governance system, see [docs/howto/merge-time-doc-governance.md](../docs/howto/merge-time-doc-governance.md).
+diff --git a/instructions/repo-health-onboarding.instructions.md b/instructions/repo-health-onboarding.instructions.md
+index bac6d94..c5f3305 100644
+--- a/instructions/repo-health-onboarding.instructions.md
++++ b/instructions/repo-health-onboarding.instructions.md
+@@ -39,28 +39,27 @@ Files live in repo root or `.github/`. Missing items are prioritized:
+ - Classify repository by primary app type (`website-static`, `web-app`, `library-sdk`, `infra-automation`) before applying standards.
+ - Apply core-baseline controls, then primary-type controls, then relevant overlays (`security`, `collaboration`, `release`, `observability`).
+ - Prefer the smallest correct standards stack over over-engineered policy.
+-- For detailed routing, if available, invoke `repo-standards-router` skill.
+-- For new/uninitialized repos, invoke `repo-onboarding-standards` skill.
+ 
+ ## Governance audit triggers
+ 
+-Run `repo-profile-governance` skill when:
+-- Starting a new session in any repository (quick health check).
+-- Before any public release.
+-- When community health gaps are suspected.
++Run `repo-profile-governance` skill at session start, after behavior-changing merges/deploys, before releases, and when community health gaps are suspected.
+ 
+ ## Repository structure conventions
+ 
+-- On new repos or restructuring, if available, invoke `repo-structure-conventions` skill.
+ - Every repo follows a universal root layout: README, LICENSE, CHANGELOG, .gitignore, .github/, docs/, scripts/, test/.
+ - CHANGELOG.md follows [Keep a Changelog](https://keepachangelog.com/) format: Added, Changed, Deprecated, Removed, Fixed, Security.
+ - Build artifacts are isolated via .gitignore (and .vscodeignore / .npmignore where applicable).
+ - No build outputs (dist/, node_modules/, resources/, *.vsix, __pycache__/) in git history.
+ 
++## OpenSSF security alignment
+ 
++- Enable Dependabot alerts, secret scanning, and push protection on every public repo.
++- Add `ossf/scorecard-action` to CI for public repos to track security posture.
++- Pin third-party Actions to full commit SHA, not tags.
++- Workflow `permissions` block defaults to `read-all`; grant write only per-job.
++- Private vulnerability reporting enabled via GitHub settings.
+ 
+ ## Consistency across repos
+ 
+-- Critical standards are consistent across all managed repositories.
+-- Deviations are documented and intentional, not accidental drift.
++- Critical standards are consistent across all managed repositories; deviations are documented and intentional.
+ - Weekly `profile-weekly-check` mode available for recurring hygiene regression detection.
+diff --git a/instructions/role-baton-routing.instructions.md b/instructions/role-baton-routing.instructions.md
+index 5142f01..8b8ab1b 100644
+--- a/instructions/role-baton-routing.instructions.md
++++ b/instructions/role-baton-routing.instructions.md
+@@ -1,35 +1,411 @@
+ ---
+ name: Role Baton Routing
+-description: Enforce single-thread role handoff across Manager -> Collaborator -> Admin -> Consultant. Prevent concurrent role mixing and require explicit handoff artifacts.
++description: "v2.0 — Single-thread role handoff with GitHub Projects integration, typed collaborators, zero null-role states."
+ applyTo: "**"
+ ---
+ 
+-# Role Baton Routing
++# Role Baton Routing (v2.0)
+ 
+-For non-trivial tasks, execute work through a single active role at a time:
++The GitHub issue **is** the baton. One active role at a time.
++Execution `role:*` labels are present only on active, role-owned states.
++Terminal states do not carry execution roles.
+ 
+-1. **Manager**: scope, constraints, acceptance criteria, gate plan.
+-2. **Collaborator**: implementation and validation.
+-3. **Admin**: operational execution (services, git/PR/release ops).
+-4. **Consultant**: independent critique and residual-risk assessment.
++Authoritative board: **Megingjord Harness Board** (GitHub Projects).
++Baton view filter: `status:triage,ready,in-progress,testing,review` (backlog/done/cancelled/dormant/deferred hidden from active baton view).
+ 
+-## Hard rules
++## Role Taxonomy (7-role canonical set, Epic #2299)
+ 
+-- No concurrent role execution.
+-- Do not skip a role when its scope is applicable.
+-- Emit a short handoff artifact at each transition.
+-- If a role cannot proceed due to missing evidence, stop and request the missing evidence from tooling/research (not from the user by default).
++The harness recognizes seven named roles. Operator is a meta-term (see
++`instructions/operator-identity-context.instructions.md`), not an eighth role.
+ 
+-## Skill mapping
++| Role | Scope | GitHub baton label |
++|---|---|---|
++| Manager | Scope, AC authoring, baton routing, Epic oversight | `role:manager` |
++| Collaborator | Implementation, deliverable production, test authoring | `role:collaborator` |
++| Admin | Git/release ops, merge, runtime sync, publish | `role:admin` |
++| Consultant | Independent critique, rubric scoring, closeout authority | `role:consultant` |
++| IT | Fleet hardware + service setup/config (no GitHub workflow) | `role:it` |
++| Red-Team | Adversarial cross-family review; structured hallucination audit | `role:red-team` |
++| Client | Design direction + UAT confirmation; overrides Consultant carve-outs | `role:client` |
+ 
+-- Manager: `role-manager-execution`
+-- Collaborator: `role-collaborator-execution`
+-- Admin: `role-admin-execution`
+-- Consultant: `role-consultant-critique`
+-- Orchestration: `role-baton-orchestrator`
++**Guest-Collaborator (RESERVED)**: placeholder for non-adversarial external
++contributions (fleet-coding-local dispatch, cross-team feature contributions,
++external human wiki-ingest) that are NOT adversarial/critique-class. Not
++currently active; use Red-Team for all adversarial/review dispatches (D1,
++Epic #2299). Reserved to prevent taxonomy namespace collision.
+ 
+-## De-duplication boundary
++IT role note: IT scope covers fleet hardware (hosts, Tailscale mesh, Ollama
++models, MCP provisioning) and services (HAMR activation, cron, hook install).
++IT does NOT create tickets, push branches, commit, or comment on issues. The
++`[it-ops]` / `MEGINGJORD_IT_OPS=1` / `chore(it-ops):` bypass markers are the
++documented IT-role escape hatch for the rare tracked-file edit that does not
++warrant a full baton cycle.
+ 
+-- `operator-identity-context` defines authority and automation mandate.
+-- Role skills define per-role execution contracts.
+-- Domain skills (`repo-standards-router`, `workflow-self-anneal`, release/security/docs skills) remain source of truth for specialized procedures.
++## Status Workflow (11-state taxonomy v1.2, Epic #1828)
++
++```
++Status         Role Label                       Gate / Trigger
++──────────────────────────────────────────────────────────────────────
++backlog        — (Epic: manager)                Created; Epic untouched; child has no parent context yet
++queued         —                                Child of active Epic; awaiting Manager pickup (#1828)
++triage         role:manager                     Manager actively scoping AC + gates
++ready          —                                MANAGER_HANDOFF emitted; awaiting Collaborator pickup
++in-progress    role:collaborator                Implementation active (Epic: role:manager per Rule E3)
++testing        role:admin                       COLLABORATOR_HANDOFF emitted; CI gates running
++review         role:consultant                  ADMIN_HANDOFF emitted; critique + closeout active
++                                                (Epic: role:consultant transient — Rule E2 v2, #1828)
++done           — (terminal)                     CONSULTANT_CLOSEOUT emitted; issue closed
++cancelled      — (terminal)                     Goal invalidated; Manager authority
++dormant        role:manager                     Epic-only: paused; 90d EPIC_REVIEW (Rule E5)
++deferred       role:manager                     Epic-only: blocked, no ETA (Rule E5)
++```
++
++**Single-status invariant**: at any time, a ticket carries **exactly one** `status:*` label. Multi-status carriage is a Rule 1 violation, enforced by label-lint (Epic #1828 AC6).
++
++**Status sub-flow for child tickets of an active Epic**:
++- Independent ticket: `backlog → triage → ready → in-progress → testing → review → done`
++- Child of Epic at `status:backlog`: child stays at `backlog`
++- Child of Epic at `status:in-progress | dormant | deferred`: child progresses `backlog → queued → triage → ready → in-progress → testing → review → done`
++- Transition `backlog → queued` is Manager-initiated when the parent Epic moves out of `status:backlog`. Label-lint emits an advisory comment when this transition is pending.
++
++## Transition Guards
++
++- `backlog → triage`: Manager picks up; applies `role:manager`.
++- `triage → ready`: MANAGER_HANDOFF posted; remove `role:manager` (no role on `ready`).
++- `ready → in-progress`: Collaborator picks up; applies `role:collaborator`.
++- `in-progress → testing`: COLLABORATOR_HANDOFF; all ACs ✅; swap to `role:admin`.
++- `testing → review`: ADMIN_HANDOFF; all gates pass; swap to `role:consultant`.
++- `review → done`: CONSULTANT_CLOSEOUT; remove `role:consultant`; close issue (atomic). Must declare `anneal_tickets_filed: [#N,...] | none` and `mid_flight_flaws:` accounting.
++- `any → cancelled`: Manager authority — remove current `role:*`; post `CANCELLATION: <reason>`; close as "not planned".
++- `in-progress ↔ dormant` (Epic-only): Manager pauses; carries `role:manager` per Rule E2.
++- `in-progress ↔ deferred` (Epic-only): Manager flags external blocker; carries `role:manager`.
++- Manager ticket-health checks, AC edits, and label fixes are out-of-band; no handoff required.
++
++## Gate entry conditions — Admin and Consultant (Refs #1944)
++
++The two most-failure-prone transitions in the baton are `in-progress → testing` (Collaborator → Admin) and `testing → review` (Admin → Consultant). Both gates carry four facets that ALL must hold before the next role may pick up.
++
++### Admin gate (entry to `status:testing`)
++
++| Facet | Requirement |
++|---|---|
++| Trigger artifact | `COLLABORATOR_HANDOFF` comment posted on the linked issue. The comment must carry the four signing fields (`Signed-by`, `Team&Model`, `Role: collaborator`, plus `test_strategy:`) and the per-AC verification block. Validator: `scripts/global/megalint/collaborator-handoff.js`. |
++| Role-label transition | Remove `role:collaborator`; add `role:admin`. Single-role invariant holds at every instant per Rule 1. |
++| Status-label transition | Remove `status:in-progress`; add `status:testing`. Single-status invariant per the §"Single-status invariant" rule above. |
++| Preconditions | (a) ALL declared ACs verified PASS in the COLLABORATOR_HANDOFF per-AC block. (b) `test_strategy` evidence present per `instructions/test-methodology-matrix.instructions.md` — validator `scripts/global/megalint/test-discoverability.js`. (c) Lint clean for the lane (lane:code-change requires `npm run lint` green; lane:docs-research requires `wiki-lint` if wiki touched). |
++
++### Tech-Writer sub-phase (mandatory before posting the-collaborator-handoff per Epic #2148 / #2154)
++
++Before the role-collaborator-label holder posts the-collaborator-handoff, the comment MUST include a doc-coverage block per applicable surface in [config/doc-coverage-matrix.yml](../config/doc-coverage-matrix.yml). For each required + suggested surface the area-label maps to, declare one of:
++
++```
++doc-coverage:
++  UPDATED: <path-or-link> — <one-line summary of update>
++  N/A: <surface> — <reason: out-of-scope | covered-by-sibling-pr | docs-only-no-functional-change>
++```
++
++ADVISORY in first ship (Epic #2148 C1 #2154); the-collaborator-handoff validator (`scripts/global/megalint/collaborator-handoff.js`) parses the block when present and emits an advisory; missing block on lane:code-change emits a warning. Promotion to BLOCKING happens after Epic #2148 close, tracked as a follow-on.
++
++### Consultant gate (entry to `status:review`)
++
++| Facet | Requirement |
++|---|---|
++| Trigger artifact | `ADMIN_HANDOFF` comment posted on the linked issue. Must carry signing fields with `Role: admin`, plus `branch:`, `commit:`, `signer-independence-check: PASS`, and `deploy-runtime-impact:` (or `sync-verification: N/A` per `feature-completion-governance.instructions.md`). Validator: `scripts/global/megalint/admin-handoff.js`. |
++| Role-label transition | Remove `role:admin`; add `role:consultant`. |
++| Status-label transition | Remove `status:testing`; add `status:review`. |
++| Preconditions | (a) Signer-independence: Admin signer alias MUST differ from Collaborator signer alias — validator `scripts/global/megalint/signer-fidelity.js`. (b) ALL required CI checks PASS on the linked PR — observed via `gh pr checks <PR#>` or `live_checks.ci_all_pass()`; pre-merge gate `merge-evidence-pr-gate.js` enforces. (c) PR merged OR merge-evidence-override-approved label present on the linked issue per the merge-evidence batch contract. (d) For lane:code-change touching deployed runtime artifacts: `npm run sync:codex` + `npm run sync:claude` + `npm run hamr:sync-verify` outputs cited per `feature-completion-governance.instructions.md`. (e) **Merge-before-handoff** (#3053, Epic #3051): for lane:code-change, when CI is green and `admin_review_rating >= 93`, the PR MUST be merged before ADMIN_HANDOFF — validator `scripts/global/megalint/admin-merge-precondition.js`. |
++
++### Merge-before-handoff predicate (Epic #3051, Refs #3053)
++
++For `lane:code-change`, when the linked PR is CI-green, the Admin `admin_review_rating` field is present and >= 93, and the PR is NOT yet merged, the `admin-handoff-without-merge` violation fires. Carve-outs:
++
++- **Red CI never bypassed**: a genuinely RED required-CI PR is NEVER flagged — the authoritative CI gate blocks independently; this predicate does not force a bypass.
++- **Baseline-drift override**: an explicit `baseline_drift_override` in admin_ops stays labelled and honoured (per Epic #2517).
++- **Merge-evidence-override**: the `merge-evidence-override-approved` label satisfies the merge step (backward-compat with the merge-evidence batch contract).
++- **Deferred-final honoured**: the deferred-final merge-evidence contract (Epic #2295) is compatible — the predicate checks the prMerged fact, which reflects actual merge state.
++- **Admin owns the merge**: merge authorization is NEVER routed to the client (principle #2578 / AC8). The Admin baton role and close authority are AI-agent roles.
++- **Offline-graceful**: when merge/CI facts are unavailable (GitHub unreachable), the finding degrades to `severity:'advisory'` — the authoritative CI gate blocks when online.
++
++### Validation evidence — recent practice (memory-codified)
++
++The gates above match observed practice in: PR #2045 (Epic #2038 ship; three iterations of cross-family rater + four baton artifacts before PR), PR #2047 (#1943 Three-Wiki synthesis; cross-team file bundling with explicit attribution). Memory anchors: `feedback-all-baton-artifacts-before-pr` (post all four before `gh pr create`; seven consecutive clean ships once applied), `feedback-admin-ci-gate` (Admin verifies ALL required checks green before merge), `feedback-baton-artifacts-in-pr` (PR body must include handoff strings).
++
++## Collaborator role
++
++Per v1.1 taxonomy, the active label is `role:collaborator` (not the older `role:collab-{type}` form). Capability profile is reflected in ticket area labels (`area:scripts`, `area:hooks`, `area:dashboard`, etc.) rather than role-suffix typing. Each Collaborator may have only **1 `in-progress` ticket at a time** (enforced by baton-gates Action).
++
++## Multi-Lane Definition of Done
++
++| Lane         | Work type                      | Role sequence                     | N/A markers                    |
++|--------------|--------------------------------|-----------------------------------|--------------------------------|
++| code-change  | Code, infra, deploy (default)  | Manager→Collab→Admin→Consultant   | none                           |
++| research     | Analysis, wiki — no git branch | Manager→Collab(analyst)→Admin→Consultant | Admin = doc reviewer, not CI |
++| config-only  | Single-value config, no design | Manager→Admin→Consultant          | COLLABORATOR_HANDOFF: N/A      |
++| no-code-remediation | Issue-only drift normalization (no repo edits) | Manager→Consultant | COLLABORATOR_HANDOFF: N/A, ADMIN_HANDOFF: N/A |
++
++Lane set at ticket creation via `lane:*` label and `Lane` Project field. Default: **code-change**.
++
++### No-code remediation lane contract (Refs #2258 #2268)
++
++Eligibility:
++- Ticket drift is limited to issue metadata/evidence normalization (labels, stale advisories, baton artifacts, or closeout evidence) with no source changes.
++- Corrective action is issue/thread state only; no PR diff is needed.
++- Runtime-deploy sync verification is `N/A` because deployed runtime artifacts are untouched.
++
++Exclusions (must escalate to normal baton lane):
++- Any tracked file edit, generated artifact edit, workflow/config change, or test change.
++- Any required CI or validator remediation that needs code/doc changes.
++- Any ambiguity about whether the incident is issue-only versus implementation drift.
++
++Required evidence blocks:
++- `MANAGER_HANDOFF` must state `lane: lane:no-code-remediation`, explicit eligibility rationale, and the exact issue-only actions.
++- `CONSULTANT_CLOSEOUT` must verify each issue-only action completed and include flaw-accounting (`mid_flight_flaws`) plus `verdict` and `rubric_rating`.
++
++False positives and escalation path:
++- If a no-code run reveals required repository edits, Manager posts a correction comment and routes to `lane:code-change` with the standard four-role baton.
++- If stale advisory labels conflict with merged evidence, clear the stale label as issue-only remediation; if merge evidence is absent, escalate to normal baton.
++
++Examples:
++- Valid: remove stale `governance:close-without-merge` on an already-merged closed ticket.
++- Invalid: changing `instructions/**` to satisfy a validator; this is `lane:code-change` (docs/code diff exists).
++
++Operator runbook: `docs/howto/no-code-remediation-workflow.md`.
++
++## Closed-ticket ownership model
++
++Closed tickets do not carry execution `role:*` labels.
++Accountability ownership is historical metadata, not an execution-role label.
++Dashboard/audit views may resolve historical ownership to manager for reporting,
++but this must not re-add a `role:*` label to terminal issues.
++
++### Explicit accountable-team schema (Epic #2345 / design #2346)
++
++Persistent accountability is recorded as an `accountable-team:<team>` label
++(`claude-code | copilot | codex | antigravity`) that is **distinct** from, and
++never shares a namespace with, the transient `role:*` baton label. Unlike
++`role:*`, it persists across **all** states including terminal — so a closed
++ticket answers "who owns this?" without an execution-role label. The team-of-
++record resolves in order: (1) the `accountable-team:*` label, else (2) the team
++in the most recent baton/closeout signing block, else (3) the default manager
++team. Authority: only the Manager or Admin role may set or change it, and never
++as a side effect of a baton transition. Helper: `scripts/global/accountable-team.js`;
++backfill: `scripts/global/accountable-team-backfill.js` (dry-run default).
++See `docs/howto/accountable-team-schema.md`.
++
++## Hard Rules
++
++- Execution `role:*` labels are required for active role-owned states only (`triage`, `in-progress`, `testing`, `review`, and Epic-only `dormant`/`deferred`).
++- Terminal and waiting states (`backlog`, `queued`, `ready`, `done`, `cancelled`) carry no execution `role:*` label, except Epic role exceptions documented in this file.
++- No concurrent role execution on a single ticket.
++- Emit the named handoff artifact before transitioning to the next role.
++- `ADMIN_HANDOFF` must be **independent** of `COLLABORATOR_HANDOFF`. #3532 established the base rule; #3672 (Epic #3679 F2+F3) hardened it against manufactured/forged evidence: independence PASSES **only** via (b) a **VERIFIED cross-family consensus receipt** (`cross_family_receipt:`) OR (c) a cryptographic **authorship attestation**. Everything that is mere prose **FAILS**: (F2) a same-team persona/role-surname split, and a self-asserted `signer-independence-check:` disposition that is **waived / N/A** (reason `independence-self-waived`); (F3) a **bare "different `Team&Model` TEAM"** claim — it is forgeable (a single agent can mint a foreign-team signer, the #3673/PR#3677 "perfect forgery"), so a different team is **no longer** an auto-pass and now ALSO needs a receipt/attestation (reason `unattested-cross-team-claim`). Enforced consistently across `baton-independence.checkAdminIndependence`, `baton-authority/evidence-loader.deriveTrailFromGitHub` (the merge FSM), and the `consensus-receipt-check` CI validator (receipt = sha256 over provider responses in the append-only hash-chained ledger `governance/cross-family-consensus.jsonl`; panel ≥2 families distinct from the authoring family, each able to REJECT). The authorship-attestation mechanism (a committed per-team public-key registry + ed25519 verify) is fail-closed today and tracked by research child #3682. See `docs/howto/cross-family-consensus-independence.md`.
++- All governed work requires a GitHub issue and `Refs #N` in the PR body; workflow identity resolution follows `instructions/team-model-in-workflows.instructions.md`.
++- Skip baton only for: single Q&A, read-only lookup, no file edits, no state-changing tool calls.
++
++## Flaw-recognition anneal decision (required)
++
++When any active role recognizes a flaw/error during execution, it must record one explicit decision:
++- `file-ticket` — structural/repeatable gap; include `#N`
++- `log-incident-only` — one-off operational event; include `incidents.jsonl`/`pattern_id`
++- `memory-note-only` — judgment/process note with no immediate code/process delta; include memory path
++- `no-action-justified` — include a short rationale
++
++This decision must be cited in baton artifacts and summarized in `CONSULTANT_CLOSEOUT` under:
++- `mid_flight_flaws: [<flaw>, decision=<...>, artifact=<...>]`
++
++### `flaws_recognized:` block — per review-point (Epic #3425 P1-a, #3428)
++
++The discretion-dependent prose contract above is being made programmatic. Every baton artifact
++(MANAGER / COLLABORATOR / ADMIN / CONSULTANT) now carries a `flaws_recognized:` block — either a
++bare `none` or one entry per disposed candidate:
++
++```
++flaws_recognized:
++  - flaw: <short description>
++    detected_by: <F1..F8 | manual>
++    decision: file-ticket | log-incident-only | memory-note-only | no-action-justified
++    artifact: #<N> | incidents.jsonl:<pattern_id> | <memory-path> | <rationale>
++```
++
++`decision` reuses the `judgment-gate.js` `FLAW_DECISIONS` enum; `artifact` is decision-typed. The
++Consultant's `mid_flight_flaws` + `anneal_tickets_filed` remain the required closeout-aggregation
++fields; `flaws_recognized` is the per-review-point superset the other three roles gain. Validator:
++`scripts/global/megalint/flaws-recognized.js` — **ADVISORY** (warns, never blocks) until the
++replay-eval promotion gate (#3434) flips it. The field is `block` (not required) in
++`baton-artifact-schema.js` so the historical replay corpus and cross-runtime invariant are preserved.
++
++## Enforcement Points
++
++| Rule | Enforcement |
++|------|-------------|
++| Collaborator/Admin signer independence (#3532) | `baton-gates.yml` admin-gate + `baton-authority/merge` (`SIGNER_INDEPENDENT` bit) require a different `Team&Model` TEAM segment OR a verified `cross_family_receipt`; `consensus-receipt-check.yml` step re-verifies the receipt from the committed ledger. Persona-surname difference alone no longer passes. |
++| Test strategy declared per matrix | `test-evidence.yml` gate consumes `test_strategy` from `MANAGER_HANDOFF` |
++| `roles.admin` auto-emission on full baton (#2444) | `hooks/scripts/tool_activity.py` `mark_tool_activity` flips `roles["admin"] = True` when every key returned by `admin_patterns.required_admin_ops(flags, repo_type)` is set in `admin_ops`. Stop-hook `check_admin_ops` consumes the same helper. No manual state patching required. |
++
++## Baton-back review→remediation guardrail (Epic #3251 — enforced in code)
++
++When any review phase surfaces a blocking issue, the baton does not stall waiting for a
++human: it routes the issue to the remediating role and re-advances to closure
++**programmatically**. The rule lives in code (zero-token to enforce, context-loss-proof);
++this section only *describes* it (G8) — it does not carry the rule.
++
++- **Two-layer discovery, one router.** Layer A (≈40 validators + gate hooks) and Layer B
++  (a cross-model review that emits machine-readable findings) both terminate in the same
++  deterministic router. Layer B findings are parsed by
++  `scripts/global/cross-model-finding-router.js` and dispatched by
++  `scripts/global/cross-model-review-dispatch.js` (the operationalized
++  `post-merge-consultant-audit.yml` Layer-B Action); the router itself is the shipped
++  `scripts/global/baton-back.js#routeRemediation` (#3257) — no LLM, no prose.
++- **Deterministic routing rule.** Fix touches a tracked file → **Collaborator** (baton-back);
++  fix is the current role's own artifact/git-op → **current role** (block-in-place); fix is
++  issue-only governance metadata → **Manager** (hold); environmental → **override** (no
++  baton-back). Fault-owner is recorded separately from the file-editor (accountability, G8).
++- **Close-gate invariant.** A ticket cannot reach done/closed while a `## BATON_BACK` marker
++  is open on the timeline — enforced by `scripts/global/closeout-preflight.js`
++  (`batonBackGateBlocks` → `baton-back.anyOpen`), so an Epic cannot close around an open child
++  remediation. The marker also carries the finding as an actionable lesson and a bounded
++  cycle counter (default 3) that escalates to a non-blocking Tier-2 anneal.
++- **Marker persistence + disclosure labels.** `scripts/global/baton-back-set.js` posts the
++  authoritative `## BATON_BACK` timeline comment, applies the `baton-back:open` label, and a
++  metadata-only observability event is written per-ticket by
++  `scripts/global/baton-back-ledger.js` (redacted; not the consensus ledger).
++- **Graded review-coverage disclosure (G2>G3 floor).** Each review point resolves a coverage
++  rung via `scripts/global/review-coverage-resolver.js` and surfaces it as a
++  `review-coverage:{cross-family-free|cross-family-paid|same-family-paid|same-model-grounded-paid|programmatic-only}`
++  label + closeout field. `programmatic-only` (no semantic reviewer reachable) raises a client
++  UAT warning; it is the floor only under a free-only budget / no-network, never a silent skip.
++
++## MANAGER_HANDOFF schema (with test_strategy)
++
++Required fields on every `MANAGER_HANDOFF` comment:
++- `scope:` — what changes
++- `lane:` — `lane:code-change | lane:docs-research | lane:config-only | lane:no-code-remediation | lane:trivial`
++- `test_strategy:` — one of `tdd-pyramid | tdd-trophy | contract-test | golden-file | eval-harness | visual-regression | drift-lint | peer-review | manual-verify | none`
++- `acceptance:` — AC checklist
++- `gates:` — CI/governance gates that must pass
++- `anneal_tier:` (optional) — `tier-1 | tier-2 | tier-3 | null`; populate when ticket originated from a Tier-2 anneal auto-file event per Epic #1308. Default `null` / omitted for non-anneal tickets.
++
++Conditional required fields:
++- Tickets labeled `phase-gate:phase-1` MUST include `phase_gate_satisfied: yes`.
++- Tickets labeled `phase-gate:phase-1` MUST include `phase_0_sources: [#N, #N, ...]` with one or more source research-child references.
++
++`test_strategy` selected per `instructions/test-methodology-matrix.instructions.md`; missing on legacy tickets defaults to `none` (advisory). New tickets with `none` on non-permitted lane fail `test-evidence`.
++
++**Cross-family preflight requirement** (lane:code-change, Refs #2439): Before posting `COLLABORATOR_HANDOFF`, run `npm run collaborator:preflight --ticket=N`. The handoff MUST include `cross_family_rating:`, `cross_family_reviewer:`, and `cross_family_findings:` from the preflight output. The reviewer model family MUST differ from the Collaborator's `Team&Model` family.
++
++## Parent/child relationships (Sub-issues primitive)
++
++The canonical parent/child relationship uses GitHub's native **Sub-issues**
++primitive (up to 100 children per parent, 8 levels deep). The legacy prose
++`Refs Epic #N` convention remains supported for backward compatibility but
++is deprecated for new tickets. See `docs/howto/sub-issues-migration.md` for
++the migration plan and #1631 follow-on children for the helper, validator,
++and test-suite implementation.
++
++## Multi-Close PR batching (formalized #1714)
++
++A single PR MAY close multiple related tickets via multiple `Closes #N` lines, subject to all conditions below. **Historic batches before this contract landed are grandfathered**; this rule applies to PRs opened on or after 2026-05-16.
++
++### When batching is allowed
++
++All of the following must hold:
++
++- **Related ACs**: the closing tickets are children of the same parent Epic or share an `area:*` label, AND their ACs share an obvious deliverable surface (same diff, same test suite, same area).
++- **Single diff**: one branch, one diff, one PR. No squash of independent commits across siblings.
++- **Single test surface**: tests added/modified cover all closing tickets' ACs collectively (not one-test-per-ticket spread across PRs).
++- **One lead + N siblings**: the lead ticket is the lowest issue number in the batch; the branch name uses `fix/<lead-N>-...`; siblings are explicitly named in the PR body and lead ticket.
++
++### Required artifacts on the lead ticket
++
++The lead ticket receives the full 4-role baton artifact set (MANAGER_HANDOFF, COLLABORATOR_HANDOFF, ADMIN_HANDOFF, CONSULTANT_CLOSEOUT) per the standard contract.
++
++### Required artifacts on sibling tickets
++
++Each sibling ticket receives a **brief-evidence comment** with the structured fields:
++
++```
++## CONSULTANT_CLOSEOUT
++ticket: #<sibling-N> (resolved as part of batch with #<lead-N>)
++status: review
++verdict: approve_for_merge
++verification-timestamp: <ISO8601>
++
++rubric_rating: <int>/10. Full evidence on #<lead-N>.
++
++Signed-by: <human-alias>
++Team&Model: <team:model@substrate>
++Role: consultant
++```
++
++The brief evidence MUST include the 4 structured fields: `Signed-by`, `Team&Model`, `Role`, `verification-timestamp`, plus `rubric_rating`. These satisfy the `closeout-schema` signer-alias-fidelity check.
++
++### Validator recognition
++
++`scripts/global/megalint/consultant-closeout.js` recognizes the phrase "resolved as part of batch with #<N>" as a valid closeout-evidence marker (in addition to the standard substantive evidence). See `scripts/global/megalint/batch-evidence.js`.
++
++### What batching does NOT change
++
++- Each closing ticket still requires a status:done label flip at merge (auto-transitioner handles this via the `Closes #N` line).
++- Each closing ticket's labels must be advanced through the baton states (status:triage → status:ready → status:in-progress → status:testing → status:review) per the standard contract before close. Siblings can advance via the lead's MANAGER_HANDOFF; their own MANAGER_HANDOFF is NOT required.
++- Auto-escalate triggers (Epic #1736 #1743) apply per-PR regardless of batching.
++
++### Anti-pattern: when batching is NOT allowed
++
++- Tickets from different parent Epics.
++- Tickets touching different test surfaces (e.g., one is unit tests, other is integration; would force two PRs anyway).
++- Tickets where one is `lane:trivial` and another is `lane:code-change` (different validator paths).
++- Tickets where one sibling has `merge-evidence-override:approved` and another does not.
++
++## Local Override
++
++A repo may override via `.github/copilot-instructions.md`; local wins on conflict.
++
++## Cross-Team Artifact-Write Gate
++
++When a MANAGER_HANDOFF involves writing files consumed by another team's runtime,
++the `cross_runtime_writes` field is required and must include `target_team_sign_off`
++before the baton advances. See `instructions/cross-team-artifact-write.instructions.md`.
++
++## Offline contract for derive_roles_from_github (#2460, Epic #2451 Move 5)
++
++When the GitHub-derived role resolver (#2456, feature-flagged via `MEGINGJORD_DERIVE_ROLES_FROM_GH`) cannot reach GitHub:
++
++| Condition | Behavior | Operator-visible signal |
++|---|---|---|
++| First call (cold-miss): gh CLI unreachable or returns non-zero | Returns `None`; callers fall back to local-state | stderr: `[role-resolver] degraded: cold-miss for #N; falling back to local-state` |
++| Subsequent call (warm cache + gh fail) within 300s MAX_STALE | Returns last-cached value | stderr: `[role-resolver] degraded: gh-fetch-failed-using-stale for #N; falling back to stale cache` |
++| Subsequent call beyond MAX_STALE_SECONDS | Returns `None`; callers fall back to local-state | stderr: cold-miss line |
++| `gh` CLI absent (FileNotFoundError) | Same as above per cache state | same stderr lines |
++| Subprocess timeout (10s default) | Same as above per cache state | same stderr lines |
++
++**Quiet mode** for CI/cron contexts: set `MEGINGJORD_QUIET_RESOLVER=1` to suppress stderr output.
++
++**Goal-lens justification**:
++- **G6 resilience**: G6 is preserved via stale-cache fallback bounded by MAX_STALE_SECONDS=300; legacy `roles{}` continues to function when feature flag off
++- **G8 observability**: each degraded path emits a labeled stderr line so operators can diagnose; not silent
++- **G3 zero-cost in CI**: quiet-mode env flag suppresses noise without disabling the fallback path
++
++## Skill Mapping
++
++Manager: `role-manager-execution` | Collaborator: `role-collaborator-execution`
++Admin: `role-admin-execution` | Consultant: `role-consultant-critique`
++Orchestration: `role-baton-orchestrator`
++
++## Operator decision routing (#2509)
++
++When the operator (the AI agent running the baton) faces a routine yes/no dev decision (file follow-on ticket Y/N? two-ticket-or-one? accept fleet-rater verdict?), the DEFAULT routing is:
++
++1. Route to fleet decision oracle: `node scripts/global/fleet-decision-oracle.js` via `decideOnce(question, opts)`
++2. Fleet returns `{verdict: approve|reject|partial|inconclusive, rationale, model_used, escalate_to_client: bool}`
++3. If `escalate_to_client` is true (verdict inconclusive OR fleet unreachable) → THEN ask client
++4. Otherwise → operator executes per verdict; no client touch needed
++
++**Why:** per the harness's operator-identity contract (`instructions/operator-identity-context.instructions.md`), the client is design + UAT only. Asking the client to adjudicate routine dev decisions is governance-misalignment. The fleet rater (free, qwen-7b at ~30s) is the correct decision substrate.
++
++**When NOT to use fleet:**
++- Design direction (new architecture, scope expansion)
++- UAT confirmation (does the shipped behavior match user expectation)
++- Budget decisions (paid-provider lane authorization)
++- Memory has prior client preference on the specific class
++
++**Memory anchor:** `feedback_route_decisions_to_fleet_not_client` (operator-personal).
+diff --git a/instructions/workflow-resilience.instructions.md b/instructions/workflow-resilience.instructions.md
+index 980ad62..6f9d3e6 100644
+--- a/instructions/workflow-resilience.instructions.md
++++ b/instructions/workflow-resilience.instructions.md
+@@ -15,6 +15,13 @@ Run `workflow-self-anneal` skill when any of these conditions is true:
+ - Repeated carryover or blocked items across iterations.
+ - PR review or merge latency repeatedly breaches targets.
+ - Reopened issues or defects trend upward.
++- Ticket/epic local markdown state diverges from observable GitHub issue/PR evidence.
++- Any P0/P1 ticket remains `status:ready` for more than 24h without a blocker note.
++- Governance-gate bypass env var (e.g. `SKIP_CLOSEOUT_PREFLIGHT`, `PUSH_GATES_BYPASS`) used 2+ times in the same session — triggers an immediate Tier-2 anneal that promotes the underlying bug-fix to first-work in the current session. Tracked by `scripts/global/session-bypass-tracker.js`.
++- Tool-block emission (sandbox denial, hook deny, classifier deny) followed by session termination within 1 turn — Tier-2 trigger. The tool-block is redirect guidance, not a terminal state; the right adaptation is documented in operator-local memory `feedback-bash-sleep-block-recovery` (Pattern A; #2116). Surfaced after PR #2113 cycle stalled on `sleep N && cmd` sandbox block.
++- Background-task dispatch (`Bash run_in_background: true`, scheduled wake) followed by user-visible closing text without a follow-up tool call — Tier-2 trigger. Dispatch is a notification subscription, not a turn-end signal; 8 unnecessary stops in a single 2026-05-24 session followed this exact anti-pattern. See operator-local memory `feedback-bash-sleep-block-recovery` Pattern B (#2116).
++
++Ready-stall blocker note required fields: `BLOCKER_NOTE`, `owner`, `unblock_condition`, `eta_or_review_time`.
+ 
+ ## Self-annealing constraints
+ 
+@@ -26,9 +33,96 @@ Run `workflow-self-anneal` skill when any of these conditions is true:
+ 
+ ## Self-annealing protocol
+ 
+-1. Detect mismatch between expected behavior (from instructions) and observed behavior (from evidence).
++1. Detect mismatch between expected and observed behavior.
+ 2. Classify root cause: `ambiguity`, `missing guardrail`, `stale instruction`, `tool fragility`, or `human override`.
+ 3. Assess recurrence risk: `low`, `medium`, or `high`.
+ 4. Propose minimal docs/workflow delta that prevents recurrence.
+ 5. Define objective verification gate confirming the fix works.
+ 
++## Three-tier escalation model
++
++Anneal triggers route through one of three tiers per Epic #1308. See `[[distributed-self-anneal]]` for full design and `[[andon-pull-protocol]]` for any-role pull mechanics. The base protocol above is the Tier-2 mid-flight pivot phase.
++
++### Tier 1 — Observation (any role)
++
++Append a drift event to `~/.megingjord/incidents.jsonl` (schema v2). No threshold, no ticket. Pure trend capture for the recurrence detector.
++
++### Tier 2 — Mid-flight pivot (auto-ticket)
++
++Triggers when `severity ≥ medium` AND (recurrence ≥ 2 in 7d OR `trigger_type == manual-pull`) AND no active session-pivot AND no matching suppression entry. Effect: orchestrator pauses current baton step, snapshots state, runs the protocol above, files Manager ticket(s) to backlog, restores baton.
++
++#### Guardrail-first disposition (Epic #3380)
++
++A Tier-2 friction is, by default, an opportunity to build a **guardrail that prevents that friction for
++every team** — not a workaround note that enlarges always-resident memory and re-bills its token cost
++every session. Before a friction is recorded as a memory note, route it through the deterministic
++classifier `scripts/global/friction-classifier.js` (`classifyFriction(record)`), which maps it to one of
++four destinations:
++
++| Destination | When | Action |
++|---|---|---|
++| `guardrail-candidate` | mechanical surface named (gate / hook / validator / regex / state-file / parser / enforcer) AND recurrence ≥ 2 AND severity ≥ medium AND reproducible | file a guardrail ticket; build a **hook → validator → test → CI backstop** (prevention-first ladder) |
++| `skill` | a correct, reusable multi-step procedure (≥ 3 ordered steps), not a defect | promote to a skill / runbook |
++| `semantic-memory` | judgment / preference / client directive / external fact | keep a memory note — this is memory's *correct* use |
++| `forget` | one-off below the recurrence floor | let it decay in `incidents.jsonl`; do not promote to memory |
++
++**Anti-over-route (binding):** judgment/preference **wins on collision** — a record that names a mechanical
++surface *and* hits the judgment lexicon (or `trigger_role: client`) routes to `semantic-memory`, never to a
++guardrail. Unknown/low-confidence inputs **fail open** to `semantic-memory`. A preference is never
++auto-converted into a blocking guardrail.
++
++**Consolidation / forgetting policy:** on the 2nd in-window recurrence of a `guardrail-candidate` pattern,
++file (or de-dupe onto) a guardrail ticket and link the note to it. When that guardrail ships
++(`resolution:released`), **delete the originating note(s) and its MEMORY.md index line** — the guardrail now
++prevents the recurrence, so the note's job is done. `forget`-class records decay under `log-rotation.js`;
++they are never promoted to MEMORY.md.
++
++**Cross-team & promotion:** the classifier + lexicon live in `scripts/global/` and `config/` (the shared,
++runtime-agnostic surface mirrored to claude-code / copilot / codex / antigravity) — one guardrail protects
++all four teams. Promotion of the memory-write guard from advisory to blocking is gated on replay-eval
++precision ≥ 0.85 against `tests/fixtures/friction-corpus.json` (`friction-classifier-replay-eval.js`),
++**never a calendar threshold**. Operator guide: `docs/howto/guardrail-first-anneal.md`.
++
++### Tier 3 — Consultant goal-failure escalation
++
++Authority: Consultant only. Triggered when consultant rubric finds G1–G9 goal violation post-implementation. Effect: invoke Manager to (a) reopen failed AC/ticket via baton, (b) file new self-anneal Epic for systemic patterns.
++
++### Authority matrix
++
++| Action | Authority |
++|---|---|
++| Append Tier-1 event | Any role |
++| Request Tier-2 pivot | Any role (router classifies) |
++| Invoke Tier-3 escalation | Consultant only |
++| File Manager ticket from anneal | Manager (auto-routed via Tier-2 workflow) |
++
++### Bounded-loop guards (kill switches)
++
++- Max 1 active pivot per session (single-flight)
++- Max 3 pivots per 24h per session (rate-limit)
++- Max 5 anneal tickets per 7-day window per `pattern_id` (suppression cooperation with #1220)
++- Anneal step counter aborts with `decision: defer` if >50 tool calls
++- All trips emit `event:kill-switch-trip` for dashboard observability
++
++## Breaking-Change Recovery Handoff
++
++When Tier-3 Consultant escalation identifies a G1–G9 goal violation caused by a
++merged breaking change, invoke the **Breaking-Change Recovery Protocol** from
++`instructions/breaking-change-recovery.instructions.md`. The protocol covers
++six phases: Detect → Revert → Triage → Fix → Re-merge with smoke evidence →
++Casualty re-author. Tier-3 authority (Consultant) initiates; Manager and Admin
++execute the revert and fix phases.
++
++## Documentation drift detection
++
++Run `docs-drift-maintenance` skill after any change to:
++- Commands, CLI flags, or API behavior.
++- Configuration files, defaults, or environment variables.
++- Workflows, CI/CD pipelines, or automation scripts.
++- UX-visible behavior, user-facing features, or settings.
++
++## catch-empty suppression contract
++
++- `scripts/global/catch-empty-lint.sh` intentionally scans `.github/workflows/` only.
++- `scripts/global/` and `hooks/scripts/` may contain intentional non-empty catch handlers and are governed by code review plus unit tests instead of the workflow YAML lint.
++- Use `// catch-empty: <reason>` only for best-effort label/comment cleanup or equivalent known-safe GitHub API misses; if the handler can distinguish expected failures, prefer filtering the expected status code and rethrowing everything else.
