@@ -1,0 +1,17 @@
+{
+  "_note": "D5 (#1035) — synthetic-but-representative IDE-turn corpus for measurement.",
+  "turns": [
+    { "id": 1, "text": "show me where the cacheHeaders function is defined", "tokensIn": 80, "tokensOut": 40 },
+    { "id": 2, "text": "what is the current value of HAMR_URL in env", "tokensIn": 60, "tokensOut": 30 },
+    { "id": 3, "text": "list all files modified in the last commit", "tokensIn": 70, "tokensOut": 100 },
+    { "id": 4, "text": "add a console log to the loadPolicy function", "tokensIn": 90, "tokensOut": 80 },
+    { "id": 5, "text": "rename getCwd to getCurrentWorkingDirectory across the project", "tokensIn": 200, "tokensOut": 250 },
+    { "id": 6, "text": "extract the helper function to a separate module and add tests", "tokensIn": 350, "tokensOut": 400 },
+    { "id": 7, "text": "add a unit test for the new function", "tokensIn": 250, "tokensOut": 300 },
+    { "id": 8, "text": "fix typo in the README", "tokensIn": 100, "tokensOut": 50 },
+    { "id": 9, "text": "refactor this large function into smaller helpers and update callers", "tokensIn": 600, "tokensOut": 800, "fileCount": 3 },
+    { "id": 10, "text": "audit this code for security vulnerabilities and concurrency race conditions in the multi-threaded queue", "tokensIn": 1200, "tokensOut": 1500, "fileCount": 4 },
+    { "id": 11, "text": "design the architecture for a new authentication system across our distributed system with security review", "tokensIn": 2000, "tokensOut": 2500, "fileCount": 6 },
+    { "id": 12, "text": "investigate the incident in production and propose a fix for the race condition", "tokensIn": 1500, "tokensOut": 1800, "fileCount": 5 }
+  ]
+}
