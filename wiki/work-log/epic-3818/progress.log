@@ -2,3 +2,4 @@ L1 hooks · 70 files captured · consensus c5ef88a90db06e57 · feat/3818-L1-capt
 L8 baton+epic+ticket · 45 files captured · consensus 92055edc2ebfbbb9 · feat/3818-L8-capture
 L9 cross+model+multi+review · 40 files captured · consensus b3a06080d252b595 · feat/3818-L9-capture
 L2 instructions · 45 files captured · consensus 9fcfc83f724f2174 · feat/3818-L2-capture
+L7 scripts·governance+lint — 45 captured, 1 HOLD (governance-verify.js stale), 2 no-op — consensus 4e8ade1968206148 — Refs #3818
