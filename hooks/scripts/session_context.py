@@ -9,9 +9,34 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from governance_state import ensure_state, reset_state
+from governance_state import ensure_state, reset_state, save_state
 from wiki_router import route_wiki_context
 from wiki_wisdom import baton_protocol, governance_enforcement, post_merge_checklist
+
+
+def _record_uncommitted_baseline(state: dict, cwd: str) -> None:
+    """#3810: snapshot the uncommitted-path set + branch at SessionStart into governance_state so
+    the Stop hook can gate on session-attributable code only (the delta), never on pre-existing
+    standing baseline drift. Advisory + fail-safe: any failure leaves NO baseline recorded, so the
+    Stop path falls back to the legacy full-set block (never fail-open) and session start is never
+    broken.
+    """
+    try:
+        import subprocess
+        from session_baseline import snapshot_uncommitted, build_baseline_record
+        try:
+            branch = subprocess.check_output(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+                cwd=cwd, text=True, stderr=subprocess.DEVNULL,
+            ).strip()
+        except Exception:
+            branch = None
+        paths = snapshot_uncommitted(cwd)
+        if paths is not None:
+            state["baseline_uncommitted"] = build_baseline_record(branch, paths)
+            save_state(state)
+    except Exception:
+        pass  # advisory snapshot must never break session start
 
 
 def main() -> int:
@@ -26,6 +51,7 @@ def main() -> int:
         state = reset_state(str(cwd))
     else:
         state = ensure_state(str(cwd))
+    _record_uncommitted_baseline(state, str(cwd))  # #3810
     repo_type = state.get("repo_type", "generic")
 
     signals = []
