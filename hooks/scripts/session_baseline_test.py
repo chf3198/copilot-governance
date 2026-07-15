@@ -145,5 +145,67 @@ class GuardConditions(unittest.TestCase):
         self.assertEqual(sb.attributable_delta(["a"], ["a"]), [])
 
 
+class SessionAttributableSubset(unittest.TestCase):
+    """#3820 — the subset that scopes classify_internal_conflict to session-created conflicts."""
+
+    def test_ac1_standing_drift_yields_empty(self):
+        # All uncommitted paths are in the SessionStart baseline -> nothing attributable -> [] -> the
+        # conflict classifier sees an empty list -> type "none" -> NO false-positive worktree-drift block.
+        rec = record("feat/3026", STANDING_DRIFT)
+        self.assertEqual(
+            sb.session_attributable_subset(
+                list(STANDING_DRIFT), rec, current_branch="feat/3026", admin_ops={}),
+            [],
+        )
+
+    def test_ac2_new_conflict_still_surfaces(self):
+        # A NEW file created after SessionStart is not in the baseline -> stays in the subset ->
+        # still classified (no weakening of genuine conflict detection).
+        rec = record("feat/3026", STANDING_DRIFT)
+        out = sb.session_attributable_subset(
+            list(STANDING_DRIFT) + ["scripts/new-conflict.js"], rec,
+            current_branch="feat/3026", admin_ops={})
+        self.assertEqual(out, ["scripts/new-conflict.js"])
+
+    def test_ac3_override_suppresses(self):
+        rec = record("feat/3026", STANDING_DRIFT)
+        self.assertEqual(
+            sb.session_attributable_subset(
+                list(STANDING_DRIFT) + ["scripts/new.js"], rec,
+                current_branch="feat/3026", admin_ops={"baseline_drift_override": True}),
+            [],
+        )
+
+    def test_ac3_expected_mutations_ignored(self):
+        # Ephemeral runtime files are never conflicts, even when session-attributable (not in baseline).
+        rec = record("b", [])
+        out = sb.session_attributable_subset(
+            [".megingjord/session.id", "hooks/scripts/session_baseline.py",
+             ".copilot/state.json", "scripts/real.js"],
+            rec, current_branch="b", admin_ops={})
+        self.assertEqual(out, ["scripts/real.js"])
+
+    def test_ac4_unresolved_baseline_failsafe_full_set(self):
+        # Missing/branch-mismatched baseline -> fall back to the FULL set (minus expected mutations),
+        # so a real conflict on a checkout with no snapshot still classifies (fail-safe, not fail-open).
+        out = sb.session_attributable_subset(
+            ["scripts/x.js", "scripts/y.py"], None, current_branch="b", admin_ops={})
+        self.assertEqual(out, ["scripts/x.js", "scripts/y.py"])
+        # branch mismatch is also unresolved -> full set
+        rec = record("other-branch", ["scripts/x.js"])
+        out2 = sb.session_attributable_subset(
+            ["scripts/x.js", "scripts/y.py"], rec, current_branch="b", admin_ops={})
+        self.assertEqual(out2, ["scripts/x.js", "scripts/y.py"])
+
+    def test_empty_tree_yields_empty(self):
+        self.assertEqual(sb.session_attributable_subset([], None, "b", {}), [])
+
+    def test_is_expected_mutation(self):
+        self.assertTrue(sb.is_expected_mutation(".megingjord/session.id"))
+        self.assertTrue(sb.is_expected_mutation("hooks/scripts/governance_state.json"))
+        self.assertTrue(sb.is_expected_mutation(".copilot/anything"))
+        self.assertFalse(sb.is_expected_mutation("scripts/real-validator.js"))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
