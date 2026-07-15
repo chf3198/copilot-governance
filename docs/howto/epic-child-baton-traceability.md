@@ -69,5 +69,27 @@ Promotion of any invariant from advisory to a hard Epic-close gate requires the 
 (false-positive rate < 2% over the corpus) **and** a ≥2-distinct-family free-cloud cross-model
 consensus on the FP analysis. Tracked as Phase-1 (#3800 AC3/AC4/AC5).
 
+### AC4 shadow-period metric
+
+`scripts/epic-baton-shadow-metric.js` measures the EB1/EB2/EB3 finding-rate over the corpus a gate
+would scan and emits a data-driven `promotionReadiness` verdict:
+
+```
+node scripts/epic-baton-shadow-metric.js
+```
+
+- **tracked corpus** (git-committed subset) = what a CI-wired gate actually sees. Its finding-rate is
+  a sound upper bound on the gate's block-rate there. On the current tracked tree this is **0%**.
+- **worktree corpus** (on-disk mirror, incl. untracked) = the historical **backlog** — pre-existing
+  TRUE positives (real bundling drift), NOT false positives. On the canonical dev checkout this is
+  ~327 flagged children (~98%). A true FP-rate needs a labeled corpus.
+
+`promotionReadiness.ready` is true only when the tracked finding-rate is < 2% **and** there is no
+working-tree backlog a naively-wired gate would brick on. Because the current advisory `main()` scans
+the working-tree wiki dir, promoting EB1/EB2/EB3 to blocking today would brick every commit on the
+~327 historical instances — so **promotion is DEFERRED** pending **AC5** (historical backfill /
+grandfathering) and a tracked-tree-scoped gate wiring. The shadow metric is wired into
+`governance-verify` as a default-on, non-blocking advisory (`EPIC_BATON_SHADOW_ADVISORY=0` silences).
+
 See also: `role-baton-routing.instructions.md` (per-child evidence requirement), Epic #2345
 (the completion review that surfaced this defect).
