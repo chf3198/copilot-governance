@@ -1,0 +1,72 @@
+diff --git a/agents/governance-auditor.agent.md b/agents/governance-auditor.agent.md
+index bdd4b71..2aa5411 100644
+--- a/agents/governance-auditor.agent.md
++++ b/agents/governance-auditor.agent.md
+@@ -3,7 +3,7 @@ name: Governance Auditor
+ description: Post-merge and post-deploy governance enforcement. Audits CHANGELOG, README sync, community health, docs drift, and learnings.
+ tools:
+   - '*'
+-model: Claude Sonnet 4 (copilot)
++model: Claude Sonnet 4.6 (copilot)
+ ---
+ 
+ # Governance Auditor
+diff --git a/agents/planner.agent.md b/agents/planner.agent.md
+index fafc66a..64ed7a5 100644
+--- a/agents/planner.agent.md
++++ b/agents/planner.agent.md
+@@ -2,12 +2,16 @@
+ name: Planner
+ description: Research and implementation planning agent. Read-only tools — cannot modify files. Produces structured plans with evidence.
+ tools: []
+-model: Claude Opus 4 (copilot)
++model: Claude Opus 4.6 (copilot)
+ handoffs:
+-  - label: Start Implementation
+-    agent: agent
++  - label: ⚡ Implement Plan
++    agent: implementer
+     prompt: Implement the plan outlined above. Follow the implementation steps in order.
+     send: false
++  - label: 🧠 Architect It
++    agent: architect
++    prompt: Implement the plan outlined above. This requires deep reasoning — use architectural rigor.
++    send: false
+ ---
+ 
+ # Planner
+diff --git a/agents/release-reviewer.agent.md b/agents/release-reviewer.agent.md
+index 41013e1..84f800d 100644
+--- a/agents/release-reviewer.agent.md
++++ b/agents/release-reviewer.agent.md
+@@ -3,7 +3,7 @@ name: Release Reviewer
+ description: Version integrity, CHANGELOG quality, artifact safety, and documentation synchronization reviewer.
+ tools:
+   - '*'
+-model: Claude Sonnet 4 (copilot)
++model: Claude Sonnet 4.6 (copilot)
+ ---
+ 
+ # Release Reviewer
+diff --git a/agents/security-scanner.agent.md b/agents/security-scanner.agent.md
+index 9a7659b..f84582b 100644
+--- a/agents/security-scanner.agent.md
++++ b/agents/security-scanner.agent.md
+@@ -3,7 +3,7 @@ name: Security Scanner
+ description: Credential and secret exposure scanner. Audits files, git history, package artifacts, and CI workflows for leaked secrets.
+ tools:
+   - '*'
+-model: Claude Sonnet 4 (copilot)
++model: Claude Sonnet 4.6 (copilot)
+ ---
+ 
+ # Security Scanner
+@@ -14,7 +14,7 @@ You are a security-focused scanner. Your sole purpose is to find and prevent cre
+ 
+ ### 1. Live File Scan
+ Search the workspace for files containing potential secrets:
+-- API keys: patterns like `sk-`, `ghp_`, `gho_`, `Bearer `, `token`, `secret`, `password`
++- API keys: patterns like `sk-`, `ghp_`, `gho_`, `Bearer`, `token`, `secret`, `password`
+ - `.env` files with real values (not placeholders)
+ - Private keys: `-----BEGIN`, `.pem`, `.key`, `id_rsa`, `id_ed25519`
+ - Hard-coded credentials in source files
