@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "description": "Provider adapters for provider-neutral lane capability tiers.",
+  "runtimeKinds": [
+    "antigravity",
+    "claude-code",
+    "codex",
+    "copilot",
+    "cursor"
+  ],
+  "lanes": {
+    "free": {
+      "capabilityTier": "free-auto",
+      "defaultAdapter": "openai-compatible:mini",
+      "defaultProvider": "openai-compatible",
+      "defaultModelId": "gpt-5-mini",
+      "adapters": [
+        "openai-compatible:mini",
+        "openrouter:free",
+        "litellm:free"
+      ]
+    },
+    "fleet": {
+      "capabilityTier": "fleet-coding-local",
+      "defaultAdapter": "ollama:qwen-coder",
+      "defaultProvider": "ollama",
+      "defaultModelId": "qwen2.5:7b-instruct",
+      "adapters": [
+        "ollama:qwen-coder",
+        "fleet:heavy-coding",
+        "fleet:coding"
+      ]
+    },
+    "haiku": {
+      "capabilityTier": "balanced-cloud",
+      "defaultAdapter": "anthropic:haiku",
+      "defaultProvider": "anthropic",
+      "defaultModelId": "claude-haiku-4-5-20251001",
+      "adapters": [
+        "anthropic:haiku",
+        "openai-compatible:small",
+        "openrouter:small",
+        "litellm:small"
+      ]
+    },
+    "premium": {
+      "capabilityTier": "frontier-reasoning",
+      "defaultAdapter": "anthropic:sonnet",
+      "defaultProvider": "anthropic",
+      "defaultModelId": "claude-sonnet-4-6",
+      "adapters": [
+        "anthropic:sonnet",
+        "openai-compatible:frontier",
+        "openrouter:frontier",
+        "litellm:frontier"
+      ]
+    }
+  }
+}
