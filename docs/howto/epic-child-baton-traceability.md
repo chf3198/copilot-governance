@@ -44,6 +44,25 @@ Give the flagged child its own `## CONSULTANT_CLOSEOUT` and `## GitHub Evidence 
 or reopen it and complete its baton. For a closed Epic with an open child (EB3), either close the child
 with its own evidence or reopen the Epic.
 
+## Close-time remediation hint (AC3)
+
+Before closing an Epic, ask the detector for an epic-scoped, actionable hint that names the specific
+children still missing their own baton evidence:
+
+```
+node scripts/epic-child-baton-traceability.js --epic <N>
+```
+
+- If the Epic has un-evidenced or still-open children, it prints a `CLOSE-TIME HINT` naming each
+  blocking child and the invariant codes (`EB1`/`EB2`/`EB3`) blocking it — remediate those first.
+- If the Epic is clean (or is not an actually-closing Epic), it prints `clear to close` and does
+  nothing else. The hint reuses the same validated `auditEpics()` predicate, so it is low-false-
+  positive by construction and **never** fires on an open/non-epic ticket.
+
+This is a HINT for the Manager/Admin baton path, not a blocking gate (advisory-first, always exit 0).
+Programmatic callers can use the exported `epicCloseHint(tickets, epicNumber)` →
+`{ epic, blockers:[{child, codes}], hint }` (`hint` is `null` when clear).
+
 ## Promotion path (not yet blocking)
 
 Promotion of any invariant from advisory to a hard Epic-close gate requires the AC4 shadow metric
