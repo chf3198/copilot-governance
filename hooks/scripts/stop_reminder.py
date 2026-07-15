@@ -71,7 +71,15 @@ def main() -> int:
         messages.append("CLIENT-DEFER GUARDRAIL — " + redirect["directive"])
 
     if not block_reason:
-        block_reason, msg = check_uncommitted(uncommitted, roles)
+        # #3810: session-attributable gating — pass the SessionStart baseline snapshot + current
+        # branch + admin_ops so check_uncommitted blocks only on code THIS session left uncommitted,
+        # not on pre-existing standing drift. Unresolved baseline => legacy block (fail-safe).
+        block_reason, msg = check_uncommitted(
+            uncommitted, roles,
+            baseline_record=state.get("baseline_uncommitted"),
+            current_branch=branch,
+            admin_ops=ops,
+        )
     else:
         msg = None
     if msg:
