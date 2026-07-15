@@ -7,3 +7,4 @@ L3 skills · 43 files captured (file-level -uall) · consensus c3b442e90fcaab89 
 L4 agents · 10 files captured · consensus a9cc15113274e365 · feat/3818-L4-capture
 L5 root-misc · 108 files captured (dashboard/docs/openclaw/.gitignore, mode-faithful 755) · consensus 81b023b3b9b79ae1 · feat/3818-L5-capture
 L6 fleet+hamr+openclaw · 81 files captured · consensus 8448a2c72366ef4c · feat/3818-L6-capture
+L10 anneal+harness · 39 files captured (1 pre-existing-broken spec captured as-is + follow-up) · consensus cd4b6babef7b5292 · feat/3818-L10-capture
