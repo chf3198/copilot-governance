@@ -1,0 +1,33 @@
+name: governance-evidence-bridge
+
+# #3014 (Epic #3008 Phase C) — regression gate for the HAMR governance evidence bridge: bridging,
+# content-hash parity, freshness TTL, per-role completeness, and diagnostics. Also self-tests the
+# graceful megalint fallback in baton-artifact-governance (the bridge's only load-time dependency).
+# These are the enforced roots that make scripts/governance-evidence-bridge.js and
+# scripts/baton-artifact-governance.js ENFORCED (enforcement-wiring-audit). Pure/hermetic — Node
+# built-ins only; no network, no gh.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  governance-evidence-bridge:
+    name: governance-evidence-bridge (parity/TTL/completeness/diagnostics self-test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Evidence-bridge self-test (AC1-AC4)
+        run: node scripts/governance-evidence-bridge.spec.js
+
+      - name: Baton-artifact-governance self-test (load + finders + graceful fallback)
+        run: node scripts/baton-artifact-governance.spec.js

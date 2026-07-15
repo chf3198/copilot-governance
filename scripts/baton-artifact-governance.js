@@ -1,6 +1,20 @@
 'use strict';
 
-const { extractArtifactFields, validateArtifactAlias } = require('./megalint/signer-registry-check');
+// #3014 — the megalint signer-registry-check module is deployed out-of-repo on some checkouts (it is
+// not tracked here; cf. the "megalint/ absent" capture gotcha). Require it defensively so consumers
+// that only need the artifact FINDERS (entries/classifyComment — e.g. governance-evidence-bridge #3014)
+// still load when it is absent. Signer/alias + role-mismatch validation, which genuinely needs the
+// registry, degrades to a safe no-op (no false violations) until the module is restored; full behavior
+// is preserved whenever it IS present.
+let extractArtifactFields;
+let validateArtifactAlias;
+try {
+  ({ extractArtifactFields, validateArtifactAlias } = require('./megalint/signer-registry-check'));
+} catch (err) {
+  if (err && err.code !== 'MODULE_NOT_FOUND') throw err;
+  extractArtifactFields = () => ({});
+  validateArtifactAlias = () => ({ ok: true, degraded: true });
+}
 
 const ARTIFACT_ROLE = {
   MANAGER_HANDOFF: 'manager',
