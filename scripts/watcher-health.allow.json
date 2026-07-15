@@ -1,0 +1,5 @@
+{
+  "_note": "Allow-list of scheduled workflows expected to be skipped/failing (#3522, ADR-020 \u00a7D5). Key = 'repo/workflow-name'; value = reason string (required \u2014 silence must be auditable). Orphaned entries (target no longer exists) are flagged 'stale-allowlist' each run so a suppression can never outlive its target.",
+  "_example": "chf3198-somerepo/deprecated-cron.yml",
+  "copilot-global-skills/ticket-governance-metrics": "retired: deprecated type-prefix title metric + ephemeral job-summary-only output; RETIRE per unanimous 4/4 cross-model consensus 2026-07-07 (#3647). Workflow intentionally left disabled."
+}

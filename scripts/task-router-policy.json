@@ -1,0 +1,41 @@
+{
+  "version": "1.2.0",
+  "defaultLane": "fleet",
+  "fleetMinScore": 1,
+  "lanes": {
+    "free": {
+      "backend": "auto",
+      "recommendedModel": "free-auto",
+      "keywords": [
+        "search", "grep", "find", "explain", "read", "docs",
+        "rename", "boilerplate", "simple", "small", "single-file"
+      ]
+    },
+    "fleet": {
+      "backend": "ollama",
+      "recommendedModel": "fleet-coding-local",
+      "selection": "capability-tags",
+      "keywords": [
+        "multi-file", "tests", "refactor", "implement", "migration",
+        "pattern", "transform", "integration", "batch", "known",
+        "create", "update", "fix", "add", "edit", "generate", "write"
+      ]
+    },
+    "premium": {
+      "backend": "provider-adapter",
+      "recommendedModel": "frontier-reasoning",
+      "keywords": [
+        "architecture", "ambiguous", "complex", "hard", "risk",
+        "security", "performance", "concurrency", "incident", "design"
+      ]
+    }
+  },
+  "escalation": {
+    "premiumOn": ["failed", "stuck", "unclear", "cross-system", "trade-off"],
+    "fleetOn": ["medium", "repeated", "workflow", "generate", "coverage"]
+  },
+  "fleetSelection": {
+    "source": "inventory/devices.json",
+    "fields": ["routing.inferenceClass", "routing.priority", "routing.preferredFor"]
+  }
+}

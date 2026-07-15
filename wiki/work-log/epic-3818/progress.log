@@ -10,3 +10,4 @@ L6 fleet+hamr+openclaw · 81 files captured · consensus 8448a2c72366ef4c · fea
 L10 anneal+harness · 39 files captured (1 pre-existing-broken spec captured as-is + follow-up) · consensus cd4b6babef7b5292 · feat/3818-L10-capture
 L11 worktree+authorization+routing · 27 files captured · consensus b89c7eda0fc3e382 · feat/3818-L11-capture
 L12a scripts-rest a-m · 185 files captured · consensus 2d25ee14b59bcb8e · feat/3818-L12a-capture
+L12b scripts-rest n-z · 131 files captured · consensus eaa2fac051802117 · feat/3818-L12b-capture · COMPLETES all 12 lots
