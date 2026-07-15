@@ -212,6 +212,29 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first Epic-close bundling-drift SHADOW-PERIOD metric (#3800 AC4). Default-on but NEVER
+  // contributes to `issues` — it records the EB1/EB2/EB3 finding-rate over the tracked vs working-tree
+  // corpora (G8 observability) and a data-driven `promotionReadiness` verdict per AC4's < 2% rule, and
+  // adds a non-blocking hint when promotion is NOT yet ready (e.g. a historical working-tree backlog
+  // remains — AC5 scope). It does NOT flip EB1/EB2/EB3 to blocking. Scans THIS repo (path.resolve(
+  // __dirname,'..')), not the passed layout `root`, so it is a no-op under throwaway fixture roots.
+  // Set EPIC_BATON_SHADOW_ADVISORY=0 to silence.
+  let epicBatonShadowMetric = null;
+  if (process.env.EPIC_BATON_SHADOW_ADVISORY !== '0') {
+    try {
+      const sm = require('./epic-baton-shadow-metric');
+      epicBatonShadowMetric = sm.shadowMetric(sm.scanCorpora(path.resolve(__dirname, '..')));
+      if (!epicBatonShadowMetric.promotionReadiness.ready) {
+        hints.push({
+          code: 'advisory_epic_baton_promotion_deferred',
+          reason: epicBatonShadowMetric.promotionReadiness.reason,
+          backlog: epicBatonShadowMetric.promotionReadiness.backlog,
+          advisory: true,
+        });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -225,6 +248,7 @@ function verify(root, opts = {}) {
     mirrorTicketAdvisories,
     autonomyAdvisories,
     completionGateAdvisories,
+    epicBatonShadowMetric,
     runAt: new Date().toISOString(),
   };
 }
@@ -266,6 +290,10 @@ if (require.main === module) {
     if (result.completionGateAdvisories && result.completionGateAdvisories.length) {
       console.log(`Completion-gate advisories (non-blocking): ${result.completionGateAdvisories.length}`);
       result.completionGateAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
+    }
+    if (result.epicBatonShadowMetric) {
+      const pr = result.epicBatonShadowMetric.promotionReadiness;
+      console.log(`Epic-baton shadow metric (non-blocking): promotion ${pr.ready ? 'READY' : 'DEFER'} — ${pr.reason}`);
     }
   }
   process.exit(result.issues.length ? 1 : 0);
