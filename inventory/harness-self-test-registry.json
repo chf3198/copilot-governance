@@ -23,6 +23,8 @@
     { "name": "hamr-tool-policy", "spec": "scripts/hamr-tool-policy.spec.js" },
     { "name": "hamr-tool-proxy", "spec": "scripts/hamr-tool-proxy.spec.js" },
     { "name": "hamr-tool-audit", "spec": "scripts/hamr-tool-audit.spec.js" },
+    { "name": "governance-evidence-bridge", "spec": "scripts/governance-evidence-bridge.spec.js" },
+    { "name": "baton-artifact-governance", "spec": "scripts/baton-artifact-governance.spec.js" },
     { "name": "session-baseline", "spec": "hooks/scripts/session_baseline.spec.md", "test": "hooks/scripts/session_baseline_test.py", "kind": "hook-pytest" },
     { "name": "git-checks-porcelain", "spec": "hooks/scripts/git_checks.spec.md", "test": "hooks/scripts/git_checks_test.py", "kind": "hook-pytest" }
   ]
