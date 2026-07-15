@@ -156,6 +156,25 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first flat-mirror ticket structural lint (#3805). Reconciles the legacy `# Ticket N —`
+  // parser to the flat wiki-mirror frontmatter schema: the blocking `parse()` above reads `<root>/
+  // tickets/` (absent on flat main → silent `checkedTickets: 0`), so the real corpus at wiki/work-log/
+  // tickets/ was never structurally linted. Default-on but NEVER contributes to `issues` — it only adds
+  // advisory hints, so the pass/fail verdict is unchanged. Scans THIS repo's wiki/ (path.resolve(
+  // __dirname,'..')), not the passed layout `root`, so it is a no-op under throwaway fixture roots.
+  // Set MIRROR_TICKET_LINT_ADVISORY=0 to silence.
+  const mirrorTicketAdvisories = [];
+  if (process.env.MIRROR_TICKET_LINT_ADVISORY !== '0') {
+    try {
+      const mtl = require('./mirror-ticket-lint');
+      const { warnings } = mtl.lint(mtl.scanMirror(path.resolve(__dirname, '..')));
+      for (const w of warnings) {
+        mirrorTicketAdvisories.push(w);
+        hints.push({ code: `advisory_${w.code}`, file: w.file, ticket: w.number, advisory: true });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -166,6 +185,7 @@ function verify(root, opts = {}) {
     epicChildBatonAdvisories,
     enforcementTelemetry,
     mirrorAdminAdvisories,
+    mirrorTicketAdvisories,
     runAt: new Date().toISOString(),
   };
 }
@@ -195,6 +215,10 @@ if (require.main === module) {
     if (result.epicChildBatonAdvisories.length) {
       console.log(`Epic-child baton advisories (non-blocking): ${result.epicChildBatonAdvisories.length}`);
       result.epicChildBatonAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
+    }
+    if (result.mirrorTicketAdvisories && result.mirrorTicketAdvisories.length) {
+      console.log(`Mirror-ticket structural advisories (non-blocking): ${result.mirrorTicketAdvisories.length}`);
+      result.mirrorTicketAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
     }
   }
   process.exit(result.issues.length ? 1 : 0);
