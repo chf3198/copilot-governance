@@ -1,0 +1,59 @@
+/* Live Activity Feed styles */
+
+.activity-list {
+  max-height: 440px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.activity-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.2rem 0;
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-row:last-child { border-bottom: none; }
+
+.activity-row:hover {
+  background: color-mix(in srgb, var(--blue) 6%, transparent);
+  border-radius: 4px;
+}
+
+.activity-time {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  min-width: 5.5em;
+  font-family: monospace;
+  letter-spacing: -0.02em;
+}
+
+.activity-icon { font-size: 0.85rem; }
+
+.activity-msg { color: var(--text); }
+
+.activity-detail {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  margin-left: auto;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px;
+}
+
+.activity-empty {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+  padding: 0.3rem;
+}
+
+/* Agile event type colors */
+.activity-row.ticket .activity-icon { color: var(--blue); }
+.activity-row.role .activity-icon { color: #a78bfa; }
+.activity-row.branch .activity-icon,
+.activity-row.commit .activity-icon { color: var(--green); }
+.activity-row.pr .activity-icon,
+.activity-row.merge .activity-icon { color: #f59e0b; }
+.activity-row.deploy .activity-icon { color: #06b6d4; }
+.activity-row.error .activity-msg { color: var(--red); }

@@ -1,0 +1,33 @@
+diff --git a/.gitignore b/.gitignore
+index 7acbaab..fd997ef 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -17,3 +17,28 @@ Thumbs.db
+ 
+ # VS Code workspace-specific
+ .vscode/
++
++# Runtime / generated operational artifacts — never committed (regenerated at runtime).
++# Added 2026-07-13 to stop the live operational runtime from polluting the tracked tree.
++# NOTE: authored source (hooks/scripts, instructions, skills, agents) is intentionally
++# NOT ignored — that drift needs human triage + a baton, not a blanket ignore.
++session-state/
++session-store.db
++logs/
++.dashboard/
++hooks/state/
++command-history-state.json
++hamr-config.json
++openclaw-usage.log
++openclaw-model-refresh.json
++vscode.session.metadata.cache.json
++*.session.metadata.cache.json
++# Generated LLM-wiki mirror (Karpathy-pattern, regenerated; never tracked in this checkout)
++wiki/
++
++# Host-local / IDE runtime state — machine-specific or contains live tokens (#3797).
++# /config.json self-describes as "managed automatically"; ide/*.lock holds a live MCP
++# auth nonce + socket + pid; permissions-config.json is keyed to an absolute host path.
++/config.json
++/ide/
++/permissions-config.json

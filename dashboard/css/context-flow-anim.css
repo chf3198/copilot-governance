@@ -1,0 +1,67 @@
+/* Context Flow animation enhancements — Epic #1339 C4.
+ * Replaces the basic cf-pulse with a hybrid: rAF-friendly opacity + transform
+ * (GPU-accelerated, no layout shift), plus reduced-motion fallback that
+ * snaps to state instead of animating.
+ *
+ * WCAG 4.5:1 contrast preserved by NOT relying on color alone to convey
+ * activity — animation also changes brightness and adds drop-shadow.
+ */
+
+.cf-active {
+  /* Override the simpler 3s pulse with a richer animation */
+  animation: cf-pulse-v2 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: opacity, transform, filter;
+}
+
+@keyframes cf-pulse-v2 {
+  0% {
+    opacity: 1;
+    transform: scale(1.0);
+    filter: drop-shadow(0 0 6px #60a5fa) brightness(1.15);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 12px #3b82f6) brightness(1.25);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1.0);
+    filter: drop-shadow(0 0 0 transparent) brightness(1);
+  }
+}
+
+/* Edge / arrow animation when traffic flows along it */
+.cf-edge-active {
+  animation: cf-edge-flow 1.2s ease-out forwards;
+  will-change: stroke-dashoffset, opacity;
+}
+
+@keyframes cf-edge-flow {
+  0% { stroke-dashoffset: 20; opacity: 0.4; }
+  50% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: -20; opacity: 0.6; }
+}
+
+/* Reduced-motion fallback: SNAP to state, no animation.
+ * Preserves accessibility for users who request reduced motion
+ * (vestibular disorders, motion sickness, focus).
+ */
+@media (prefers-reduced-motion: reduce) {
+  .cf-active {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    filter: drop-shadow(0 0 4px #60a5fa);
+  }
+  .cf-edge-active {
+    animation: none !important;
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Scale SVG diagram for narrow viewports where 9px node text would be unreadable */
+@media (max-width: 480px) {
+  .cf-wrap { transform: scale(0.7); transform-origin: top left; }
+}

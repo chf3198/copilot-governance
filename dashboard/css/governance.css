@@ -1,0 +1,7 @@
+.governance-grid{display:flex;flex-direction:column;gap:0.5rem;}
+.gov-card{background:#101827;border:1px solid #334155;border-radius:0.5rem;padding:0.5rem 0.75rem;font-size:0.85rem;line-height:1.35;color:#f8fafc;}
+.gov-card h3{margin:0 0 0.2rem;font-size:0.88rem;color:#f8fafc;}
+.gov-status{background:#0f172a;border-color:#1e293b;}
+.gov-list ul{margin:0;padding-left:1.1rem;list-style:disc outside;}
+.gov-list li{margin-bottom:0.35rem;word-break:break-word;}
+.gov-card code{background:#1f2937;padding:0.15rem 0.3rem;border-radius:0.35rem;color:#e2e8f0;}

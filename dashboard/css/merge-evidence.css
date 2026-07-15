@@ -1,0 +1,40 @@
+/* Merge-Evidence Panel (Epic #1486 Phase-1d). WCAG 4.5:1 contrast preserved
+   via brightness + drop-shadow signaling rather than color-only per
+   instructions/observability.instructions.md (animation + accessibility). */
+
+.merge-evidence-panel { padding: 0.75rem 1rem; font-family: inherit; }
+.merge-evidence-panel .me-title { margin: 0 0 0.5rem; font-size: 1rem; }
+.merge-evidence-panel .me-warn {
+  background: #fff3cd; color: #4a3a00; padding: 0.4rem 0.6rem;
+  border-left: 3px solid #d9a000; margin: 0.5rem 0; font-size: 0.85rem;
+}
+.merge-evidence-panel .me-warn code { background: #f0e8c8; padding: 0 0.25rem; }
+.merge-evidence-panel .me-error { color: #8b0000; font-size: 0.85rem; }
+
+.me-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.me-table th, .me-table td { padding: 0.35rem 0.5rem; text-align: left; }
+.me-table thead { background: rgba(0,0,0,0.04); font-weight: 600; }
+.me-table tbody tr { border-top: 1px solid rgba(0,0,0,0.08); }
+.me-row-ok td { color: inherit; }
+.me-row-low td { color: #6b4a00; }
+.me-row-high td { color: #6b0000; font-weight: 500; }
+.me-empty { color: #555; font-style: italic; padding: 0.5rem; }
+
+.me-badge {
+  display: inline-block; padding: 0.05rem 0.5rem; border-radius: 0.4rem;
+  font-weight: 600; font-size: 0.8rem;
+}
+.me-ok   { background: #d4edda; color: #155724; }
+.me-low  { background: #fff3cd; color: #6b4a00; filter: brightness(0.97); }
+.me-high {
+  background: #f8d7da; color: #721c24;
+  filter: drop-shadow(0 0 1px rgba(114,28,36,0.4));
+}
+
+.merge-evidence-panel .me-summary {
+  margin: 0.5rem 0 0; font-size: 0.78rem; color: #555;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .me-badge { transition: none !important; }
+}

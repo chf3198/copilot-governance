@@ -1,0 +1,8 @@
+/* fleet-panel.css — Epic #2518 AC6 (#2526) */
+.fleet-panel { padding: 12px; border: 1px solid var(--border, #444); border-radius: 6px; margin: 8px 0; }
+.fleet-panel h3 { margin-top: 0; font-size: 1em; color: var(--accent, #58a6ff); }
+.fleet-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+.fleet-table th, .fleet-table td { padding: 4px 8px; border-bottom: 1px solid var(--border-soft, #333); text-align: left; }
+.fleet-row code { font-size: 0.9em; }
+.fleet-empty, .fleet-error { padding: 12px; opacity: 0.6; font-style: italic; }
+.fleet-error { color: var(--error, #f97316); }

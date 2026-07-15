@@ -1,0 +1,97 @@
+/* Baton Flow — Multi-ticket parallel visualization */
+
+.baton-flow {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.5rem 0.75rem;
+  display: flex; flex-direction: column;
+  gap: 0.4rem; max-height: 260px; overflow-y: auto;
+}
+
+.baton-empty {
+  color: var(--text-muted); font-style: italic;
+  font-size: 0.82rem; text-align: center; padding: 0.5rem;
+}
+
+.baton-row {
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.4rem 0.6rem; background: var(--bg);
+}
+
+.baton-meta {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-bottom: 0.3rem; flex-wrap: wrap;
+}
+
+.baton-issue { font-size: 0.9rem; font-weight: 700; color: var(--blue); }
+.baton-title { font-size: 0.78rem; color: var(--text); font-weight: 500; }
+.baton-epic {
+  font-size: 0.65rem; color: var(--text-muted); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 3px; padding: 0 0.3rem;
+}
+.baton-agent { font-size: 0.75rem; color: var(--text); margin-left: auto; }
+
+.baton-comment {
+  font-size: 0.7rem; color: var(--text-muted); cursor: help;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 0.2rem; max-width: 100%;
+}
+
+.baton-pipeline {
+  display: flex; align-items: center; gap: 0;
+  flex-wrap: nowrap; overflow-x: auto;
+}
+
+.baton-step {
+  text-align: center; padding: 0.15rem 0.25rem; border-radius: 4px;
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-size: 0.72rem; opacity: 0.4; transition: all 0.3s ease;
+  white-space: nowrap; flex-shrink: 0;
+}
+.baton-step.done { border-color: var(--green); opacity: 0.65; }
+.baton-step.active {
+  border-color: var(--blue); opacity: 1;
+  background: color-mix(in srgb, var(--blue) 12%, var(--bg));
+  box-shadow: 0 0 6px color-mix(in srgb, var(--blue) 20%, transparent);
+}
+
+.baton-lbl { font-size: 0.58rem; font-weight: 600; margin-left: 0.1rem; }
+.baton-arrow { color: var(--border); padding: 0 0.05rem; font-size: 0.6rem; }
+.baton-step.done + .baton-arrow { color: var(--green); }
+.baton-step.active + .baton-arrow { color: var(--blue); }
+
+.baton-model {
+  font-size: 0.68rem; color: var(--text-muted); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 3px; padding: 0 0.3rem;
+}
+.baton-gap {
+  font-size: 0.68rem; color: var(--yellow);
+  background: color-mix(in srgb, var(--yellow) 10%, var(--bg));
+  border: 1px solid var(--yellow); border-radius: 3px; padding: 0 0.3rem;
+}
+.baton-timeline {
+  display: flex; align-items: center; gap: 0.15rem;
+  font-size: 0.65rem; color: var(--text-muted);
+  margin-top: 0.2rem; padding: 0.15rem 0;
+  border-top: 1px dashed var(--border); flex-wrap: wrap;
+}
+.tl-step {
+  white-space: nowrap; font-size: 0.62rem; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 3px;
+  padding: 0.05rem 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .baton-pipeline { overflow-x: auto; }
+  .baton-step { font-size: 0.65rem; padding: 0.1rem 0.2rem; }
+  .baton-agent { margin-left: 0; }
+}
+
+.baton-done-group {
+  border-top: 1px dashed var(--border); padding-top: 0.3rem;
+  margin-top: 0.2rem;
+}
+.baton-done-group summary {
+  font-size: 0.72rem; color: var(--text-muted); cursor: pointer;
+  padding: 0.15rem 0; user-select: none;
+}
+.baton-done-group .baton-row { opacity: 0.6; }

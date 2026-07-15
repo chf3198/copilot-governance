@@ -1,0 +1,25 @@
+/* hamr-panel.css — HAMR cost-coverage panel (#1159).
+   Signaling uses SHAPE + TEXT, not color alone (WCAG 4.5:1); animation honors prefers-reduced-motion. */
+.hamr-panel { display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; }
+.hamr-panel-warn { outline: 2px solid #d98200; outline-offset: 2px; }
+.hamr-gauge { font-size: 1rem; }
+.hamr-gauge strong { font-size: 1.2rem; }
+.hamr-gauge small { opacity: 0.8; }
+.hamr-governor { display: flex; align-items: center; gap: 0.4rem; }
+.hamr-badge { padding: 0.1rem 0.5rem; border-radius: 0.3rem; font-weight: 600; }
+.hamr-ok { background: #1c3a1c; color: #b7f7b7; border: 1px solid #3a7a3a; }
+.hamr-warn { background: #4a2a00; color: #ffd591; border: 1px solid #d98200; }
+.hamr-table { width: 100%; border-collapse: collapse; }
+.hamr-table caption { text-align: left; opacity: 0.85; padding: 0.2rem 0; font-weight: 600; }
+.hamr-row td { padding: 0.15rem 0.3rem; vertical-align: middle; }
+.hamr-label { white-space: nowrap; }
+.hamr-bar-cell { width: 60%; }
+.hamr-bar { display: inline-block; height: 0.7rem; min-width: 2%; border-radius: 0.2rem;
+  background: linear-gradient(90deg, #4a90d9, #2a6cb0); transition: width 0.8s ease; }
+.hamr-count { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hamr-empty, .hamr-error { opacity: 0.8; font-style: italic; }
+.hamr-error { color: #ffb3b3; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hamr-bar { transition: none; }
+}
