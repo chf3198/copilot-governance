@@ -62,41 +62,6 @@ function auditEpics(tickets) {
   return { warnings };
 }
 
-// AC3 (#3800 Phase-1) — Epic-CLOSE-TIME remediation hint.
-// Given the ticket set and a SPECIFIC Epic being closed (Manager/Admin baton path),
-// reuse `auditEpics()` and return an actionable, epic-scoped hint that NAMES the
-// un-evidenced / open children the closer must remediate FIRST.
-// Pure. Returns { epic, blockers:[{child, codes:[...]}], hint }. `hint` is null and
-// `blockers` empty when the epic is clean OR is not an actually-closing Epic — no noise,
-// low-FP by construction (same validated predicate as the Phase-0 detector).
-// Advisory only: this is a HINT, never a blocking gate (promotion to blocking is AC4).
-function epicCloseHint(tickets, epicNumber) {
-  const n = Number(epicNumber);
-  const list = Array.isArray(tickets) ? tickets : [];
-  const epic = list.find((t) => t.number === n);
-  const empty = { epic: n, blockers: [], hint: null };
-  // Only meaningful for an actual Epic that is closed/closing.
-  if (!epic || String(epic.type || '').toLowerCase() !== 'epic' || !isClosed(epic.status)) return empty;
-  // Reuse the validated audit; keep only THIS epic's warnings.
-  const warnings = auditEpics(list).warnings.filter((w) => w.epic === n && w.child != null);
-  if (warnings.length === 0) return empty;
-  // Group by child → the set of invariant codes blocking that child.
-  const byChild = new Map();
-  for (const w of warnings) {
-    if (!byChild.has(w.child)) byChild.set(w.child, []);
-    byChild.get(w.child).push(w.code);
-  }
-  const blockers = [...byChild.entries()]
-    .map(([child, codes]) => ({ child, codes: codes.slice().sort() }))
-    .sort((a, b) => a.child - b.child);
-  const names = blockers.map((b) => `#${b.child}`).join(', ');
-  const hint =
-    `Epic #${n} is closing with ${blockers.length} un-evidenced child(ren): ${names}. ` +
-    'Before closing, give each child its own CONSULTANT_CLOSEOUT + GitHub Evidence Block ' +
-    '(or reopen/complete the open child). Per-child baton evidence is required — do not bundle-close.';
-  return { epic: n, blockers, hint };
-}
-
 // ── Mirror parsing (CLI only) ────────────────────────────────────────────────
 function parseMirrorTicket(file, txt) {
   const number = Number((path.basename(file).match(/(\d+)/) || [])[1] || 0);
@@ -120,26 +85,8 @@ function scanMirror(dir) {
     .map((f) => parseMirrorTicket(f, fs.readFileSync(path.join(dir, f), 'utf8')));
 }
 
-function main(argv) {
-  const args = argv || process.argv.slice(2);
+function main() {
   const dir = path.join(__dirname, '..', 'wiki', 'work-log', 'tickets');
-
-  // AC3 close-time hint mode: `--epic <N>` prints the epic-scoped remediation hint.
-  const epicIdx = args.indexOf('--epic');
-  if (epicIdx !== -1) {
-    const epicNumber = Number(args[epicIdx + 1]);
-    const { hint, blockers } = epicCloseHint(scanMirror(dir), epicNumber);
-    if (hint) {
-      console.log(`[epic-child-baton-traceability] CLOSE-TIME HINT for Epic #${epicNumber}:`);
-      console.log(`  ⚠ ${hint}`);
-      for (const b of blockers) console.log(`    · #${b.child}: ${b.codes.join(', ')}`);
-    } else {
-      console.log(`[epic-child-baton-traceability] Epic #${epicNumber}: no per-child evidence blockers — clear to close.`);
-    }
-    process.exit(0); // advisory-first: hint never fails the run
-    return;
-  }
-
   const { warnings } = auditEpics(scanMirror(dir));
   console.log(`[epic-child-baton-traceability] ADVISORY: ${warnings.length} bundling-drift warning(s).`);
   for (const w of warnings) console.log(`  ⚠ #${w.child ?? w.epic} [${w.code}] ${w.message}`);
@@ -148,4 +95,4 @@ function main(argv) {
 
 if (require.main === module) main();
 
-module.exports = { auditEpics, epicCloseHint, parseMirrorTicket, scanMirror, isClosed };
+module.exports = { auditEpics, parseMirrorTicket, scanMirror, isClosed };
