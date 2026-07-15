@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+"/home/curtisfranks/devenv-ops/scripts/hooks/branch-ops-audit.sh" post-commit "$@"
