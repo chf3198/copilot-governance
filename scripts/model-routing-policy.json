@@ -1,0 +1,291 @@
+{
+  "version": "2.3.0",
+  "defaultLane": "fleet",
+  "adapterPolicy": "routing-provider-adapters.json",
+  "complexityThresholds": {
+    "_doc": "Numeric complexity score gates. fleet=[0,0.3), haiku=[0.3,0.7), premium=[0.7,1.0]",
+    "haiku": 0.3,
+    "premium": 0.7
+  },
+  "taskClasses": {
+    "routine": [
+      "search",
+      "grep",
+      "read",
+      "docs",
+      "simple",
+      "list",
+      "find"
+    ],
+    "coding": [
+      "implement",
+      "refactor",
+      "tests",
+      "integration",
+      "generate",
+      "config"
+    ],
+    "architecture": [
+      "architecture",
+      "design",
+      "risk",
+      "security",
+      "concurrency",
+      "multi-file"
+    ]
+  },
+  "escalationRules": {
+    "premiumOn": [
+      "failed",
+      "stuck",
+      "unclear",
+      "cross-system",
+      "trade-off"
+    ],
+    "fleetOn": [
+      "medium",
+      "repeated",
+      "workflow",
+      "generate",
+      "coverage",
+      "critique",
+      "review",
+      "consultant",
+      "closeout"
+    ]
+  },
+  "models": {
+    "free": {
+      "id": "free-auto",
+      "mult": 0,
+      "costPer1kTokens": 0
+    },
+    "fleet": {
+      "id": "fleet-coding-local",
+      "mult": 0,
+      "costPer1kTokens": 0,
+      "endpoint": "ollama"
+    },
+    "free-cloud": {
+      "id": "free-cloud-failover",
+      "mult": 0,
+      "costPer1kTokens": 0,
+      "endpoint": "openai-compatible",
+      "_doc": "#2619: $0 cloud failover used when fleet is UNREACHABLE (availability failure), before any paid tier. Ordered free providers; see skills/openrouter-free-failover.",
+      "providers": ["cerebras", "groq", "gemini", "openrouter-free", "mistral", "github-models", "nvidia", "sambanova"]
+    },
+    "haiku": {
+      "id": "balanced-cloud",
+      "mult": 0.08,
+      "costPer1kTokens": 0.00088
+    },
+    "premium": {
+      "id": "frontier-reasoning",
+      "mult": 1,
+      "costPer1kTokens": 0.009
+    },
+    "fallback": {
+      "id": "balanced-cloud",
+      "mult": 0.08,
+      "costPer1kTokens": 0.00088
+    }
+  },
+  "capability_matrix": {
+    "_doc": "Per-dimension tier thresholds. Manager uses this for ticket assignment.",
+    "reasoning_depth": {
+      "fleet": "single-hop lookup, extraction, slot-filling",
+      "haiku": "2-3 step reasoning, structured output with schema",
+      "premium": "multi-hop chain-of-thought, planning, proof"
+    },
+    "code_complexity": {
+      "fleet": "autocomplete, boilerplate, single-function (<30 lines), config gen",
+      "haiku": "single-file refactor, test generation, bug fix with clear root cause",
+      "premium": "multi-file refactor, cross-module debugging, architecture design"
+    },
+    "context_length": {
+      "fleet": "<8K tokens (7B model effective window)",
+      "haiku": "8K-32K tokens",
+      "premium": ">32K tokens or coherence across large context required"
+    },
+    "tool_call_chain": {
+      "fleet": "1-2 tool calls, well-specified inputs, structured outputs",
+      "haiku": "3-4 tool calls with retry, moderate output variance",
+      "premium": "5+ tool calls, long-horizon agent plan, error amplification risk"
+    },
+    "ambiguity_level": {
+      "fleet": "well-specified with clear output schema, in-distribution task",
+      "haiku": "multi-constraint with some ambiguity, defined acceptance criteria",
+      "premium": "underspecified, competing constraints, OOD novel task"
+    },
+    "escalation_direct_to_premium": [
+      "security review",
+      "vulnerability audit",
+      "architecture design",
+      "incident response",
+      "cross-system trade-off",
+      "concurrency analysis"
+    ]
+  },
+  "fleetTargets": {
+    "primary": {
+      "deviceId": "36gbwinresource",
+      "ollamaUrl": "http://100.91.113.16:11434",
+      "inferenceClass": "heavy-coding",
+      "warmTokPerSec": 32.3,
+      "gpu": true
+    },
+    "fallback": {
+      "deviceId": "windows-laptop",
+      "ollamaUrl": "http://100.78.22.13:11434",
+      "inferenceClass": "coding",
+      "warmTokPerSec": 7.3,
+      "gpu": false,
+      "note": "Set OLLAMA_KEEP_ALIVE=24h on this host \u2014 see research/ollama-keepalive-runbook.md"
+    },
+    "reasoning": {
+      "deviceId": "36gbwinresource",
+      "ollamaUrl": "http://100.91.113.16:11434",
+      "model": "qwen3:32b",
+      "inferenceClass": "reasoning",
+      "warmTokPerSec": 5,
+      "gpu": "partial",
+      "note": "CPU-offloaded 32B reasoning; mutually exclusive with qwen2.5-coder:32b. Use for Consultant critique and architecture review. G3>G7: zero cost accepted over throughput."
+    }
+  },
+  "cascade": {
+    "enabled": true,
+    "tiers": [
+      "fleet",
+      "free-cloud",
+      "haiku",
+      "premium"
+    ],
+    "qualityThresholds": {
+      "minResponseLength": 30,
+      "structuralValidation": true,
+      "confidenceLevels": {
+        "high": "return",
+        "low": "escalate_to_haiku"
+      }
+    }
+  },
+  "judge": {
+    "_doc": "Layer 2 judge gate: qwen3:32b on 36gbwinresource. Provides reasoning-quality evaluation for fleet responses.",
+    "enabled": true,
+    "model": "qwen3:32b",
+    "threshold": 0.7,
+    "fallback_on_error": true,
+    "requires_gpu": true
+  },
+  "rollback": {
+    "enabled": true,
+    "windowDays": 7,
+    "minSuccessRate": 0.75,
+    "maxPremiumShare": 0.2,
+    "forceLane": "fleet"
+  },
+  "premiumBudget": {
+    "windowDays": 30,
+    "softLimitShare": 0.11,
+    "hardLimitShare": 0.12,
+    "requireStructuredRationale": true
+  },
+  "tavilyBudget": {
+    "softCapUsd": 3,
+    "hardCapUsd": 5,
+    "fallbackLane": "free"
+  },
+  "cascadeEnforcement": {
+    "enforceFreeFleetFirst": true,
+    "minFleetUtilizationShare": 0.85,
+    "windowDays": 7,
+    "violationEscalationReason": "fleet-bypass"
+  },
+  "per_role_lane_preferences": {
+    "_doc": "Per-role preferred lane by complexity tier. Consumed by resolveRouting when opts.role is set. Refs #2320.",
+    "_tiers": "low=[0,0.3) mid=[0.3,0.7) high=[0.7,1.0]",
+    "manager": {
+      "low": "fleet",
+      "mid": "haiku",
+      "high": "premium",
+      "_rationale": "Scoping novel work requires premium at high complexity; templatable tasks are fleet-eligible."
+    },
+    "collaborator": {
+      "low": "fleet",
+      "mid": "fleet",
+      "high": "haiku",
+      "_rationale": "Known-pattern implementation defaults fleet; multi-file novel work escalates to haiku."
+    },
+    "admin": {
+      "low": "fleet",
+      "mid": "fleet",
+      "high": "haiku",
+      "_rationale": "CI ops and deploy verification are templatable; git/release rarely needs above haiku."
+    },
+    "consultant": {
+      "low": "fleet",
+      "mid": "haiku",
+      "high": "premium",
+      "_rationale": "Critique needs independent reasoning; fleet for routine closeout; premium for novel G1-G9 rubric."
+    },
+    "it": {
+      "low": "fleet",
+      "mid": "fleet",
+      "high": "fleet",
+      "_rationale": "IT-ops maintenance fully fleet-eligible per D3. Escalate only on direct-to-premium trigger."
+    },
+    "red-team": {
+      "low": "fleet",
+      "mid": "fleet",
+      "high": "haiku",
+      "_rationale": "Cross-family adversarial review prefers fleet (qwen2.5-coder). Haiku ceiling for high-complexity exploit reasoning."
+    }
+  },
+  "fleet_dev_deny_paths": {
+    "_rationale": "Least-Agency (OWASP-2026, design D9): high-blast-radius paths are OFF-LIMITS to autonomous fleet-development regardless of measured capability. Only senior-tier (premium) or human may author. Canonicalized substring/segment matching by scripts/global/fleet-dev-deny-paths.js (URI-decode + NFKC + non-ASCII fail-closed). Precision is SECURITY-FIRST: a false positive only escalates legit work to premium (G3 cost, acceptable); a false negative is a breach (unacceptable) — so patterns err broad. Edits are CODEOWNERS-governed via the /scripts/global/ entry.",
+    "patterns": [
+      "auth/", "/auth", "authn", "authz", "authentication", "/login", "/login/", "login/", "session/", "oauth", "oidc", "sso/", "saml", "jwt", "kerberos",
+      "crypto", "/keys/", "key-management", "keystore", "secret", "credential", "signing", "ed25519", "private-key", "certificate", "/cert/", ".pem", ".crt", "encrypt", "decrypt",
+      "iam/", "permission", "rbac", "role-policy", "access-control", "acl/", "entitlement", ".tf",
+      "pretool_guard", "canonical_main_enforcer", "governance/", "/megalint/", "baton-gates", "-gate.js", "-gate.py", "label-lint",
+      ".github/workflows/", "/release/", "release.sh", "release.yml", "publish", "deploy.sh", "sync.sh", "ci/", "/pipeline", "jenkinsfile", ".circleci/", ".travis.yml"
+    ]
+  },
+  "code_dev_profile_meta": {
+    "schema_version": "1.0",
+    "_currency_note": "Per-model code_dev_profile values are DATED ESTIMATES (D6), not hard guarantees — refresh from public SWE-bench Verified leaderboards + local eval when a model is upgraded. Consumed by scripts/global/fleet-dev-eligibility.js.",
+    "refreshed": "2026-06-10",
+    "default_profile": {
+      "swe_bench_verified": 0.0,
+      "repo_reasoning": 0.2,
+      "tool_calling": 0.3,
+      "context_stability_tokens": 4000,
+      "latency_tok_per_sec": 7,
+      "refreshed": "2026-06-10",
+      "source": "conservative-default",
+      "estimate": true
+    }
+  },
+  "code_dev_profiles": {
+    "qwen2.5-coder:32b": {
+      "swe_bench_verified": 0.31,
+      "repo_reasoning": 0.55,
+      "tool_calling": 0.6,
+      "context_stability_tokens": 8000,
+      "latency_tok_per_sec": 32,
+      "refreshed": "2026-06-10",
+      "source": "public SWE-bench Verified leaderboard range (estimate; refresh per D6)",
+      "estimate": true
+    },
+    "qwen2.5-coder:7b": {
+      "swe_bench_verified": 0.18,
+      "repo_reasoning": 0.3,
+      "tool_calling": 0.4,
+      "context_stability_tokens": 6000,
+      "latency_tok_per_sec": 7,
+      "refreshed": "2026-06-10",
+      "source": "public benchmark range (estimate; refresh per D6)",
+      "estimate": true
+    }
+  }
+}
