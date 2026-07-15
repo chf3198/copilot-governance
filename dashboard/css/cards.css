@@ -1,0 +1,36 @@
+/* DevEnv Ops Dashboard — Card & Badge Styles */
+
+.card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem; transition: border-color 0.15s;
+}
+.card:hover { border-color: var(--blue); }
+
+.card-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 0.5rem;
+}
+.card-body p { font-size: 0.875rem; margin: 0.2rem 0; }
+.label { color: var(--text-muted); margin-right: 0.25rem; }
+
+.badge {
+    font-size: 0.75rem; padding: 0.15rem 0.5rem;
+    border-radius: 12px; font-weight: 600;
+}
+.badge.healthy, .badge.active { background: var(--green); color: #000; }
+.badge.degraded { background: var(--yellow); color: #000; }
+.badge.offline, .badge.error { background: var(--red); color: #fff; }
+.badge.unknown, .badge.not-configured { background: var(--border); color: var(--text-muted); }
+
+.status-badge { font-size: 0.85rem; font-weight: 600; }
+.status-badge.healthy { color: var(--green); }
+.status-badge.initializing { color: var(--blue); animation: pulse-status 1.5s ease-in-out infinite; }
+@keyframes pulse-status { 0%,100%{opacity:1} 50%{opacity:.5} }
+.status-badge.degraded { color: var(--yellow); }
+.status-badge.offline { color: var(--red); }
+
+.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; }
+.progress-fill.ok { background: var(--green); }
+.progress-fill.warn { background: var(--yellow); }

@@ -1,0 +1,30 @@
+/* Fleet Health Log — offline/recovery event timeline */
+
+.fleet-log-empty {
+  color: var(--text-muted); font-style: italic; padding: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.fleet-log-list {
+  display: flex; flex-direction: column; gap: 0.2rem;
+  max-height: 200px; overflow-y: auto;
+}
+
+.fleet-log-row {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.75rem; padding: 0.2rem 0.4rem;
+  background: var(--surface); border-radius: 4px;
+  border-left: 3px solid var(--border);
+}
+
+.fleet-log-row.offline, .fleet-log-row.openclaw-offline {
+  border-left-color: var(--red);
+}
+.fleet-log-row.recovered, .fleet-log-row.openclaw-recovered {
+  border-left-color: var(--green);
+}
+
+.fleet-log-time { color: var(--text-muted); font-size: 0.68rem; min-width: 120px; }
+.fleet-log-device { font-weight: 600; min-width: 80px; }
+.fleet-log-status { color: var(--text-muted); }
+.fleet-log-detail { color: var(--text-muted); font-size: 0.68rem; margin-left: auto; }

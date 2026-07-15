@@ -1,0 +1,85 @@
+{
+  "version": "1.0",
+  "updated": "2026-04-10",
+  "taskTypes": {
+    "code-generation": {
+      "keywords": [
+        "implement",
+        "feature",
+        "fix",
+        "refactor",
+        "write code",
+        "patch"
+      ],
+      "defaultLane": "openclaw",
+      "checkpoints": [
+        "implementation",
+        "verification"
+      ],
+      "complexityThreshold": "medium"
+    },
+    "analysis": {
+      "keywords": [
+        "analyze",
+        "audit",
+        "review",
+        "inspect",
+        "investigate",
+        "profile"
+      ],
+      "defaultLane": "openclaw",
+      "checkpoints": [
+        "design",
+        "verification"
+      ],
+      "complexityThreshold": "medium"
+    },
+    "reasoning-advanced": {
+      "keywords": [
+        "design",
+        "plan",
+        "trade-off",
+        "architecture",
+        "strategy",
+        "roadmap"
+      ],
+      "defaultLane": "openclaw",
+      "checkpoints": [
+        "design",
+        "implementation"
+      ],
+      "complexityThreshold": "medium"
+    },
+    "documentation": {
+      "keywords": [
+        "document",
+        "docs",
+        "readme",
+        "adr",
+        "changelog",
+        "guide"
+      ],
+      "defaultLane": "local",
+      "checkpoints": [
+        "design"
+      ],
+      "complexityThreshold": "low"
+    },
+    "testing": {
+      "keywords": [
+        "test",
+        "playwright",
+        "coverage",
+        "regression",
+        "verify",
+        "lint"
+      ],
+      "defaultLane": "openclaw",
+      "checkpoints": [
+        "implementation",
+        "verification"
+      ],
+      "complexityThreshold": "medium"
+    }
+  }
+}

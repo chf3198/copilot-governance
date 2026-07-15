@@ -1,0 +1,15 @@
+/* Synthesis Panel — Epic #1112 AC10 (#2409) */
+.synthesis-panel { padding: 12px; border: 1px solid var(--border, #444); border-radius: 6px; margin: 8px 0; }
+.synthesis-panel h3 { margin-top: 0; font-size: 1em; color: var(--accent, #58a6ff); }
+.synthesis-run { padding: 8px 0; border-bottom: 1px dashed var(--border-soft, #333); }
+.synthesis-run:last-child { border-bottom: none; }
+.synthesis-header { display: flex; gap: 12px; align-items: center; font-size: 0.95em; }
+.synthesis-progress { font-size: 0.85em; opacity: 0.8; margin-top: 4px; }
+.synthesis-empty, .synthesis-error { padding: 12px; opacity: 0.6; font-style: italic; }
+.synthesis-error { color: var(--error, #f97316); }
+.badge-info { background: #2563eb; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+.badge-progress { background: #d29922; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+.badge-active { background: #10b981; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+.badge-closing { background: #8b5cf6; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+.badge-done { background: #6b7280; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+.badge-default { background: #4b5563; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
