@@ -13,6 +13,7 @@
     { "name": "autonomy-classifier", "spec": "scripts/autonomy-classifier.spec.js" },
     { "name": "mirror-ticket-lint", "spec": "scripts/mirror-ticket-lint.spec.js" },
     { "name": "completion-gate", "spec": "scripts/completion-gate.spec.js" },
-    { "name": "governance-verify", "spec": "scripts/governance-verify.spec.js" }
+    { "name": "governance-verify", "spec": "scripts/governance-verify.spec.js" },
+    { "name": "state-store-merge-reconciler", "spec": "scripts/state-store-merge-reconciler.spec.js" }
   ]
 }
