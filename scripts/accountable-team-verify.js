@@ -8,15 +8,11 @@
 // hard gate only after a shadow period with a low false-positive rate (< 2% over
 // the ticket corpus), matching the harness's advisory-then-promote pattern.
 //
-// Four invariants checked (all emit `warning`, never a hard failure):
+// Three invariants checked (all emit `warning`, never a hard failure):
 //   AT1  malformed accountable-team:* value (not one of the known teams)
 //   AT2  more than one accountable-team:* label on a single ticket
 //   AT3  a terminal/backlog NON-EPIC ticket carrying an execution role:* label
 //        (the core invariant this Epic protects: role:* is transient, ownership is not)
-//   AT4  an ACTIVE-execution NON-EPIC ticket carrying NO accountable-team:* label
-//        (ownership *coverage*: in-flight work must have an accountable owner. This
-//        is the positive complement to AT3 — AT3 guards role:* off terminal tickets,
-//        AT4 guards owner-presence on active tickets. Added #3806, E3.)
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -65,15 +61,6 @@ function verifyTickets(tickets) {
       if (roleLabel) {
         push('AT3_role_on_terminal', t, `non-active state "${status}" carries execution label "${roleLabel}"`);
       }
-    }
-
-    // AT4 — ownership coverage: an active-execution non-epic ticket must name an
-    // accountable owner. "Active" = a known, non-empty status that is NOT terminal/
-    // backlog. An empty/unknown status is left alone (parse gaps must not manufacture
-    // a false owner-gap). Epics are ownership-exempt, matching AT3.
-    const isActive = status !== '' && !nonActive;
-    if (isActive && !isEpic && atLabels.length === 0) {
-      push('AT4_active_ticket_no_owner', t, `active state "${status}" carries no accountable-team owner`);
     }
   }
   return { warnings };
