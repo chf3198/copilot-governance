@@ -48,7 +48,7 @@ function verify(root, opts = {}) {
 
   // Merge-queue readiness: if a merge-queue-relevant workflow is PRESENT it must declare a
   // `merge_group:` trigger. Absent legacy workflows (`lint.yml`/`branch-name.yml` predate this repo's
-  // flat layout and are not part of it) are NOT an error — the repo may not use them (#3803). A
+  // flat layout and are not part of it) are NOT an error — the repo may not use them (ticket-3803). A
   // present-but-`merge_group`-less workflow is still flagged, preserving the original intent.
   const mergeQueueWorkflows = ['lint.yml', 'branch-name.yml'];
   for (const wf of mergeQueueWorkflows) {
@@ -82,7 +82,7 @@ function verify(root, opts = {}) {
     }
   }
 
-  // Advisory-first ownership/baton-separation checks (Epic #2345 AC3; synthesis #2346).
+  // Advisory-first ownership/baton-separation checks (Epic ticket-2345 AC3; synthesis ticket-2346).
   // Default-on but NEVER contributes to `issues` — it only adds advisory hints, so the
   // pass/fail verdict is unchanged. Set ACCOUNTABLE_TEAM_ADVISORY=0 to silence.
   const accountableAdvisories = [];
@@ -100,7 +100,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first Epic-completion bundling-drift checks (Epic #3800; detector reuse-first).
+  // Advisory-first Epic-completion bundling-drift checks (Epic ticket-3800; detector reuse-first).
   // Default-on but NEVER contributes to `issues` — it only adds advisory hints, so the
   // pass/fail verdict is unchanged. Set EPIC_CHILD_BATON_ADVISORY=0 to silence.
   const epicChildBatonAdvisories = [];
@@ -118,7 +118,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first enforcement-surface telemetry (#3804; E1 `+telemetry`). Default-on but NEVER
+  // Advisory-first enforcement-surface telemetry (ticket-3804; E1 `+telemetry`). Default-on but NEVER
   // contributes to `issues` — it only records the enforcement surface (G8 observability) and adds an
   // advisory hint when validators are unwired, so the pass/fail verdict is unchanged. The audit is run
   // over THIS repo's scripts/ (path.resolve(__dirname,'..')), not the passed layout `root`, so it is
@@ -139,7 +139,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first mirror-ticket Admin-completion contract (#3799 AC3). Default-on but NEVER
+  // Advisory-first mirror-ticket Admin-completion contract (ticket-3799 AC3). Default-on but NEVER
   // contributes to `issues` — it only flags DONE wiki-mirror tickets that lack the deterministic
   // Admin-close evidence (cross-family receipt / PR-mirror reference / consultant closeout). Scans
   // THIS repo's wiki/ (path.resolve(__dirname,'..')), not the passed layout `root`, so it is a no-op
@@ -156,7 +156,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first flat-mirror ticket structural lint (#3805). Reconciles the legacy `# Ticket N —`
+  // Advisory-first flat-mirror ticket structural lint (ticket-3805). Reconciles the legacy `# Ticket N —`
   // parser to the flat wiki-mirror frontmatter schema: the blocking `parse()` above reads `<root>/
   // tickets/` (absent on flat main → silent `checkedTickets: 0`), so the real corpus at wiki/work-log/
   // tickets/ was never structurally linted. Default-on but NEVER contributes to `issues` — it only adds
@@ -175,7 +175,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first reversible-vs-carveout autonomy-decision audit (#3799 AC2). Default-on but NEVER
+  // Advisory-first reversible-vs-carveout autonomy-decision audit (ticket-3799 AC2). Default-on but NEVER
   // contributes to `issues` — it only validates Autonomy-Decision markers that ARE logged in Admin/
   // handoff baton docs (malformed value, or a carve-out that records an autonomous merge). Docs with
   // no marker are not penalized, so the current corpus produces zero findings. Scans THIS repo's wiki/
@@ -193,7 +193,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first completion-gate marker audit (#3799 AC4). Default-on but NEVER contributes to
+  // Advisory-first completion-gate marker audit (ticket-3799 AC4). Default-on but NEVER contributes to
   // `issues` — it only validates `Completion-Gate:` markers that ARE logged in Admin/handoff/
   // completion baton docs (malformed value CG1, or a `blocked` gate that cites untracked / working-
   // tree drift as the blocker CG2 — the annealed 718-untracked false positive). Docs with no marker
@@ -212,7 +212,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first Epic-close bundling-drift SHADOW-PERIOD metric (#3800 AC4). Default-on but NEVER
+  // Advisory-first Epic-close bundling-drift SHADOW-PERIOD metric (ticket-3800 AC4). Default-on but NEVER
   // contributes to `issues` — it records the EB1/EB2/EB3 finding-rate over the tracked vs working-tree
   // corpora (G8 observability) and a data-driven `promotionReadiness` verdict per AC4's < 2% rule, and
   // adds a non-blocking hint when promotion is NOT yet ready (e.g. a historical working-tree backlog
@@ -235,7 +235,7 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
-  // Advisory-first Epic-child historical backfill PLAN (#3800 AC5). Default-on but NEVER contributes
+  // Advisory-first Epic-child historical backfill PLAN (ticket-3800 AC5). Default-on but NEVER contributes
   // to `issues` — it records the dry-run exemption manifest (grandfather / has-evidence / must-
   // remediate) for the pre-existing bundling-drift instances (G8 observability) and adds a non-blocking
   // hint when post-cutoff instances still need a real per-child baton. It FABRICATES NOTHING and mutates
@@ -257,6 +257,26 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first baseline-drift sentinel (#3819; ticket-3801 AC5 / ticket-3818 closeout Mode A). Default-on but
+  // NEVER contributes to `issues` — it only measures how far the live working tree has diverged from
+  // the committed baseline, so the ticket-3801 drift "never re-accumulates silently." Best-effort: a clean
+  // tree (CI) reports 0. Set BASELINE_DRIFT_ADVISORY=0 to silence.
+  let baselineDrift = null;
+  if (process.env.BASELINE_DRIFT_ADVISORY !== '0') {
+    try {
+      const sentinel = require('./baseline-drift-sentinel');
+      baselineDrift = sentinel.report(root, {});
+      if (baselineDrift.actionable > 0) {
+        hints.push({
+          code: 'advisory_baseline_drift',
+          actionable: baselineDrift.actionable,
+          beyondThreshold: baselineDrift.beyondThreshold,
+          advisory: true,
+        });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -272,6 +292,7 @@ function verify(root, opts = {}) {
     completionGateAdvisories,
     epicBatonShadowMetric,
     epicBatonBackfillPlan,
+    baselineDrift,
     runAt: new Date().toISOString(),
   };
 }
@@ -322,6 +343,12 @@ if (require.main === module) {
       const s = result.epicBatonBackfillPlan.summary;
       console.log(`Epic-baton backfill plan (non-blocking, dry-run): ${s.total} flagged — `
         + `${s.grandfather} grandfather / ${s.hasEvidence} has-evidence / ${s.mustRemediate} must-remediate`);
+    }
+    if (result.baselineDrift) {
+      const b = result.baselineDrift;
+      console.log(`Baseline-drift sentinel (non-blocking, ticket-3801 AC5): drift=${b.driftTotal} `
+        + `(actionable=${b.actionable}, ignored=${b.ignored}); threshold=${b.threshold}; `
+        + `beyondThreshold=${b.beyondThreshold}`);
     }
   }
   process.exit(result.issues.length ? 1 : 0);

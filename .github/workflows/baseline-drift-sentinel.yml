@@ -1,0 +1,35 @@
+name: baseline-drift-sentinel
+
+# #3819 — Mode A (DETECT) of the ratified baseline-drift reconciler (#3801 AC5 / #3818 closeout child;
+# design receipt 3355d17ac42b51ae). Runs the module's regression spec (hard gate, harness:self-test
+# #1893) plus its advisory self-report. Pure/hermetic — Node built-ins only; no network, no gh. This is
+# the enforced root that makes scripts/baseline-drift-sentinel.js ENFORCED (enforcement-wiring-audit).
+# Advisory-first: the sentinel enforces nothing and never blocks; promote-to-blocking is a soak follow-up.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  baseline-drift-sentinel:
+    name: baseline-drift-sentinel (self-test + advisory)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Hard gate: the sentinel's regression spec must stay green (classifier partition, allowlist,
+      # CI-safe report, threshold metric).
+      - name: Self-test (regression)
+        run: node scripts/baseline-drift-sentinel.spec.js
+
+      # Advisory: emit the drift self-report. On a clean CI checkout this is 0 drift; exits 0 always.
+      - name: Self-report (advisory)
+        run: node scripts/baseline-drift-sentinel.js
