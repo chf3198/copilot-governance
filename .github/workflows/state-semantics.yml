@@ -1,0 +1,35 @@
+name: state-semantics
+
+# Epic 2632 Phase-1 P1-a (#3808): canonical two-axis state-semantics enum module. Runs the module's
+# regression spec (hard gate, harness:self-test #1893) plus its advisory self-report. Pure, hermetic —
+# Node built-ins only; no network, no gh. This is the enforced root that makes scripts/state-semantics.js
+# ENFORCED (0 UNWIRED per enforcement-wiring-audit). Advisory-first: the module enforces nothing itself;
+# P1-b wires the I1–I5 invariants into the existing validators.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  state-semantics:
+    name: state-semantics (self-test + self-report)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Hard gate: the enum module's regression spec must stay green (partitions, alias fold,
+      # classify↔axisAOf consistency, enum-closure helpers).
+      - name: Self-test (regression)
+        run: node scripts/state-semantics.spec.js
+
+      # Advisory: emit the canonical model summary. Exits 0.
+      - name: Self-report (advisory)
+        run: node scripts/state-semantics.js
