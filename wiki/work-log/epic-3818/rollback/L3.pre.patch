@@ -1,0 +1,1329 @@
+diff --git a/skills/docs-drift-maintenance/SKILL.md b/skills/docs-drift-maintenance/SKILL.md
+index 2ba4a9f..2b355b9 100644
+--- a/skills/docs-drift-maintenance/SKILL.md
++++ b/skills/docs-drift-maintenance/SKILL.md
+@@ -1,6 +1,9 @@
+ ---
+ name: docs-drift-maintenance
+ description: Detect and remediate documentation drift after code, config, workflow, or UX changes. Use after implementation, before merge, and before release.
++argument-hint: ""
++user-invocable: true
++disable-model-invocation: false
+ ---
+ 
+ # Docs Drift Maintenance
+@@ -9,14 +12,43 @@ description: Detect and remediate documentation drift after code, config, workfl
+ 
+ - After any change to commands, config, workflows, API/CLI behavior, or release process.
+ - Before merge/release if docs accuracy is part of acceptance.
++- Before declaring a feature complete (not just gates-complete).
++
++## Documentation coverage matrix (required)
++
++For feature-adds and behavior changes, evaluate all applicable surfaces:
++
++1. Local operator docs
++   - `README.md`
++   - `docs/technical/system-stability.md`
++   - `docs/workflow/learnings.md`
++2. Public repository docs
++   - `.github/CONTRIBUTING.md`
++   - `.github/PULL_REQUEST_TEMPLATE.md`
++   - community profile files (`CODE_OF_CONDUCT.md`, `SECURITY.md`, `SUPPORT.md`) when behavior changes affect contributor workflow
++3. VS Code extension public profile
++   - `vscode-extension/README.md`
++   - `vscode-extension/CHANGELOG.md`
++   - `vscode-extension/package.json` metadata/settings descriptions
++4. Release traceability docs
++   - root `CHANGELOG.md`
++   - release notes / GitHub release object
++5. Inline code documentation (added #101 — global linting governance)
++   - **JS/TS**: JSDoc on all exported/public functions (`@param`, `@returns`, `@description`)
++   - **Python**: Google-style docstrings on all public functions, classes, and modules
++   - **Bash**: Header comment block on each script; inline comments on non-obvious logic
++   - **CSS**: Section header comments; non-obvious rule explanations
++   - Governed by `lint-configs/eslint.config.devenv.js` (JSDoc rules) and `lint-configs/ruff.devenv.toml` (D rules)
++   - Drift check: run `npm run lint:all`; any new `jsdoc/*` or `D*` violations are inline-doc drift
+ 
+ ## Procedure
+ 
+-1. Enumerate changed behavior/config/workflow surfaces.
+-2. Map each change to impacted docs (`README`, `CHANGELOG`, operational docs, runbooks).
++1. Enumerate changed behavior/config/workflow/code surfaces.
++2. Map each change to impacted docs using the coverage matrix above.
+ 3. Identify stale, missing, or contradictory statements.
+ 4. Apply minimal doc deltas that restore correctness and traceability.
+-5. Verify that docs now match actual behavior and invocation paths.
++5. Verify docs now match actual behavior and invocation paths.
++6. Record what was intentionally N/A and why.
+ 
+ ## Output format
+ 
+@@ -25,9 +57,11 @@ description: Detect and remediate documentation drift after code, config, workfl
+ - `required_updates`: concrete edits required
+ - `verification_checks`: objective checks confirming alignment
+ - `evidence`: code/workflow changes correlated to docs updates
++- `not_applicable`: surfaces reviewed but intentionally N/A
+ 
+ ## Standards
+ 
+ - Docs updates must ship with behavior/config/workflow changes.
+ - Keep wording precise, testable, and user-actionable.
+ - Avoid speculative claims unsupported by current implementation.
++- "All tests pass" does not imply docs are complete.
+diff --git a/skills/github-actions-security-hardening/SKILL.md b/skills/github-actions-security-hardening/SKILL.md
+index e262f71..97cad06 100644
+--- a/skills/github-actions-security-hardening/SKILL.md
++++ b/skills/github-actions-security-hardening/SKILL.md
+@@ -60,3 +60,14 @@ missing_evidence:
+ ## Invocation policy
+ 
+ Run in pre-merge for workflow/security-sensitive changes and in periodic governance audits.
++
++## Repo workflow inventory
++
++| Workflow | Trigger | Permissions | Status |
++|---|---|---|---|
++| `.github/workflows/lint.yml` | PR/push to main | default read | ✅ active |
++| `.github/workflows/label-lint.yml` | issues events | `issues:write`, `contents:read` | ✅ active (ADR-010) |
++
++`label-lint.yml` enforces ADR-010 rules 1–4 on every issue event. Any violation
++posts an explanatory comment and fails the check. See
++`research/adr/010-ticket-status-role-model.md`.
+diff --git a/skills/github-ops-excellence/SKILL.md b/skills/github-ops-excellence/SKILL.md
+index 9e51f83..963236b 100644
+--- a/skills/github-ops-excellence/SKILL.md
++++ b/skills/github-ops-excellence/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: github-ops-excellence
+-description: Define and apply expert GitHub policy profiles and control catalogs used by specialized execution skills across ticketing, review/merge, governance, and release flows.
+-argument-hint: [mode: triage|refinement|pre-pr|pre-merge|sprint-health|release-readiness|incident-flow|admin-audit] [scope: repo|team|org|enterprise] [policy-profile: strict|standard|light]
++description: "Define and apply expert GitHub policy profiles and control catalogs used by specialized execution skills across ticketing, review/merge, governance, and release flows."
++argument-hint: "[mode: triage|refinement|pre-pr|pre-merge|sprint-health|release-readiness|incident-flow|admin-audit] [scope: repo|team|org|enterprise] [policy-profile: strict|standard|light]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/github-ops-tree-router/SKILL.md b/skills/github-ops-tree-router/SKILL.md
+index 0deec01..e87dce7 100644
+--- a/skills/github-ops-tree-router/SKILL.md
++++ b/skills/github-ops-tree-router/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: github-ops-tree-router
+-description: Route GitHub workflow requests through a capability-first GitHub skill tree with explicit ownership boundaries and minimal overlap.
+-argument-hint: [goal: ticket-lifecycle|agile-projects|review-merge|release-incident|repo-governance|actions-security|ruleset-architecture|process-hardening] [policy-profile: strict|standard|light]
++description: "Route GitHub workflow requests through a capability-first GitHub skill tree with explicit ownership boundaries and minimal overlap."
++argument-hint: "[goal: ticket-lifecycle|agile-projects|review-merge|release-incident|repo-governance|actions-security|ruleset-architecture|process-hardening] [policy-profile: strict|standard|light]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/github-projects-agile-linkage/SKILL.md b/skills/github-projects-agile-linkage/SKILL.md
+index a4996b6..3fe365e 100644
+--- a/skills/github-projects-agile-linkage/SKILL.md
++++ b/skills/github-projects-agile-linkage/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: github-projects-agile-linkage
+-description: Apply Agile linkage controls in GitHub using issue types, sub-issues, dependencies, issue-branch/PR linkage, project fields, and built-in automations.
+-argument-hint: [mode: audit|plan|apply|verify] [scope: repo|org] [policy-profile: strict|standard|light]
++description: "Apply Agile linkage controls in GitHub using issue types, sub-issues, dependencies, issue-branch/PR linkage, project fields, and built-in automations."
++argument-hint: "[mode: audit|plan|apply|verify] [scope: repo|org] [policy-profile: strict|standard|light]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/github-release-incident-flow/SKILL.md b/skills/github-release-incident-flow/SKILL.md
+index d6fbf7f..973193d 100644
+--- a/skills/github-release-incident-flow/SKILL.md
++++ b/skills/github-release-incident-flow/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: github-release-incident-flow
+-description: Govern release readiness and incident response flow in GitHub with rollback evidence, hotfix linkage, and follow-up controls.
+-argument-hint: [mode: release-readiness|incident-flow|post-incident] [scope: repo|org] [policy-profile: strict|standard|light]
++description: "Govern release readiness and incident response flow in GitHub with rollback evidence, hotfix linkage, and follow-up controls."
++argument-hint: "[mode: release-readiness|incident-flow|post-incident] [scope: repo|org] [policy-profile: strict|standard|light]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/github-review-merge-admin/SKILL.md b/skills/github-review-merge-admin/SKILL.md
+index 2f2ef66..8345e00 100644
+--- a/skills/github-review-merge-admin/SKILL.md
++++ b/skills/github-review-merge-admin/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: github-review-merge-admin
+-description: Enforce review and merge administration gates with required checks, approvals, conversation resolution, rulesets, and merge queue readiness.
+-argument-hint: [mode: pre-review|pre-merge|admin-audit] [scope: repo|org] [policy-profile: strict|standard|light]
++description: "Enforce review and merge administration gates with required checks, approvals, conversation resolution, rulesets, and merge queue readiness."
++argument-hint: "[mode: pre-review|pre-merge|admin-audit] [scope: repo|org] [policy-profile: strict|standard|light]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/github-ticket-lifecycle-orchestrator/SKILL.md b/skills/github-ticket-lifecycle-orchestrator/SKILL.md
+index a30cb4d..7185be8 100644
+--- a/skills/github-ticket-lifecycle-orchestrator/SKILL.md
++++ b/skills/github-ticket-lifecycle-orchestrator/SKILL.md
+@@ -1,180 +1,78 @@
+ ---
+ name: github-ticket-lifecycle-orchestrator
+-description: Orchestrate end-to-end ticket lifecycle across manager, collaborator, reviewer, and admin roles in GitHub: create/refine, assign, branch, develop, PR, review, merge, and closeout with evidence.
+-argument-hint: [phase: intake|planning|assignment|execution|pre-pr|review|pre-merge|closeout] [scope: repo|org] [policy-profile: strict|standard|light]
++description: Naming conventions and phase protocol for GitHub ticket lifecycle. Baton workflow in manager-ticket-lifecycle.
++argument-hint: [phase: intake|planning|execution|pre-pr|review|merge|closeout]
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+ 
+ # GitHub Ticket Lifecycle Orchestrator
+ 
+-## Purpose
+-
+-Provide one bounded operating flow that connects issue management, branching, development execution, review, and merge administration.
+-
+ ## Hard constraints
+ 
+-1. No unbounded loops.
+-2. Max one lifecycle pass per invocation.
+-3. If required evidence is missing, return `NO_CHANGE` with missing artifacts.
+-4. Do not claim merge/closeout success without verification evidence.
+-
+-## Issue ID and title standard (universal — all repos)
+-
+-This standard applies to every repository managed under this skill set. Agents
+-must apply it at intake for every new issue and enforce it during triage audits.
+-
+-### Canonical ticket identifier
+-
+-- The GitHub issue number (`#N`) is the **sole canonical ticket identifier**.
+-- Do **not** create or maintain parallel local ID schemes (`TICKET-NNN`, `JIRA-123`,
+-  audit-doc sequential IDs, etc.). These diverge from `#N` and break closing keywords,
+-  branch linkage, and cross-repo references.
+-- When migrating tickets from external sources (audit docs, Notion, spreadsheets),
+-  use the assigned `#N` immediately after creation; discard the source ID or note
+-  it as an alias only.
+-
+-### Issue title format — plain imperative (human-scannable)
+-
+-Issue titles must be readable in a project board, search result, or notification
+-without any parsing. **Do not apply Conventional Commits prefixes to issue titles.**
+-Type and scope are expressed via labels, not the title.
+-
+-```
+-<Imperative verb phrase describing the desired outcome>  [≤ 72 chars]
+-```
+-
+-| Rule                           | Detail                                                            |
+-| ------------------------------ | ----------------------------------------------------------------- |
+-| Start with an imperative verb  | "Fix", "Add", "Normalize", "Redesign", "Audit", "Stabilize"       |
+-| Plain English, human-scannable | Must make sense standalone in a board or search result            |
+-| No `type(scope):` prefix       | Type is a label (`type: bug-fix`); scope is a label (`area: seo`) |
+-| ≤ 72 chars                     | Fits project board columns and notification subjects              |
+-
+-**Correct examples:**
++1. No unbounded loops. Max one lifecycle pass per invocation.
++2. If required evidence is missing, return `NO_CHANGE` with missing artifacts.
++3. Do not claim merge/closeout success without verification evidence.
+ 
+-- `Fix header nav contrast on dark hero backgrounds`
+-- `Normalize /services-store title and meta description for Austin SEO`
+-- `Redesign footer layout, hierarchy, and mobile composition`
+-- `Audit interactive states and produce sitewide affordance spec`
+-- `Stabilize Playwright QA runtime for repeatable pre-publish checks`
++## Issue title format — plain imperative
+ 
+-**Incorrect — do not use:**
++`<Imperative verb phrase describing the desired outcome>` [≤ 72 chars]
+ 
+-- ~~`fix(nav-contrast): fix header nav contrast`~~ — Conventional Commits belongs on commits/PRs, not issues; also redundant
+-- ~~`TICKET-008: Fix header nav contrast`~~ — parallel ID scheme
+-- ~~`[BUG] header nav contrast issue`~~ — bracket tags are label substitutes
++- Start with imperative verb: "Fix", "Add", "Normalize", "Audit", "Stabilize"
++- Plain English, human-scannable in boards and notifications
++- **No `type(scope):` prefix** — type/scope expressed via labels
++- No bracket tags `[BUG]`, no parallel IDs `TICKET-NNN`
+ 
+-### Commit and PR title format — Conventional Commits
++Good: `Fix header nav contrast on dark hero backgrounds`
++Bad: ~~`fix(nav): fix header nav contrast`~~ ~~`TICKET-008: Fix header`~~
+ 
+-The `type(scope): description` format (Conventional Commits) belongs on **commit
+-messages and PR titles** — not issue titles.
++## Commit and PR title format — Conventional Commits
+ 
+-```
+-<type>(<scope>): <imperative description>  [≤ 72 chars]
+-```
++`<type>(<scope>): <imperative description>` [≤ 72 chars]
+ 
+-Allowed types: `feat` `fix` `chore` `content` `perf` `refactor` `docs` `style` `test`
++Types: `feat` `fix` `chore` `content` `perf` `refactor` `docs` `style` `test`
+ 
+-Examples:
++## Branch naming
+ 
+-- `fix(nav-contrast): apply WCAG AA contrast to header nav links`
+-- `feat(footer): redesign footer layout and mobile composition`
+-- `chore(qa-runtime): document mem-watchdog pause sequence in uat-guide`
++`<type>/<issue-number>-<short-slug>` — e.g. `fix/5-nav-contrast`, `feat/11-footer-redesign`
+ 
+-### Branch naming
++## Template requirements
+ 
+-```
+-<type>/<issue-number>-<short-slug>
+-```
++Every repo must have `.github/ISSUE_TEMPLATE/` with at minimum: bug, task, epic forms.
++Config: `blank_issues_enabled: false`. Plus `PULL_REQUEST_TEMPLATE.md` with issue linkage.
+ 
+-Examples: `fix/5-nav-contrast`, `feat/11-footer-redesign`, `chore/13-qa-runtime`
++## Phase protocol (compact)
+ 
+-The `<issue-number>` segment creates an unambiguous link to the GitHub issue
+-without relying on closing keywords alone.
++| Phase | Key actions |
++|---|---|
++| **intake** | Validate issue, apply labels/priority/milestone |
++| **planning** | Split to sub-issues, add dependencies, set project fields |
++| **execution** | One branch per ticket, link in Development panel, atomic commits |
++| **pre-pr** | PR links issue with closing keywords, test evidence attached |
++| **review** | Resolve feedback, re-run checks after changes |
++| **merge** | Required reviews/checks satisfied, merge per repo policy |
++| **closeout** | Issue state transition, branch deletion, post-merge cleanup |
+ 
+-### Template requirements
++## Label taxonomy reference
+ 
+-Every repository must have:
+-
+-- `.github/ISSUE_TEMPLATE/` containing **at minimum** one bug form, one task form, and one epic form (filenames may vary, e.g. `bug-report.yml`, `task-request.yml`)
+-- `blank_issues_enabled: false` in `.github/ISSUE_TEMPLATE/config.yml`
+-- A `PULL_REQUEST_TEMPLATE.md` with linked issue, validation evidence, and risk fields
+-
+-Recommended: include a research/audit issue form when `type: research` is used in the repository workflow.
+-
+-The triage phase must verify template adherence before any issue enters planning.
+-
+----
++See `manager-ticket-lifecycle` for full label taxonomy:
++`type:*`, `status:*`, `priority:*`, `area:*`, `role:*`
+ 
+-## Phase protocol
+-
+-### `intake`
+-
+-- Validate issue statement, acceptance criteria, and business impact.
+-- Apply labels, type, priority, and milestone/iteration.
+-
+-### `planning`
+-
+-- Split large work into sub-issues.
+-- Add dependencies (`blocked by` / `blocking`).
+-- Ensure project item fields are set (status, priority, iteration, owner).
+-
+-### `assignment`
+-
+-- Confirm single responsible owner.
+-- Confirm due window/iteration and unblocker owner for blockers.
+-
+-### `execution`
+-
+-- One branch per ticket concern.
+-- Link branch in issue Development panel.
+-- Keep commits atomic and scoped.
+-
+-### `pre-pr`
+-
+-- PR links issue(s) with closing keywords where appropriate.
+-- Test/validation evidence attached.
+-- Reviewer(s) and CODEOWNERS requested.
+-
+-### `review`
+-
+-- Resolve feedback; keep conversation state clean.
+-- Re-run required checks after substantive changes.
+-
+-### `pre-merge`
+-
+-- Required reviews/checks/rulesets all satisfied.
+-- Merge method follows repo policy.
+-
+-### `closeout`
+-
+-- Confirm issue state transition and project status updates.
+-- Confirm branch deletion and post-merge cleanup.
+-
+-## Output format (required)
++## Output format
+ 
+ ```text
+ TICKET_LIFECYCLE_REPORT
+-phase: <intake|planning|assignment|execution|pre-pr|review|pre-merge|closeout>
++phase: <phase>
+ scope: <repo|org>
+ policy_profile: <strict|standard|light>
+-
+ checks:
+ - id: C1
+   result: <pass|fail|partial>
+-  observation: <what was found>
+-  expected: <required state>
+-
++  observation: <finding>
+ actions:
+ 1) priority: <P1|P2|P3>
+-   owner: <role/person>
+-   change: <specific action>
+-   verification: <objective pass condition>
+-
+-decision:
+-- <apply|defer|NO_CHANGE>
+-
+-missing_evidence:
+-- <none or required artifacts>
++   owner: <role>
++   change: <action>
++decision: <apply|defer|NO_CHANGE>
++missing_evidence: <none or list>
+ ```
+diff --git a/skills/mem-watchdog-ops/SKILL.md b/skills/mem-watchdog-ops/SKILL.md
+index 347b5f1..e829d4f 100644
+--- a/skills/mem-watchdog-ops/SKILL.md
++++ b/skills/mem-watchdog-ops/SKILL.md
+@@ -79,8 +79,8 @@ The daemon detects active Playwright sessions via `pgrep -f 'node.*playwright'`.
+ 
+ ## Key Repo References
+ 
+-- [Daemon logic](../../mem-watchdog.sh)
+-- [Extension activation](../../extension.js)
+-- [Dashboard/actions](../../commands.js)
+-- [Config bridge](../../configWriter.js)
+-- [System stability doc](../../../../docs/technical/system-stability.md)
++- [Snapshot helper](watchdog-snapshot.sh) — the in-repo memory snapshot script shipped with this skill.
++
++The watchdog daemon, extension activation, dashboard actions, config bridge, and the
++system-stability design doc live in the upstream VS Code extension repository (the
++canonical home of this skill), not in this harness checkout.
+diff --git a/skills/operator-identity-context/SKILL.md b/skills/operator-identity-context/SKILL.md
+index 90c2feb..611a012 100644
+--- a/skills/operator-identity-context/SKILL.md
++++ b/skills/operator-identity-context/SKILL.md
+@@ -10,97 +10,78 @@ disable-model-invocation: false
+ 
+ ## Purpose
+ 
+-Establish and enforce the operator authority model for every session. This skill encodes who does what, what access level the agent has, and the core automation mandate. It must be loaded at the start of every task and re-applied whenever the agent is tempted to ask the user to "manually" do something.
+-
+-This skill is **global** (user-level) and applies across all repositories on this machine.
+-
+----
++Establish and enforce the operator authority model for every session. This skill encodes who does what, what access level the agent has, and the core automation mandate.
+ 
+ ## Identity Model
+ 
+-| Role             | Party  | Responsibilities                                                               |
+-| ---------------- | ------ | ------------------------------------------------------------------------------ |
+-| **Manager**      | Agent  | Frames scope, constraints, plan, gates, and acceptance criteria                |
+-| **Collaborator** | Agent  | Implements code/config/docs and executes local validation                       |
+-| **Admin**        | Agent  | Executes operational tasks (services, runtime controls, git/release operations) |
+-| **Consultant**   | Agent  | Performs independent critique, risk analysis, and post-change recommendations   |
+-| **Client**       | User   | Approves design direction; performs UAT visual confirmation when requested      |
++| Role             | Party  | Responsibilities                                          |
++| ---------------- | ------ | --------------------------------------------------------- |
++| **Manager**      | Agent  | Frames scope, constraints, plan, gates, acceptance criteria |
++| **Collaborator** | Agent  | Implements code/config/docs and executes local validation |
++| **Admin**        | Agent  | Executes operational tasks (services, runtime, git/release) |
++| **Consultant**   | Agent  | Independent critique, risk analysis, recommendations      |
++| **Client**       | User   | Approves design direction; UAT visual confirmation        |
+ 
+ **Execution mode: single-thread baton handoff.**
+-Only one role is active at a time. A role may proceed only after emitting handoff evidence for the next role.
++Only one role active at a time. Role proceeds only after emitting handoff evidence.
+ 
+-**The user is never asked to type a command, paste content, edit a file, or click a button in any external system** unless physically unavoidable (e.g., hardware 2FA).
+-
+----
++**The user is never asked to type a command, paste content, edit a file, or click a button** unless physically unavoidable (e.g., hardware 2FA).
+ 
+ ## Authority Inventory (baseline)
+ 
+-### Machine
++### Machines (multi-platform mesh)
++
++Fleet topology is auto-detected via `fleet-config.js`. See `network-platform-resources` for full inventory.
+ 
++**Primary (local)**
+ - OS: Linux (Chromebook / Crostini container)
+-- User: `curtisfranks`
+ - Root access: Full (`sudo` no-password)
+-- RAM: ~6.3 GB usable (mem-watchdog active — always stop before browser automation)
+ - Node.js, Playwright, `gh` CLI, `git` all installed and authenticated
+ 
+-### Git and hosting
++**Remote fleet** — resolved at runtime via Tailscale auto-detection.
++Load `network-platform-resources` for connection methods and offloading rules.
+ 
+-- Agent handles repository operations end-to-end (branching, commits, PR lifecycle, merge/admin tasks) subject to repo policy.
+-- Platform capabilities must be verified before recommending governance actions.
++### Git and hosting
++- Agent handles repository operations end-to-end subject to repo policy.
++- Platform capabilities verified before recommending governance actions.
+ 
+ ### Repository specificity
+-
+ - Global skill is baseline only.
+-- Repository-local instructions and skills define repo-specific constraints and must be applied as overlays.
+-
+----
++- Repository-local instructions define repo-specific constraints as overlays.
+ 
+ ## Automation Mandate
+ 
+ ### Hard rules
+ 
+-1. **Never say "you will need to manually…"** — if automation doesn't exist, build it.
+-2. **Never say "please paste this into…"** — if content must go somewhere, script the delivery.
+-3. **Never say "you'll need to log in to…"** — use saved session cookies; if expired, re-authenticate headlessly where possible; headed if required (agent runs it, not user).
+-4. **Never defer a step with "this requires manual access to…"** — research tools, APIs, Playwright flows, or workarounds first.
+-5. If after exhausting research a step genuinely cannot be automated (e.g. a CAPTCHA, a physical 2FA device in the user's possession, or a policy that blocks programmatic access), state that explicitly with evidence, and minimize what the user must do to the absolute smallest action.
++1. **Never say "you will need to manually…"** — build automation if missing.
++2. **Never say "please paste this into…"** — script the delivery.
++3. **Never say "you'll need to log in to…"** — use saved sessions or headless auth.
++4. **Never defer with "this requires manual access to…"** — research APIs/Playwright first.
++5. If genuinely not automatable, state evidence and minimize user action.
+ 
+ ### Research protocol (when automation gap is found)
+ 
+ 1. Check existing scripts in `scripts/` for established patterns.
+ 2. Check `scripts/scratch/` for prior exploration data.
+-3. Inspect the target system's admin UI DOM via Playwright probe script.
++3. Inspect target system's admin UI DOM via Playwright probe.
+ 4. Search for REST/GraphQL APIs offered by the target system.
+-5. If API access is blocked, fall back to Playwright UI automation.
+-6. Document findings in the repository's technical docs before implementing.
+-
+----
++5. If API blocked, fall back to Playwright UI automation.
++6. Document findings before implementing.
+ 
+ ## Session Start Checklist
+ 
+-When starting any task in this workspace:
+-
+ - [ ] Confirm `git status` is clean or understand current WIP state
+-- [ ] Confirm active branch per repository policy (never bypass protected branch rules)
++- [ ] Confirm active branch per repository policy
+ - [ ] Review open issues for ticket context
++- [ ] Run `role-baton-orchestrator` — emit `MANAGER_HANDOFF` before implementation
+ - [ ] Run `repo-standards-router` for standards/gate routing
+-- [ ] If this is a post-failure or process drift situation: run `workflow-self-anneal`
+-- [ ] For multi-step implementation: run `role-baton-orchestrator`
++- [ ] If post-failure or drift: run `workflow-self-anneal`
+ - [ ] Never ask user to do anything before attempting all automation options
+ 
+----
+-
+ ## Self-Audit Triggers
+ 
+-Run this skill's audit mode (`workflow-self-anneal`) when:
+-
++Run audit mode when:
+ - You find yourself writing "you'll need to…" or "please manually…"
+ - A gap in automation causes a task to stall
+ - After a VS Code crash or OOM event
+-- At the start of a new session after a context summarization
+-
+----
+-
+-## Why This Skill Exists
+-
+-This skill was created because earlier sessions repeatedly asked the user to paste code into Squarespace manually, when the agent had full Playwright admin access and the existing publish script already demonstrated the automation pattern. The root cause was no persistent, always-loaded instruction encoding the operator authority model and automation mandate. This skill closes that gap permanently.
++- At the start of a new session after context summarization
+diff --git a/skills/playwright-vision-low-resource/SKILL.md b/skills/playwright-vision-low-resource/SKILL.md
+index 75d0108..b831ef6 100644
+--- a/skills/playwright-vision-low-resource/SKILL.md
++++ b/skills/playwright-vision-low-resource/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: playwright-vision-low-resource
+-description: Apply a low-resource operating profile for Playwright MCP + Claude Vision on constrained machines. Use this at session start, before visual QA, or after browser-context/OOM failures. Establishes bounded retries, local-vs-remote execution split, and optimized screenshot/vision practices.
+-argument-hint: [mode: local-smoke|local-debug|remote-full] [scope: mcp|playwright|vision|all]
++description: "Apply a low-resource operating profile for Playwright MCP + Claude Vision on constrained machines. Use this at session start, before visual QA, or after browser-context/OOM failures. Establishes bounded retries, local-vs-remote execution split, and optimized screenshot/vision practices."
++argument-hint: "[mode: local-smoke|local-debug|remote-full] [scope: mcp|playwright|vision|all]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/release-version-integrity/SKILL.md b/skills/release-version-integrity/SKILL.md
+index 9dade51..12563e2 100644
+--- a/skills/release-version-integrity/SKILL.md
++++ b/skills/release-version-integrity/SKILL.md
+@@ -1,6 +1,9 @@
+ ---
+ name: release-version-integrity
+ description: Validate and enforce release version integrity across tags, manifests, changelogs, and publish workflows. Use before tagging, publishing, or when release metadata drift is suspected.
++argument-hint: ""
++user-invocable: true
++disable-model-invocation: false
+ ---
+ 
+ # Release Version Integrity
+diff --git a/skills/repo-onboarding-standards/SKILL.md b/skills/repo-onboarding-standards/SKILL.md
+index 100299a..9ae1141 100644
+--- a/skills/repo-onboarding-standards/SKILL.md
++++ b/skills/repo-onboarding-standards/SKILL.md
+@@ -1,6 +1,9 @@
+ ---
+ name: repo-onboarding-standards
+ description: Onboard any repository into a standardized Copilot + CI governance baseline. Use for new repos and first-time sessions to ensure immediate standards adoption.
++argument-hint: ""
++user-invocable: true
++disable-model-invocation: false
+ ---
+ 
+ # Repo Onboarding Standards
+@@ -9,23 +12,27 @@ description: Onboard any repository into a standardized Copilot + CI governance
+ 
+ - First session in a new repository.
+ - Existing repositories lacking standardized AI customization and release/security gates.
++- Requests like: "include all global-skills in your initialization process."
+ 
+ ## Procedure
+ 
+-1. Classify repository type and risk profile using existing routing skills.
+-2. Generate baseline repo instructions (`.github/copilot-instructions.md`) with build/test/gate truth.
+-3. Add targeted `.github/instructions/*.instructions.md` files for stack-specific rules.
+-4. Verify CI has minimum baseline: lint/test, dependency/security review, artifact/release checks.
+-5. Add or update release policy controls (version integrity, docs sync, packaging audit).
+-6. For platforms that support exact-version install/pin, require version-selectability controls:
++1. Run `global-skills-bootstrap` in `mode=init` for repository scaffolding.
++2. **Provision canonical label taxonomy**: `node scripts/global/label-provision.js --repo=<owner/repo>`. This seeds all `type:*`, `status:*`, `priority:*`, `role:*`, `area:*`, `lane:*`, `resolution:*`, and governance labels required for the baton lifecycle. Manifest: `scripts/global/label-manifest.json` (Refs #2785).
++3. Classify repository type and risk profile using existing routing skills.
++3. Generate baseline repo instructions (`.github/copilot-instructions.md`) with build/test/gate truth.
++4. Add targeted `.github/instructions/*.instructions.md` files for stack-specific rules.
++5. Verify CI has minimum baseline: lint/test, dependency/security review, artifact/release checks.
++6. Add or update release policy controls (version integrity, docs sync, packaging audit).
++7. For platforms that support exact-version install/pin, require version-selectability controls:
+ 	- immutable artifact retention,
+ 	- exact-version install smoke checks,
+ 	- canonical version index/source alignment for update prompts,
+ 	- documented rollback and version-yank policy.
+-7. Produce an onboarding report with required vs optional controls and evidence.
++8. Produce an onboarding report with required vs optional controls and evidence.
+ 
+ ## Required handoffs
+ 
++- Run `global-skills-bootstrap` first for new repositories.
+ - Route standards selection via `repo-standards-router`.
+ - Route GitHub workflow governance controls via `github-ops-tree-router`.
+ - Use `workflow-self-anneal` only post-failure/process mismatch.
+diff --git a/skills/repo-profile-governance/SKILL.md b/skills/repo-profile-governance/SKILL.md
+index 5c69ade..29c97ed 100644
+--- a/skills/repo-profile-governance/SKILL.md
++++ b/skills/repo-profile-governance/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: repo-profile-governance
+-description: Audit and harden repository profile, community health, discoverability metadata, and contribution surfaces across repos using bounded, evidence-based checks.
+-argument-hint: [mode: profile-audit|profile-remediate|profile-weekly-check] [scope: repo|org] [visibility: public|private] [policy-profile: strict|standard|light]
++description: "Audit and harden repository profile, community health, discoverability metadata, and contribution surfaces across repos using bounded, evidence-based checks."
++argument-hint: "[mode: profile-audit|profile-remediate|profile-weekly-check] [scope: repo|org] [visibility: public|private] [policy-profile: strict|standard|light]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+diff --git a/skills/repo-standards-router/SKILL.md b/skills/repo-standards-router/SKILL.md
+index 40e00c6..099ecc4 100644
+--- a/skills/repo-standards-router/SKILL.md
++++ b/skills/repo-standards-router/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: repo-standards-router
+-description: Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates.
+-argument-hint: [primary-type: website-static|web-app|library-sdk|infra-automation|auto-detect] [policy-profile: strict|standard|light] [overlays: security|collaboration|release|observability]
++description: "Classify a repository by app type and route it to the correct standards branch, policy profile, and verification gates."
++argument-hint: "[primary-type: website-static|web-app|library-sdk|infra-automation|auto-detect] [policy-profile: strict|standard|light] [overlays: security|collaboration|release|observability]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+@@ -35,7 +35,7 @@ If the request includes GitHub workflow governance controls, hand off to `github
+ 1. Detect `primary_type` from runtime intent and repository artifacts.
+ 2. Detect `secondary_types` only when overlap is clear and evidence-backed.
+ 3. Apply `core-baseline` controls.
+-4. Apply primary-type controls from [APP-TYPE-SKILL-TREE.md](../APP-TYPE-SKILL-TREE.md).
++4. Apply primary-type controls per the app-type classification (the `core-baseline` controls above plus the per-type overlays selected in steps 5-6).
+ 5. Apply selected overlays (`security`, `collaboration`, `release`, optional `observability`).
+ 6. Calibrate severity with `policy_profile`.
+ 7. Emit actionable controls and checks.
+@@ -81,7 +81,7 @@ missing_controls:
+ - <none or control gaps not yet covered by current branches>
+ 
+ skills_to_run_next:
+-- <none|repo-profile-governance|github-ops-tree-router|workflow-self-anneal>
++- <none|web-regression-governance|repo-profile-governance|github-ops-tree-router|workflow-self-anneal>
+ 
+ decision:
+ - <apply|defer|NO_CHANGE>
+@@ -95,8 +95,8 @@ evolution_todos:
+ 
+ ## App-type branch controls (summary)
+ 
+-- `website-static`: SEO/schema sync, visual regression, responsive QA, WCAG AA baseline, performance budgets.
+-- `web-app`: component/e2e testing, auth/session hardening, dependency controls, WCAG AA.
++- `website-static`: SEO/schema sync, visual regression, responsive QA, WCAG AA baseline, performance budgets; run `web-regression-governance` when runtime injection/DOM mutation risks exist.
++- `web-app`: component/e2e testing, auth/session hardening, dependency controls, WCAG AA; run `web-regression-governance` for route-level visual/DOM/runtime invariant enforcement.
+ - `library-sdk`: compatibility policy, SemVer, changelog quality, consumer examples.
+ - `infra-automation`: least privilege, pinned dependencies/actions, policy checks, runbooks.
+ 
+@@ -127,3 +127,10 @@ Recommend adding a new branch only if all are true:
+ 1. Repeated need appears in at least 2 repositories.
+ 2. At least 3 controls are not covered by existing primary types + overlays.
+ 3. Risk is meaningful if left as ad-hoc guidance.
++
++## Cross-Team Artifact-Write Flag
++
++When routing a repo that authors config files consumed by another team's runtime
++(e.g., Codex team writing `.claude/settings.json`), flag the ticket for the
++cross-team artifact-write contract. See
++`instructions/cross-team-artifact-write.instructions.md`.
+diff --git a/skills/role-admin-execution/SKILL.md b/skills/role-admin-execution/SKILL.md
+index 6add3e7..6e07327 100644
+--- a/skills/role-admin-execution/SKILL.md
++++ b/skills/role-admin-execution/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: role-admin-execution
+-description: Execute operational tasks after validated implementation: runtime controls, git/PR/release flow, and governance checks.
+-argument-hint: [ops-scope: runtime|git-pr|release|mixed]
++description: "Execute operational tasks after validated implementation: runtime controls, git/PR/release flow, and governance checks."
++argument-hint: "[ops-scope: runtime|git-pr|release|mixed]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+@@ -14,6 +14,44 @@ disable-model-invocation: false
+ - Perform git/PR/release administration consistent with policy.
+ - Execute required post-merge/post-deploy governance checklist items.
+ 
++## Upstream verification (from Collaborator)
++
++Before merging/deploying, verify:
++- Validation evidence exists for EVERY gate in Manager's scope.
++- Scope compliance: implementation matches Manager's criteria list.
++- No un-flagged scope drift from Collaborator.
++- Admin checks process, NOT solution quality (that's Consultant).
++
++## Ticket baton protocol
++
++1. Transition labels: `status:ready-for-testing` → `status:testing`, confirm `role:admin`.
++2. After merge: transition `status:testing` → `status:passed-testing`.
++3. Write ops comment — **first line**: `**⚙️ Admin [role-admin-execution] — Addie Merges**`
++   then: `## Operations Evidence (#N)` including:
++   - PR URL and merge SHA
++   - CI check results (pass/fail per check name)
++   - Any post-merge actions (release, deploy, label update)
++4. Add ✅ reaction: `gh api repos/{owner}/{repo}/pulls/{PR}/reactions -f content=+1`
++5. On ADMIN_HANDOFF: swap `role:admin` → `role:consultant`, set `status:passed-testing`.
++6. **Emit event**: `emit-event.js --type baton:admin --issue N --role admin --agent "Addie Merges"`.
++
++## PASSED-TESTING gate
++
++`status:passed-testing` means the merge is **already complete**. Admin sets this status only after:
++- All CI gates green.
++- PR merged via `gh pr merge --squash --delete-branch`.
++- Post-merge event emitted.
++
++Do not set `passed-testing` before merge. Consultant receives the baton only after merge is confirmed.
++
++## Review-failed flow
++
++If AC verification fails: swap `status:in-review` → `status:review-failed`, swap `role:admin` → `role:collaborator`, uncheck failing ACs, comment reason. Collaborator re-implements.
++
++## Post-merge AC failure policy
++
++Never revert a merge. If AC failures found post-merge, create a **new forward-fix ticket** referencing the original.
++
+ ## Entry criteria
+ 
+ - `COLLABORATOR_HANDOFF` validation evidence is present.
+@@ -23,24 +61,31 @@ disable-model-invocation: false
+ 
+ - `ADMIN_HANDOFF` records objective outcomes for each operation.
+ - Governance/release checks are marked complete or explicitly N/A.
++- **Merge-before-handoff** (#3053): for lane:code-change, when CI is green and
++  `admin_review_rating >= 93`, the PR MUST be merged before posting ADMIN_HANDOFF.
++  Red CI is never force-bypassed. Exceptions: `merge-evidence-override-approved`
++  label or `baseline_drift_override`. The Admin owns the merge; never route
++  merge authorization to the client (principle #2578).
+ 
+ ## Must not do
+ 
+ - Do not re-scope implementation.
+ - Do not skip required validation evidence.
+ 
+-## Escalation triggers
++## Merge verification checklist
+ 
+-- Operational preconditions fail.
+-- Release/governance integrity checks fail.
++1. Branch matches `<type>/<issue#>-<slug>` convention.
++2. Collaborator pulled latest `main` before PR (no stale base).
++3. Commit messages reference `#N` (issue number).
++4. Research tickets: no merge — verify findings posted as comment.
+ 
+-## Output contract
++## Feature completion steps (required for feature/bugfix)
+ 
+-```text
+-ADMIN_HANDOFF
+-operations_run:
+-service_runtime_state:
+-git_pr_release_state:
+-governance_checks:
+-exceptions_or_na:
+-```
++Execute in order:
++1. **Commit** — `git add -A && git commit -m "... Closes #N"`
++2. **Push** — `git push -u origin <branch-name>`
++3. **PR** — `gh pr create` with `Closes #N`, evidence, labels
++4. **CI green** — `gh pr checks <PR> --watch`; fix before merge
++5. **Merge** — `gh pr merge --squash --delete-branch`
++6. **Event** — `emit-event.js '{"type":"pr:merged","ticket":"#N"}'`
++7. **Close** — `gh issue close N --comment "Released in vX.Y.Z"`
+diff --git a/skills/role-baton-orchestrator/SKILL.md b/skills/role-baton-orchestrator/SKILL.md
+index 7674f63..668d5a5 100644
+--- a/skills/role-baton-orchestrator/SKILL.md
++++ b/skills/role-baton-orchestrator/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: role-baton-orchestrator
+-description: Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts.
+-argument-hint: [context: new-task|post-failure|pre-merge|pre-release] [scope: code|ops|governance|mixed]
++description: "Orchestrate single-thread baton handoff across Manager -> Collaborator -> Admin -> Consultant with explicit entry/exit contracts."
++argument-hint: "[context: new-task|post-failure|pre-merge|pre-release] [scope: code|ops|governance|mixed]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+@@ -12,14 +12,31 @@ disable-model-invocation: false
+ 
+ Provide deterministic role sequencing for end-to-end tasks while preventing overlap and instruction drift.
+ 
+-## Sequence (fixed)
++## Sequence (fixed, per ticket)
+ 
+ 1. Manager
+ 2. Collaborator
+ 3. Admin
+ 4. Consultant
+ 
+-Only one role may be active at a time.
++Only one role may be active **per ticket** at a time.
++Multiple tickets may have different active roles concurrently.
++
++## Parallel dispatch
++
++Manager may hand off N tickets to N different collaborators simultaneously.
++Each ticket carries its own baton independently. Constraints:
++- Each collaborator owns exactly one ticket at a time.
++- Admin merges are serialized (one PR at a time) to avoid conflicts.
++- Collaborators pull latest main before creating PR.
++
++## Research ticket lifecycle
++
++Research tickets skip branch/PR/merge. Baton sequence:
++1. Manager: scope research question, assign collaborator (fleet LLM).
++2. Collaborator: produce research, post findings on ticket.
++3. Admin: review storage placement (wiki/research/), no merge.
++4. Consultant: validate quality, close ticket.
+ 
+ ## Entry criteria
+ 
+diff --git a/skills/role-collaborator-execution/SKILL.md b/skills/role-collaborator-execution/SKILL.md
+index 2aca84d..7d8209d 100644
+--- a/skills/role-collaborator-execution/SKILL.md
++++ b/skills/role-collaborator-execution/SKILL.md
+@@ -15,33 +15,85 @@ disable-model-invocation: false
+ - Run required validation gates and capture outcomes.
+ - Update docs/changelog when behavior changes.
+ 
++## Upstream verification (from Manager)
++
++Before implementing, verify Manager's scope:
++- Are acceptance criteria testable and complete (binary pass/fail)?
++- Are constraints realistic given available resources?
++- Are verification gates achievable? If not, push back early.
++- If scope is vague, request `MANAGER_HANDOFF` revision.
++
+ ## Entry criteria
+ 
+ - Valid `MANAGER_HANDOFF` exists.
+ - Required gates are defined.
++- Active GitHub issue linked to work.
++
++## Branch and commit rules
++
++- Create branch: `<type>/<issue#>-<slug>` (e.g., `feat/62-baton-redesign`).
++- Every commit references `#N` in message.
++- Pull latest `main` into branch before PR: `git pull origin main`.
++- Research tickets: no branch — post findings as ticket comment.
+ 
+ ## Exit criteria
+ 
+ - `COLLABORATOR_HANDOFF` includes concrete validation evidence.
++- `COLLABORATOR_HANDOFF` explicitly enumerates `admin_required_ops`.
++- Do not declare complete at exit; "all gates pass" = validated, not released.
+ - Any scope drift is explicitly flagged for manager re-handoff.
+ 
+-## Must not do
++## Rich comment template
++
++`COLLABORATOR_HANDOFF` comment must include:
++- **Changes**: per-file summary of what changed and why
++- **Behavior delta**: before/after description of observable behavior
++- **AC evidence**: each AC checkbox ✅ with the test command or output proving it
++- **Risks for Admin**: potential CI flags, merge conflict risk, env dependencies
++- **Visualization** (optional): Mermaid diagram or ASCII flow for complex changes
++
++Add 🔧 reaction: `gh api repos/{owner}/{repo}/issues/{N}/reactions -f content=wrench`
++
++## Multi-ticket TODO model
+ 
++When multiple tickets are in `status:todo`, the Collaborator:
++- Holds ALL of them in TODO simultaneously (visible in baton map).
++- Keeps **exactly one** in `status:in-progress` at a time.
++- Completes and emits `COLLABORATOR_HANDOFF` before pulling the next ticket to `in-progress`.
++
++This prevents context bleed and ensures clean per-ticket evidence trails.
++
++## Ticket baton protocol
++
++1. Write comment — **first line**: `**🔧 Collaborator [role-collaborator-execution] — <persona>**`
++   then: `## Validation Evidence (#N)`.
++2. Transition labels: `status:todo` → `status:in-progress`, confirm `role:collaborator`.
++3. **AC confirmation gate**: Before COLLABORATOR_HANDOFF, mark each AC checkbox ✅ or ❌ with evidence. All must be ✅ to proceed.
++4. On COLLABORATOR_HANDOFF: swap `role:collaborator` → `role:admin`.
++5. **Emit event**: `emit-event.js --type baton:collaborator --issue N --role collaborator --agent "<persona>"`.
++
++**Persona roster**: see `agents/roster.json`. Select persona matching task specialty.
++
++## Must not do
+ - Do not alter scope without manager handoff update.
+ - Do not perform final release/merge/admin governance decisions.
+ 
+ ## Escalation triggers
+-
+ - Missing gate evidence.
+ - Ambiguous acceptance criteria.
++## Pre-handoff verification (#1571)
+ 
++Run `runChecks()` from `scripts/global/collaborator-self-check.js` and
++paste the `formatChecks()` table into the handoff body before posting.
++Waiver: label `collaborator-self-check:waived`.
+ ## Output contract
+-
+ ```text
+ COLLABORATOR_HANDOFF
+ files_changed:
+ behavior_changes:
+ validation_results:
+ docs_updates:
++admin_required_ops:
+ open_risks:
++pre_handoff_checks:
+ ```
+diff --git a/skills/role-consultant-critique/SKILL.md b/skills/role-consultant-critique/SKILL.md
+index 29d7bb7..a44950c 100644
+--- a/skills/role-consultant-critique/SKILL.md
++++ b/skills/role-consultant-critique/SKILL.md
+@@ -8,39 +8,93 @@ disable-model-invocation: false
+ 
+ # Role: Consultant Critique
+ 
++## Comprehensive Check Registry
++
++Run `node scripts/global/consultant-checks.js --issue <N> --json > /tmp/checks.json` before CLOSEOUT.
++Checks span 3 domains: `governance` (baton artifacts, labels, events), `tools` (wiki growth, skill refs), `fleet` (device routing, cost budget).
++Include `checks_run: <N>/<total>` and `checks_failed: <N>` in CLOSEOUT output.
++
+ ## Responsibilities
+ 
+-- Perform independent quality/risk review.
++- Perform independent quality/risk review of ALL prior roles.
+ - Score confidence and identify residual risk.
++- **Grade Manager scope quality** — were gates testable and complete?
++- **Grade Collaborator implementation** — evidence per gate, no gold-plating?
++- **Grade Admin process** — clean deployment, proper git hygiene?
++- **Audit ticket governance, wiki generation, and fleet routing.**
+ - Recommend follow-up actions with priority.
++- Identify at least one concrete improvement per role per review.
++
++## Grading rubric
++
++For G1-G9 harness goal scores, use the deterministic v2 rubric. Run
++`node scripts/global/rubric-score.js --trail <issue-trail> --diff <pr.diff>
++--closeout <closeout-draft>` and paste only its JSON under
++`### Deterministic Rubric`. Subjective scoring text belongs in
++`### Rationale` and must not affect `boxes_checked`, `boxes_total`, `score`, or
++`mean`. Legacy `G1=9, G2=8, ...` scoring remains accepted only through the
++2026-05-22 transition window.
++
++| Area | Pass | Fail |
++|---|---|---|
++| Scope testability | All gates have binary pass/fail | Vague gates ("make it good") |
++| Evidence completeness | Each gate has artifact | Missing gate results |
++| Process adherence | Branch, commit, PR, merge per protocol | Skipped steps |
++| Ticket governance | Issue exists, linked, labeled | No issue, orphan commits |
++| Comment protocol | Each role posted structured comment | Missing role comments |
++| Wiki growth | Research → wiki pages generated | Research with 0 wiki pages |
++| Fleet routing | Tasks use appropriate devices | All tasks on one device |
++
++## Ticket baton protocol (CLOSEOUT)
++
++1. Write CLOSEOUT — **first line**: `**🔍 Consultant [role-consultant-critique] — Quinn Critic**`
++   then: `## CLOSEOUT (#N)` with grades, risks, follow-ups.
++2. Transition labels: `status:passed-testing` → `status:done`, remove `role:*`.
++3. **Audit**: Verify each role posted a structured comment (Manager scope, Collaborator evidence, Admin ops).
++4. Add 🎉 emoji reaction to the issue to celebrate closure.
++5. **Emit event**: `emit-event.js --type baton:consultant --issue N --role consultant --agent "Quinn Critic"`.
++6. Close issue: `gh issue close N --comment "Released in vX.Y.Z — summary"`.
++7. **Manager Feedback Protocol**: after confidence scoring, run `node scripts/global/consultant-feedback.js --issue <N> --results /tmp/checks.json`. Require `remediation_issues: [...]` in CLOSEOUT if any FAIL (or `remediation_issues: none`).
++
++## Reject criteria (governance failures only)
++
++Reject (revert to Collaborator) only when a required artifact is absent, ACs lack evidence, or Admin merged before CI was green. Disagreements on quality/style become `recommended_follow_ups`. Post exact violation before rejecting.
+ 
+ ## Entry criteria
+ 
+-- `ADMIN_HANDOFF` exists (or explicit N/A with reason).
+-- Evidence set is sufficient to support confidence scoring.
++- `ADMIN_HANDOFF` exists and evidence supports confidence scoring.
+ 
+ ## Exit criteria
+ 
+-- `CONSULTANT_CLOSEOUT` includes strengths, risks, and prioritized follow-ups.
+-- Confidence score is evidence-backed.
++- `CONSULTANT_CLOSEOUT` includes per-role grades, evidence-backed confidence,
++  and at least one improvement per role.
+ 
+ ## Must not do
+ 
+ - Do not silently re-open implementation scope.
+ - Do not claim certainty without evidence.
+ 
+-## Escalation triggers
++## Drift detection checklist (mandatory)
+ 
+-- Material evidence gaps.
+-- High residual risk without mitigation path.
++- [ ] **Labels**: Issue has correct type/status/priority/area/role labels.
++- [ ] **Comments**: Each role posted structured comment (Mgr/Collab/Admin).
++- [ ] **Events**: Baton transitions emitted via emit-event.js at each handoff.
++- [ ] **ACs**: All acceptance criteria checked ✅ with evidence.
+ 
+ ## Output contract
+ 
+-```text
+ CONSULTANT_CLOSEOUT
++manager_grade: <A-F> <justification>
++collaborator_grade: <A-F> <justification>
++admin_grade: <A-F> <justification>
++drift_score: <0-10> <evidence: events emitted / expected>
+ strengths:
+ findings:
+ risk_register:
+ confidence: <low|medium|high>
++wiki_health: <pages_before>→<pages_after>
++fleet_utilization: <devices_used>/<devices_available>
+ recommended_follow_ups:
+-```
++checks_run: <N>/<total>
++checks_failed: <N>
++remediation_issues: <list or none>
+diff --git a/skills/role-manager-execution/SKILL.md b/skills/role-manager-execution/SKILL.md
+index 3f0d370..ca3ee57 100644
+--- a/skills/role-manager-execution/SKILL.md
++++ b/skills/role-manager-execution/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: role-manager-execution
+-description: Define scope, constraints, acceptance criteria, and verification gates before implementation begins.
+-argument-hint: [task-type: feature|bugfix|refactor|governance] [risk: low|medium|high]
++description: "Define scope, constraints, acceptance criteria, and verification gates before implementation begins."
++argument-hint: "[task-type: feature|bugfix|refactor|governance] [risk: low|medium|high]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+@@ -10,10 +10,41 @@ disable-model-invocation: false
+ 
+ ## Responsibilities
+ 
++- Create or link a GitHub issue **before any other action**.
+ - Clarify objective and non-objectives.
+ - Identify constraints from instructions and repository policy.
+-- Define objective acceptance criteria.
++- Define **testable** acceptance criteria (binary pass/fail only).
+ - Select required gates/tests/checks.
++- Provide context, not step-by-step instructions (autonomy principle).
++
++## Upstream verification (from Consultant)
++
++Before starting new work, check if prior Consultant CLOSEOUT had recommendations:
++- Incorporate feedback from `recommended_follow_ups`.
++- Address any `process: ticket-hygiene-gap` findings.
++
++## Ticket-first gate (mandatory)
++
++Before emitting `MANAGER_HANDOFF`, the Manager **must**:
++
++1. Run `gh issue list` to check for an existing issue matching the task.
++2. If none exists: `gh issue create --title "<imperative>" --label "type:..." --label "status:backlog" --label "priority:..." --label "area:..."`.
++3. Record the issue number in `MANAGER_HANDOFF` as `issue: #N`.
++4. All subsequent commits must reference `#N` in the commit message.
++
++**Skip condition**: trivial-task escape (read-only, no file edits, no state changes).
++
++## Ticket baton protocol
++
++1. Write scope comment — **first line must be**: `**🎯 Manager [role-manager-execution] — Manny Scope**`
++   then: `## Scope Definition (#N)` with objective, AC, constraints.
++2. Each AC **must** be a binary pass/fail checkbox: `- [ ] AC1: <testable statement>`.
++3. Set labels: `status:todo`, `role:manager`.
++4. Add 👀 reaction via `gh api repos/{owner}/{repo}/issues/{N}/reactions -f content=eyes`.
++5. On MANAGER_HANDOFF: swap `role:manager` → `role:collaborator`.
++6. **Emit event**: `emit-event.js --type baton:manager --issue N --role manager --agent "Manny Scope"`.
++
++**Persona roster**: see `agents/roster.json` for all 9 named agents.
+ 
+ ## Entry criteria
+ 
+@@ -22,6 +53,7 @@ disable-model-invocation: false
+ 
+ ## Exit criteria
+ 
++- A GitHub issue exists and is referenced in `MANAGER_HANDOFF`.
+ - `MANAGER_HANDOFF` is complete and testable.
+ - Scope boundaries are explicit enough for implementation without reinterpretation.
+ 
+@@ -34,15 +66,23 @@ disable-model-invocation: false
+ 
+ - If scope expands materially, regenerate `MANAGER_HANDOFF` before collaborator work continues.
+ 
+-## Required integrations
++## BACKLOG vs TODO distinction
++
++- **BACKLOG** (`status:backlog`): Ticket exists but Manager has NOT claimed it. Inactive-open. No role binding. Used for triage queue.
++- **TODO** (`status:todo`): Manager has claimed and is actively defining scope. Role binding = `role:manager`.
++
++Set `status:todo` (not `status:backlog`) when beginning a new Manager cycle.
++
++## Cancellation authority
+ 
+-- Route standards with `repo-standards-router`.
+-- Use `workflow-self-anneal` only if post-failure/process drift applies.
++Manager is the **only role** that may cancel a ticket. Applies at **any status**.
++Required: post a comment with cancellation reason before setting `status:cancelled` and removing all role labels.
+ 
+ ## Output contract
+ 
+ ```text
+ MANAGER_HANDOFF
++issue: #N
+ objective:
+ non_objectives:
+ constraints:
+diff --git a/skills/secret-exposure-prevention/SKILL.md b/skills/secret-exposure-prevention/SKILL.md
+index aca0a06..3b22d4b 100644
+--- a/skills/secret-exposure-prevention/SKILL.md
++++ b/skills/secret-exposure-prevention/SKILL.md
+@@ -1,6 +1,9 @@
+ ---
+ name: secret-exposure-prevention
+ description: Prevent secret leakage across git history, package artifacts, logs, and docs. Use when editing workflows, packaging configuration, environment files, or release automation.
++argument-hint: ""
++user-invocable: true
++disable-model-invocation: false
+ ---
+ 
+ # Secret Exposure Prevention
+diff --git a/skills/workflow-self-anneal/SKILL.md b/skills/workflow-self-anneal/SKILL.md
+index 8164ebb..47b5c0e 100644
+--- a/skills/workflow-self-anneal/SKILL.md
++++ b/skills/workflow-self-anneal/SKILL.md
+@@ -1,7 +1,7 @@
+ ---
+ name: workflow-self-anneal
+-description: Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended process and observed execution.
+-argument-hint: [context: session-start|post-failure|pre-merge|post-release] [scope: workflow|stability|qa|git]
++description: "Run a bounded self-annealing review of operating instructions and workflow outcomes. Use this after failures, after long sessions, before merge, or when repeated mismatches appear between intended process and observed execution."
++argument-hint: "[context: session-start|post-failure|pre-merge|post-release] [scope: workflow|stability|qa|git]"
+ user-invocable: true
+ disable-model-invocation: false
+ ---
+@@ -16,49 +16,44 @@ This skill optimizes _process reliability_, not model internals.
+ 
+ ## Hard safety constraints
+ 
+-1. No unbounded loops, recursive retries, or autonomous "improve forever" behavior.
+-2. Maximum one anneal pass per invocation.
+-3. Maximum three proposed documentation changes per invocation.
+-4. Do not claim deploy/publish/release success without explicit verification evidence.
+-5. Do not modify security/permission policy automatically; propose changes only.
+-6. If evidence is insufficient, return `NO_CHANGE` with missing-evidence requirements.
++1. No unbounded loops or autonomous "improve forever" behavior.
++2. Max one anneal pass per invocation; max three proposed doc changes.
++3. No deploy/publish success claims without verification evidence.
++4. Do not modify security/permission policy automatically; propose only.
++5. If evidence insufficient, return `NO_CHANGE` with missing-evidence list.
+ 
+ ## Trigger conditions
+ 
+-Run this skill when any of the following is true:
++- Same failure pattern ≥2 times in 7 days.
++- Session crash/restart/tooling instability.
++- Instructions contradicted by observed actions.
++- Pre-merge gate requires hardening evidence.
++- Repeated carryover/blocked items across iterations.
++- PR/merge latency breaches targets or reopened issues trend up.
++- **Commits exist without linked GitHub issues** (process drift).
++- **Consultant check registry returns ≥1 FAIL on domain:governance**.
++- **Fleet check `fleet-002` (cost-budget) FAIL for ≥2 consecutive cycles**.
+ 
+-- Same failure pattern appears at least twice in the last 7 days.
+-- Session had crash/restart/tooling instability.
+-- Instructions were contradicted by observed actions.
+-- Pre-merge gate requires process hardening evidence.
+-- Repeated carryover/blocked items appear across iterations.
+-- PR review or merge latency repeatedly breaches team targets.
+-- Reopened issues/defects trend upward.
++## Consultant Integration
+ 
+-## Input collection
+-
+-Collect only relevant evidence for current scope:
++Self-anneal may be invoked automatically from `consultant-feedback.js` when `gov-002` (baton-artifact-presence) or `gov-003` (event-emission) FAIL — these are workflow process failures, not implementation bugs.
++Check IDs are managed in `scripts/global/consultant-checks.js` (3 domains: governance/tools/fleet).
+ 
+-- Recent execution artifacts (logs, errors, failing checks, screenshots, QA notes)
+-- Existing instructions and workflow docs
+-- Recent commits/PR notes if available
++## Input collection
+ 
+-If required artifacts are unavailable, declare exactly what is missing and stop.
++Collect: execution artifacts (logs, errors, checks), instructions/workflow docs, recent commits/PR notes. If unavailable, declare missing and stop.
+ 
+ ## Analysis protocol
+ 
+-1. **Detect mismatch**
+-   - Compare expected behavior from instructions vs observed behavior in evidence.
+-2. **Classify root cause**
+-   - One of: `ambiguity`, `missing guardrail`, `stale instruction`, `tool fragility`, `human override`.
+-3. **Assess recurrence risk**
+-   - `low`, `medium`, `high` based on frequency and blast radius.
+-4. **Detect Agile drift signals**
+-   - Check trend indicators (carryover, blocked age, review latency, reopen rate).
+-5. **Propose minimal fix**
+-   - Prefer smallest docs/workflow delta that prevents recurrence.
+-6. **Define verification gate**
+-   - Add objective checks that confirm the fix works.
++1. **Detect mismatch**: expected vs observed behavior.
++2. **Classify root cause**: `ambiguity|missing guardrail|stale instruction|tool fragility|human override`.
++3. **Assess recurrence risk**: `low|medium|high` by frequency and blast radius.
++4. **Detect Agile drift signals**: carryover, blocked age, review/merge latency, reopen rate.
++   - **Ticket linkage**: `git log --oneline | wc -l` vs `--grep='#'`. If <80%, flag `ticket-linkage-drift`.
++   - **PR coverage**: commits vs `gh pr list --state all`. If 0 PRs, flag `pr-coverage-drift`.
++   - **Event gaps**: count events in `.dashboard/events.jsonl` per role transition. If <1 event per baton handoff, flag `event-emission-drift`.
++5. **Propose minimal fix**: smallest docs/workflow delta preventing recurrence.
++6. **Define verification gate**: objective checks confirming the fix.
+ 
+ ## Output format (required)
+ 
+@@ -68,77 +63,36 @@ Return exactly this structure:
+ SELF_ANNEAL_REPORT
+ context: <session-start|post-failure|pre-merge|post-release>
+ scope: <workflow|stability|qa|git>
+-
+-observation:
+-- ...
+-
+-expected_behavior:
+-- ...
+-
+-mismatch:
+-- ...
+-
++observation: [...]
++expected_behavior: [...]
++mismatch: [...]
+ root_cause: <ambiguity|missing guardrail|stale instruction|tool fragility|human override>
+ risk: <low|medium|high>
+-
+ drift_signals:
+-- metric: <carryover|blocked-age|review-latency|merge-latency|reopen-rate>
+-   trend: <improving|stable|degrading>
+-   evidence: <artifact reference>
+-
++- metric: <carryover|blocked-age|review-latency|merge-latency|reopen-rate|ticket-linkage|pr-coverage>
++   trend: <improving|stable|degrading>  evidence: <artifact>
+ proposed_changes:
+-1) file: <path>
+-   change_type: <add|edit|remove>
+-   rationale: <why this is minimal and sufficient>
+-   patch_summary: <short description>
+-
++1) file: <path>  change_type: <add|edit|remove>  rationale: <why>
+ verification_plan:
+-- check: <objective check>
+-  pass_condition: <measurable condition>
+-
+-decision:
+-- <apply|defer|NO_CHANGE>
+-
+-missing_evidence:
+-- <none or required artifacts>
++- check: <objective>  pass_condition: <measurable>
++decision: <apply|defer|NO_CHANGE>
++missing_evidence: <none or list>
+ ```
+ 
+ ## Change targeting guidance
+ 
+-When possible, prioritize these targets:
+-
+-1. `docs/workflow/self-annealing.md`
+-2. `docs/workflow/learnings.md`
+-3. `docs/technical/system-stability.md`
+-4. `docs/workflow/skills/AGILE-METRICS-PLAYBOOK.md`
+-5. project-specific runbooks/checklists directly tied to failure mode
++Prioritize: project runbooks/checklists, workflow docs, system-stability docs, learnings docs.
+ 
+ ## Stop conditions
+ 
+-Stop immediately and return `NO_CHANGE` if:
++Return `NO_CHANGE` if: change cannot be validated objectively, evidence is missing, change expands permissions, or same fix was already applied.
+ 
+-- Proposed change cannot be validated objectively.
+-- Required evidence is missing.
+-- Change would expand permissions or bypass approval controls.
+-- The same recommendation was already applied and verified recently.
++For iterative anneal loops (refinement passes), call `shouldStop(...)` from `scripts/global/anneal-stop.js` after every iteration (Epic #1568 AC-5, #1574). Stop when: deterministic gates green, OR `iterations >= 3`, OR `|rubric_mean_delta| <= 0.5`. Continuation past a stop requires `ANNEAL_OVERRIDE_CONTINUE: rationale` comment from the operator and is logged as `event:kill-switch-bypass`.
+ 
+ ## Quality bar
+ 
+-A good anneal output is:
+-
+-- **Specific**: references concrete behavior and artifacts
+-- **Minimal**: smallest viable guardrail update
+-- **Testable**: clear pass/fail checks
+-- **Traceable**: explicit rationale and risk classification
+-- **Trend-aware**: confirms drift is reduced across subsequent cycles
+-
+-## Mandatory visual verification rule (publish/UX scope)
++Good anneal output is: **specific** (concrete artifacts), **minimal** (smallest viable delta), **testable** (pass/fail checks), **traceable** (rationale + risk), **trend-aware** (drift reducing).
+ 
+-When scope includes UX-rendered changes (`qa` or `workflow` affecting UI):
++## Visual verification rule (publish/UX scope)
+ 
+-1. Do not allow ticket closure or publish success claims from DOM/CI checks alone.
+-2. Require at least one post-change visual inspection artifact (Claude Vision or equivalent) from live/UAT.
+-3. Required pass evidence in `verification_plan`:
+-   - `check`: visual rendering integrity
+-   - `pass_condition`: primary hero/content sections visibly render, primary CTA visible, no major collapse/malformed layout
+-4. If evidence is missing, decision must be `NO_CHANGE` or `defer` with explicit missing artifact list.
++For UX-rendered changes: require post-change visual inspection artifact. Do not allow ticket closure from DOM/CI checks alone. If visual evidence is missing, decision must be `defer`.
