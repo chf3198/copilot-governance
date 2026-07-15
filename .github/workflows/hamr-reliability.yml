@@ -1,0 +1,31 @@
+name: hamr-reliability
+
+# #3015 (Epic #3008 Phase D) — regression gate for HAMR reliability calibration: SLO/breaker
+# calibration, free-cloud-precedence escalation ladder, canary/rollback decisions, and the offload KPI.
+# Enforced root making scripts/hamr-reliability.js + scripts/hamr-offload-kpi.js ENFORCED
+# (enforcement-wiring-audit). Pure/hermetic — Node built-ins only; no network, no gh.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  hamr-reliability:
+    name: hamr-reliability (SLO/ladder/canary + KPI self-test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Reliability self-test (calibration, free-cloud precedence, canary/rollback)
+        run: node scripts/hamr-reliability.spec.js
+
+      - name: Offload-KPI self-test (coverage/gate-quality/incident/escalation)
+        run: node scripts/hamr-offload-kpi.spec.js
