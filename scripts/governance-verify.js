@@ -175,6 +175,24 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first reversible-vs-carveout autonomy-decision audit (#3799 AC2). Default-on but NEVER
+  // contributes to `issues` — it only validates Autonomy-Decision markers that ARE logged in Admin/
+  // handoff baton docs (malformed value, or a carve-out that records an autonomous merge). Docs with
+  // no marker are not penalized, so the current corpus produces zero findings. Scans THIS repo's wiki/
+  // (path.resolve(__dirname,'..')), not the passed layout `root`, so it is a no-op under throwaway
+  // ticket-fixture roots. Set AUTONOMY_CLASSIFIER_ADVISORY=0 to silence.
+  const autonomyAdvisories = [];
+  if (process.env.AUTONOMY_CLASSIFIER_ADVISORY !== '0') {
+    try {
+      const ac = require('./autonomy-classifier');
+      const { warnings } = ac.verifyAdminDocs(ac.scanAdminDocs(path.resolve(__dirname, '..')));
+      for (const w of warnings) {
+        autonomyAdvisories.push(w);
+        hints.push({ code: `advisory_${w.code}`, file: w.file, advisory: true });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -186,6 +204,7 @@ function verify(root, opts = {}) {
     enforcementTelemetry,
     mirrorAdminAdvisories,
     mirrorTicketAdvisories,
+    autonomyAdvisories,
     runAt: new Date().toISOString(),
   };
 }
@@ -219,6 +238,10 @@ if (require.main === module) {
     if (result.mirrorTicketAdvisories && result.mirrorTicketAdvisories.length) {
       console.log(`Mirror-ticket structural advisories (non-blocking): ${result.mirrorTicketAdvisories.length}`);
       result.mirrorTicketAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
+    }
+    if (result.autonomyAdvisories && result.autonomyAdvisories.length) {
+      console.log(`Autonomy-decision advisories (non-blocking): ${result.autonomyAdvisories.length}`);
+      result.autonomyAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
     }
   }
   process.exit(result.issues.length ? 1 : 0);
