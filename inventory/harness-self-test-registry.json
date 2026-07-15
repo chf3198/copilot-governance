@@ -27,6 +27,7 @@
     { "name": "baton-artifact-governance", "spec": "scripts/baton-artifact-governance.spec.js" },
     { "name": "hamr-reliability", "spec": "scripts/hamr-reliability.spec.js" },
     { "name": "hamr-offload-kpi", "spec": "scripts/hamr-offload-kpi.spec.js" },
+    { "name": "ac-suggest", "spec": "scripts/ac-suggest.spec.js" },
     { "name": "session-baseline", "spec": "hooks/scripts/session_baseline.spec.md", "test": "hooks/scripts/session_baseline_test.py", "kind": "hook-pytest" },
     { "name": "git-checks-porcelain", "spec": "hooks/scripts/git_checks.spec.md", "test": "hooks/scripts/git_checks_test.py", "kind": "hook-pytest" }
   ]
