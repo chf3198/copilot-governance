@@ -1,7 +1,7 @@
 {
   "schemaVersion": "enforcement-telemetry/v1",
-  "checkedValidators": 27,
-  "enforcedCount": 27,
+  "checkedValidators": 28,
+  "enforcedCount": 28,
   "unwiredCount": 0,
   "unwired": [],
   "enforcedRatio": 1
