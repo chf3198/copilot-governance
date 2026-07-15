@@ -48,9 +48,14 @@ def detect_uncommitted_changes(cwd: str) -> list[str]:
             capture_output=True, text=True, cwd=cwd, timeout=5,
         )
         if result.returncode == 0 and result.stdout.strip():
+            # #3821: split with splitlines() and DO NOT strip the whole stdout first. A
+            # `result.stdout.strip()` would eat the leading status space of the FIRST porcelain line,
+            # shifting its `line[3:]` by one and corrupting that path (e.g. ".gitignore" -> "gitignore").
+            # This must parse identically to session_baseline.snapshot_uncommitted so the Stop
+            # session-attributable delta (#3820) is exact.
             return [
                 line[3:]
-                for line in result.stdout.strip().split("\n")
+                for line in result.stdout.splitlines()
                 if line.strip()
             ]
     except Exception:
