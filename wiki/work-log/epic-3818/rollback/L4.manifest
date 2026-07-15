@@ -1,0 +1,10 @@
+agents/architect.agent.md
+agents/governance-auditor.agent.md
+agents/implementer.agent.md
+agents/planner.agent.md
+agents/quick.agent.md
+agents/release-reviewer.agent.md
+agents/roster.json
+agents/router.agent.md
+agents/router-policy.md
+agents/security-scanner.agent.md
