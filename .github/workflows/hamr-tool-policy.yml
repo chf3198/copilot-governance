@@ -1,0 +1,35 @@
+name: hamr-tool-policy
+
+# #3013 (Epic #3008 Phase B) — regression gate for the HAMR tool-surface proxy. Runs the role-scoped
+# policy, proxy-e2e, and audit-log specs as a hard gate (harness:self-test #1893). This is the enforced
+# root that makes scripts/hamr-tool-{policy,proxy,audit}.js ENFORCED (enforcement-wiring-audit). The
+# policy is a least-privilege ROLE layer over the #2847 fleet-mcp-tools default-deny catalog; it never
+# broadens the tool surface. Pure/hermetic — Node built-ins only; no network, no gh.
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  hamr-tool-policy:
+    name: hamr-tool-policy (proxy/policy/audit self-test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Policy self-test (allow/deny, role-scope, default fallback, AC4 compliance)
+        run: node scripts/hamr-tool-policy.spec.js
+
+      - name: Proxy e2e (approved + blocked calls, audited envelope)
+        run: node scripts/hamr-tool-proxy.spec.js
+
+      - name: Audit-log self-test (append/read/complianceRate)
+        run: node scripts/hamr-tool-audit.spec.js
