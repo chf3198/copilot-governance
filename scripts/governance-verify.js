@@ -139,6 +139,23 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first mirror-ticket Admin-completion contract (#3799 AC3). Default-on but NEVER
+  // contributes to `issues` — it only flags DONE wiki-mirror tickets that lack the deterministic
+  // Admin-close evidence (cross-family receipt / PR-mirror reference / consultant closeout). Scans
+  // THIS repo's wiki/ (path.resolve(__dirname,'..')), not the passed layout `root`, so it is a no-op
+  // under throwaway ticket-fixture roots. Set MIRROR_ADMIN_ADVISORY=0 to silence.
+  const mirrorAdminAdvisories = [];
+  if (process.env.MIRROR_ADMIN_ADVISORY !== '0') {
+    try {
+      const mac = require('./mirror-admin-completion');
+      const { warnings } = mac.verify(mac.scanMirror(path.resolve(__dirname, '..')));
+      for (const w of warnings) {
+        mirrorAdminAdvisories.push(w);
+        hints.push({ code: `advisory_${w.code}`, file: w.file, ticket: w.number, advisory: true });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -148,6 +165,7 @@ function verify(root, opts = {}) {
     accountableTeamAdvisories: accountableAdvisories,
     epicChildBatonAdvisories,
     enforcementTelemetry,
+    mirrorAdminAdvisories,
     runAt: new Date().toISOString(),
   };
 }
