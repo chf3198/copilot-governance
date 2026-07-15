@@ -91,5 +91,31 @@ the working-tree wiki dir, promoting EB1/EB2/EB3 to blocking today would brick e
 grandfathering) and a tracked-tree-scoped gate wiring. The shadow metric is wired into
 `governance-verify` as a default-on, non-blocking advisory (`EPIC_BATON_SHADOW_ADVISORY=0` silences).
 
+### AC5 historical backfill plan (dry-run exemption manifest)
+
+`scripts/epic-baton-backfill-plan.js` produces the deterministic classification a future
+promotion-to-blocking needs — **without fabricating any evidence** (it never writes a
+`CONSULTANT_CLOSEOUT` / `GitHub Evidence Block`; the 1893.md MC3 precedent — leave long-merged
+closeouts alone):
+
+```
+node scripts/epic-baton-backfill-plan.js
+```
+
+Each flagged historical child is classified:
+- **grandfather** — created before the guard cutoff (`2026-07-14`) → EXEMPT from a future blocking
+  gate. The advisory still reports it (transparency preserved — nothing is silenced or fabricated).
+- **has-evidence** — a real sibling evidence artifact (`wiki/work-log/ticket-<N>/*closeout*` …) exists
+  → record a POINTER to real evidence, no new prose.
+- **must-remediate** — post-cutoff and genuinely un-evidenced → needs a real per-child baton; never
+  auto-backfilled.
+
+On the canonical corpus all **327** flagged children classify as **grandfather** (0 must-remediate),
+so a blocking Epic-close gate scoped to `(tracked ∧ post-cutoff ∧ not-grandfathered)` sees **zero**
+historical instances and is safe to promote. That promotion (the actual flip of EB1/EB2/EB3 to
+blocking) is a well-defined, now-unblocked follow-up child — it is deliberately NOT part of Epic #3800
+(whose ACs deliver the guard, the metric, and this manifest). The plan is wired into
+`governance-verify` as a default-on dry-run advisory (`EPIC_BATON_BACKFILL_ADVISORY=0` silences).
+
 See also: `role-baton-routing.instructions.md` (per-child evidence requirement), Epic #2345
 (the completion review that surfaced this defect).

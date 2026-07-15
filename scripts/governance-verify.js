@@ -235,6 +235,28 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first Epic-child historical backfill PLAN (#3800 AC5). Default-on but NEVER contributes
+  // to `issues` — it records the dry-run exemption manifest (grandfather / has-evidence / must-
+  // remediate) for the pre-existing bundling-drift instances (G8 observability) and adds a non-blocking
+  // hint when post-cutoff instances still need a real per-child baton. It FABRICATES NOTHING and mutates
+  // no ticket. Scans THIS repo (path.resolve(__dirname,'..')), not the passed layout `root`, so it is a
+  // no-op under throwaway fixture roots. Set EPIC_BATON_BACKFILL_ADVISORY=0 to silence.
+  let epicBatonBackfillPlan = null;
+  if (process.env.EPIC_BATON_BACKFILL_ADVISORY !== '0') {
+    try {
+      const bp = require('./epic-baton-backfill-plan');
+      epicBatonBackfillPlan = bp.backfillPlan(bp.scanFlagged(path.resolve(__dirname, '..')));
+      if (epicBatonBackfillPlan.mustRemediate.length > 0) {
+        hints.push({
+          code: 'advisory_epic_baton_backfill_must_remediate',
+          count: epicBatonBackfillPlan.mustRemediate.length,
+          tickets: epicBatonBackfillPlan.mustRemediate,
+          advisory: true,
+        });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -249,6 +271,7 @@ function verify(root, opts = {}) {
     autonomyAdvisories,
     completionGateAdvisories,
     epicBatonShadowMetric,
+    epicBatonBackfillPlan,
     runAt: new Date().toISOString(),
   };
 }
@@ -294,6 +317,11 @@ if (require.main === module) {
     if (result.epicBatonShadowMetric) {
       const pr = result.epicBatonShadowMetric.promotionReadiness;
       console.log(`Epic-baton shadow metric (non-blocking): promotion ${pr.ready ? 'READY' : 'DEFER'} — ${pr.reason}`);
+    }
+    if (result.epicBatonBackfillPlan) {
+      const s = result.epicBatonBackfillPlan.summary;
+      console.log(`Epic-baton backfill plan (non-blocking, dry-run): ${s.total} flagged — `
+        + `${s.grandfather} grandfather / ${s.hasEvidence} has-evidence / ${s.mustRemediate} must-remediate`);
     }
   }
   process.exit(result.issues.length ? 1 : 0);
