@@ -19,6 +19,7 @@
     { "name": "epic-baton-backfill-plan", "spec": "scripts/epic-baton-backfill-plan.spec.js" },
     { "name": "state-semantics", "spec": "scripts/state-semantics.spec.js" },
     { "name": "baseline-drift-sentinel", "spec": "scripts/baseline-drift-sentinel.spec.js" },
+    { "name": "baseline-cutover", "spec": "scripts/baseline-cutover.spec.js" },
     { "name": "hamr-tool-policy", "spec": "scripts/hamr-tool-policy.spec.js" },
     { "name": "hamr-tool-proxy", "spec": "scripts/hamr-tool-proxy.spec.js" },
     { "name": "hamr-tool-audit", "spec": "scripts/hamr-tool-audit.spec.js" },

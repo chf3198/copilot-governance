@@ -1,0 +1,34 @@
+name: baseline-cutover
+
+# #3822 — Mode C (CUTOVER) tooling of the ratified baseline-drift reconciler (ticket-3801 AC4 / ticket-3818 closeout
+# child; design receipt 3355d17ac42b51ae). Runs the module's regression spec (hard gate, harness:self-test
+# ticket-1893) plus the dry-run (advisory). Pure/hermetic — Node built-ins only; no network, no gh. The tool
+# NEVER mutates a checkout; the live re-park is a gated carve-out done by a human, not CI. This is the
+# enforced root that makes scripts/baseline-cutover.js ENFORCED (enforcement-wiring-audit).
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  baseline-cutover:
+    name: baseline-cutover (self-test + dry-run)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Hard gate: regression spec (classifier buckets, strings-only recipe, CI-safe plan/verify).
+      - name: Self-test (regression)
+        run: node scripts/baseline-cutover.spec.js
+
+      # Advisory: dry-run on the clean CI checkout — reports ready with 0 drift; exits 0. Never mutates.
+      - name: Dry-run (advisory)
+        run: node scripts/baseline-cutover.js --dry-run
