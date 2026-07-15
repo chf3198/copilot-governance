@@ -193,6 +193,25 @@ function verify(root, opts = {}) {
     } catch (_) { /* advisory only: never break governance-verify on this path */ }
   }
 
+  // Advisory-first completion-gate marker audit (#3799 AC4). Default-on but NEVER contributes to
+  // `issues` — it only validates `Completion-Gate:` markers that ARE logged in Admin/handoff/
+  // completion baton docs (malformed value CG1, or a `blocked` gate that cites untracked / working-
+  // tree drift as the blocker CG2 — the annealed 718-untracked false positive). Docs with no marker
+  // are not penalized, so the current corpus produces zero findings. Scans THIS repo's wiki/
+  // (path.resolve(__dirname,'..')), not the passed layout `root`, so it is a no-op under throwaway
+  // ticket-fixture roots. Set COMPLETION_GATE_ADVISORY=0 to silence.
+  const completionGateAdvisories = [];
+  if (process.env.COMPLETION_GATE_ADVISORY !== '0') {
+    try {
+      const cg = require('./completion-gate');
+      const { warnings } = cg.verifyGateDocs(cg.scanGateDocs(path.resolve(__dirname, '..')));
+      for (const w of warnings) {
+        completionGateAdvisories.push(w);
+        hints.push({ code: `advisory_${w.code}`, file: w.file, advisory: true });
+      }
+    } catch (_) { /* advisory only: never break governance-verify on this path */ }
+  }
+
   return {
     checkedTickets: all.size,
     failedChecks: issues.length,
@@ -205,6 +224,7 @@ function verify(root, opts = {}) {
     mirrorAdminAdvisories,
     mirrorTicketAdvisories,
     autonomyAdvisories,
+    completionGateAdvisories,
     runAt: new Date().toISOString(),
   };
 }
@@ -242,6 +262,10 @@ if (require.main === module) {
     if (result.autonomyAdvisories && result.autonomyAdvisories.length) {
       console.log(`Autonomy-decision advisories (non-blocking): ${result.autonomyAdvisories.length}`);
       result.autonomyAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
+    }
+    if (result.completionGateAdvisories && result.completionGateAdvisories.length) {
+      console.log(`Completion-gate advisories (non-blocking): ${result.completionGateAdvisories.length}`);
+      result.completionGateAdvisories.forEach(w => console.log(`  ~ ${w.file} [${w.code}] ${w.message}`));
     }
   }
   process.exit(result.issues.length ? 1 : 0);
